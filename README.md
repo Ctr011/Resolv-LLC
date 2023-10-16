@@ -7,6 +7,9 @@
 ![default view of team logo](https://github.com/Ctr011/Resolv-LLC/blob/a3026d0b942bafe60a05fe0d1d60c6aaa198044c/logo/Resolv-logos.jpeg)
 # Team #
 Team Leader: Godfrey Lozada
+
 Team Member 1: Mrinisha Adhikari
+
 Team Member 2: Matthew Teng
+
 Team Member 3: Calvin Trujillo
