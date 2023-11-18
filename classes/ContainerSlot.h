@@ -27,7 +27,7 @@ public:
 
 class NANSlot : public ContainerSlot {
 public:
-    NANSlot(int x, int y) : ContainerSlot("NAN", x, y, false) {};
+    NANSlot(int x, int y);
 };
 
 class Container: public ContainerSlot{
@@ -35,13 +35,13 @@ class Container: public ContainerSlot{
     float containerMass;
 
 public:
-    Container(string name, float mass, int x, int y) : ContainerSlot(name, x, y, true){
-        containerMass = mass;
-    };
+    Container(string name, float mass, int x, int y);
 
-    bool changeXPos();
-    bool changeYPos();
+    void changeXPos(int x);
+    void changeYPos(int y);
 
     float getMass();
-    float changeMass(); //  Do we need this?
+    void changeMass(float mass); //  Do we need this?
+
+    void toString();
 };
