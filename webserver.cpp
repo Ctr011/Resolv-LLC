@@ -1,6 +1,12 @@
 #include <iostream>
 #include "dependencies/httplib.h"
 
+
+/**
+ * @fn Main section for application. Webserver will run from here
+ * 
+ * @todo Add other webserver endpoints for client to interact with server
+*/
 int main() {
     std::cout << "Starting server..." << std::endl;
 
