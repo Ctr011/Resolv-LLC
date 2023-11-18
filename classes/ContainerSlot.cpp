@@ -16,9 +16,11 @@ NANSlot::NANSlot(int x, int y) : ContainerSlot("NAN", x, y, false){};
  * Container Constructor
 */
 Container::Container(string name, float mass, int x, int y) : ContainerSlot(name, x, y, true){
+    
     if(name.empty() || name == "NAN" || name == "UNUSED"){throw std::invalid_argument("Invalid Container name: " + name);}; //  Check for invalid names
     if(name.length() > 256){throw std::invalid_argument("Container name too long.");} //  Name length
     if(mass < 0 || mass > 99999.0){ throw std::invalid_argument("Invalid mass for container: " + to_string(mass));} //  Mass number
+    
     containerMass = mass;
 };
 
