@@ -1,3 +1,7 @@
+//  ContainerSlot.h
+#ifndef CONTAINERSLOT_H
+#define CONTAINERSLOT_H
+
 #include <iostream>
 #include <string>
 using namespace std;
@@ -45,3 +49,5 @@ public:
 
     void toString();
 };
+
+#endif

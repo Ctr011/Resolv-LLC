@@ -24,15 +24,15 @@ Container::Container(string name, float mass, int x, int y) : ContainerSlot(name
     containerMass = mass;
 };
 
-//  COntainer Getters
+//  Container-Specific Getter
 float Container::getMass(){return this->containerMass;};
 
-//  Container changing positions
+//  Container changing positions/Mass
 void Container::changeXPos(int x){this->xPos = x; return;};
 void Container::changeYPos(int y){this->yPos = y; return;};
 void Container::changeMass(float mass){this->containerMass = mass; return;};
 
-//  Just for our use
+//  For Debugging
 void Container::toString(){
     string output = "Container Info";
     std::cout << "Container Info" << endl;
