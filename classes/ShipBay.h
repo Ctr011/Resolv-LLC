@@ -12,17 +12,20 @@ class ShipBay{
 
     int size_x = 12;
     int size_y = 8;
-    vector<vector<ContainerSlot>> bayArea;
+    std::vector<std::vector<ContainerSlot>> bayArea;
 
-    void parseContent(string manifest);
-    ContainerSlot parseLine(string entry);
+    void parseContent(std::string manifest);
+    ContainerSlot parseLine(std::string entry);
 
 
     public:
+
+        ShipBay() = default;
+
         ShipBay(std::string manifestContent);
         void addContainer(Container newContainer, int x, int y);
 
-
+        virtual ~ShipBay(){};
 };
 
 #endif

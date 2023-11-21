@@ -1,11 +1,12 @@
 //  ShipBay.cpp
 #include "ShipBay.h"
+#include "ContainerSlot.h"
 
 /**
  * @fn ShipBay (Constructor)
 */
 ShipBay::ShipBay(std::string manifestContent){
-
+    parseContent(manifestContent);
 }
 
 /**
@@ -14,22 +15,22 @@ ShipBay::ShipBay(std::string manifestContent){
  * @param {string} manifest
  * @return {void}
 */
-void ShipBay::parseContent(string manifest){
-    ifstream filestream;
-    vector<string> data;
+void ShipBay::parseContent(std::string manifest){
+    std::ifstream filestream;
+    std::vector<std::string> data;
     int entries = 0;
 
     filestream.open(manifest);
     if (!filestream.is_open()) {
-        cout << "File Error";
+        std::cout << "File Error";
     }
 
-    string curr_line;
+    std::string curr_line;
     int curr_col = -1;
-    while (getline(filestream, curr_line)) {
+    while (std::getline(filestream, curr_line)) {
         ContainerSlot curr_container = parseLine(curr_line);
         if ((curr_container.getXPos() - 1) != curr_col) {
-            vector<ContainerSlot> new_column;
+            std::vector<ContainerSlot> new_column;
             bayArea.push_back(new_column);
             curr_col++;
         }
@@ -43,13 +44,13 @@ void ShipBay::parseContent(string manifest){
  * @param {string} entry
  * @return {ContainerSlot}
 */
-ContainerSlot ShipBay::parseLine(string entry){
+ContainerSlot ShipBay::parseLine(std::string entry){
 
     //  First get name of container
-    int x = stoi(entry.substr(1,2));    //  x Position
-    int y = stoi(entry.substr(4,2));    //  y Position
+    int x = std::stoi(entry.substr(1,2));    //  x Position
+    int y = std::stoi(entry.substr(4,2));    //  y Position
     int weight = stoi(entry.substr(10,5));  //  Mass of Container
-    string label = entry.substr(18);
+    std::string label = entry.substr(18);
 
     //  If container is an NAN slot, return NAN object
     if(label.compare("NAN") == 0){

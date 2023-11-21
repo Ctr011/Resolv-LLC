@@ -3,6 +3,11 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+
+#include "classes/ContainerSlot.h"
+#include "classes/ContainerSlot.cpp"
+#include "classes/ShipBay.h"
+#include "classes/ShipBay.cpp"
 #include "dependencies/httplib.h"
 using namespace std;
 
@@ -45,7 +50,10 @@ int main() {
                 entries++;
             }
 
+            string test = "QWERTY";
+
             //  @todo: Create new ShipBay Object Here
+            ShipBay* bay = new ShipBay(file.content);
 
             // Status code 200: Success
             res.status = 200;
