@@ -1,28 +1,65 @@
-#include <fstream> // for file input
+#include <fstream>
+#include <vector>
+#include <string>
+#include <iostream>
+#include <sstream>
 #include "dependencies/httplib.h"
-#include "classes/ContainerSlot.h"
+using namespace std;
 
-
-/**
- * @fn Main section for application. Webserver will run from here
- * 
- * @todo Add other webserver endpoints for client to interact with server
-*/
 int main() {
-
-    Container c("testContainer", 99.99, 0, 0);
-    c.toString();
-
-    //  Init webserver here
     httplib::Server svr;
 
-    /**
-     * @fn Just for testing.
-    */
+    // Serve static files from the "webpage" directory
+    svr.set_mount_point("/", "./webpage");
+
+    // Serve other static files (JS, CSS, etc.)
+    svr.set_mount_point("/JS", "./webpage/JS");
+    svr.set_mount_point("/CSS", "./webpage/CSS");
+
+    // Serve HTML file
+    svr.Get("/", [](const httplib::Request &, httplib::Response &res) {
+        std::ifstream file("webpage/HTML/fileupload.html");
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        res.set_content(buffer.str(), "text/html");
+    });
+
+    // Just for testing
     svr.Get("/hi", [](const httplib::Request &, httplib::Response &res) {
         res.set_content("Hello World!", "text/plain");
     });
 
+    // Endpoint to accept file uploads from the frontend
+    svr.Post("/upload", [&](const httplib::Request &req, httplib::Response &res) {
+        if (req.has_file("file")) {
+            const auto &file = req.get_file_value("file");
+            std::istringstream filestream(file.content);
+
+            // Print the content line by line
+            string curr_line;
+            int entries = 0;
+            std::vector<std::string> data;
+            while (getline(filestream, curr_line)) {
+                std::cout << "Line " << entries + 1 << ": " << curr_line << std::endl;
+                data.push_back(curr_line);
+                entries++;
+            }
+
+            //  @todo: Create new ShipBay Object Here
+
+            // Status code 200: Success
+            res.status = 200;
+            res.set_content("File successfully uploaded", "text/plain");
+        } else {
+            // HTTP status code set to 400: Bad Request
+            res.status = 400;
+            res.set_content("No file uploaded", "text/plain");
+        }
+    });
+
+    // Run web server on localhost (127.0.0.1)
     std::cout << "Deckware Web Server listening on Port 8080..." << std::endl;
-    svr.listen("0.0.0.0", 8080);
+    svr.listen("localhost", 8080);
+
+    return 0;
 }
