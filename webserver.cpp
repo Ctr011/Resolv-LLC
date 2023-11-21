@@ -1,5 +1,10 @@
 #include <fstream>
+#include <vector>
+#include <string>
+#include <iostream>
+#include <sstream>
 #include "dependencies/httplib.h"
+using namespace std;
 
 int main() {
     httplib::Server svr;
@@ -28,6 +33,17 @@ int main() {
     svr.Post("/upload", [&](const httplib::Request &req, httplib::Response &res) {
         if (req.has_file("file")) {
             const auto &file = req.get_file_value("file");
+            std::istringstream filestream(file.content);
+
+            // Print the content line by line
+            string curr_line;
+            int entries = 0;
+            std::vector<std::string> data;
+            while (getline(filestream, curr_line)) {
+                std::cout << "Line " << entries + 1 << ": " << curr_line << std::endl;
+                data.push_back(curr_line);
+                entries++;
+            }
 
             //  @todo: Create new ShipBay Object Here
 
