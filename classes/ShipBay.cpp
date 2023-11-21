@@ -4,27 +4,70 @@
 /**
  * @fn ShipBay (Constructor)
 */
-ShipBay::ShipBay(std::string filePath){
-    //  @todo: Load manifest into bayArea martix here
+ShipBay::ShipBay(std::string manifestContent){
 
-    //  Define filepath here
-    this->manifestFilePath = filePath;
-    
-    //  Open file stream
-    std::ifstream manifest(filePath);
+}
 
-    //  String value for content of manifest
-    std::string manifestContent;
+/**
+ * @fn parseContent
+ * Parses string content and creates the Ship Bay Area from it
+ * @param {string} manifest
+ * @return {void}
+*/
+void ShipBay::parseContent(string manifest){
+    ifstream filestream;
+    vector<string> data;
+    int entries = 0;
 
-    //  @todo: There has to be a better way to do this
-    int containerInfo = 0;
-    if(manifest.is_open()){
-        while(manifest.good()){
-            manifest >> manifestContent;
-            std::cout << manifestContent;
-        }
-    }else{
-        throw std::invalid_argument("The file '" + filePath +"' is unable to be opened");
+    filestream.open(manifest);
+    if (!filestream.is_open()) {
+        cout << "File Error";
     }
-    
+
+    string curr_line;
+    int curr_col = -1;
+    while (getline(filestream, curr_line)) {
+        ContainerSlot curr_container = parseLine(curr_line);
+        if ((curr_container.getXPos() - 1) != curr_col) {
+            vector<ContainerSlot> new_column;
+            bayArea.push_back(new_column);
+            curr_col++;
+        }
+        bayArea.at(curr_col).push_back(curr_container);
+    }
+}
+
+/**
+ * @fn parseLine
+ * Parses a line of string and creates a COntainerSlot object
+ * @param {string} entry
+ * @return {ContainerSlot}
+*/
+ContainerSlot ShipBay::parseLine(string entry){
+
+    //  First get name of container
+    int x = stoi(entry.substr(1,2));    //  x Position
+    int y = stoi(entry.substr(4,2));    //  y Position
+    int weight = stoi(entry.substr(10,5));  //  Mass of Container
+    string label = entry.substr(18);
+
+    //  If container is an NAN slot, return NAN object
+    if(label.compare("NAN") == 0){
+        return NANSlot(x, y);
+    }
+
+    // else if(label.compare("UNUSED") == 0){ //  If it is empty, return NULL
+    //     return NULL;
+    // }
+
+    //  Otherwise, data represents a container
+    return Container(label, weight, x, y);
+}
+
+/**
+ * @fn addContainer
+ * @todo: Create addContainer function
+*/
+void ShipBay::addContainer(Container newContainer, int x, int y){
+    return;
 }
