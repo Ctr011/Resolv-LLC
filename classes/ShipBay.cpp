@@ -2,11 +2,13 @@
 #include "ShipBay.h"
 #include "ContainerSlot.h"
 
+
 /**
  * @fn ShipBay (Constructor)
 */
-ShipBay::ShipBay(std::string manifestContent){
+ShipBay::ShipBay(const std::string manifestContent){
     parseContent(manifestContent);
+    return;
 }
 
 /**
@@ -16,19 +18,26 @@ ShipBay::ShipBay(std::string manifestContent){
  * @return {void}
 */
 void ShipBay::parseContent(std::string manifest){
-    std::ifstream filestream;
+    std::istringstream filestream(manifest);
     std::vector<std::string> data;
     int entries = 0;
 
-    filestream.open(manifest);
-    if (!filestream.is_open()) {
+    if (!filestream) {
         std::cout << "File Error";
+        throw std::invalid_argument("Unable to parse manifest!");
+        return;
     }
 
     std::string curr_line;
     int curr_col = -1;
+    
+    //  Get the next line of the file
     while (std::getline(filestream, curr_line)) {
+
+        //  Make a new container out of the current line
         ContainerSlot curr_container = parseLine(curr_line);
+        
+        //  Make a new column if 
         if ((curr_container.getXPos() - 1) != curr_col) {
             std::vector<ContainerSlot> new_column;
             bayArea.push_back(new_column);
@@ -36,6 +45,7 @@ void ShipBay::parseContent(std::string manifest){
         }
         bayArea.at(curr_col).push_back(curr_container);
     }
+    return;
 }
 
 /**
@@ -45,6 +55,9 @@ void ShipBay::parseContent(std::string manifest){
  * @return {ContainerSlot}
 */
 ContainerSlot ShipBay::parseLine(std::string entry){
+
+    //  Remove return value
+    entry.erase(std::remove(entry.begin(), entry.end(), '\r'), entry.end());
 
     //  First get name of container
     int x = std::stoi(entry.substr(1,2));    //  x Position
@@ -57,9 +70,9 @@ ContainerSlot ShipBay::parseLine(std::string entry){
         return NANSlot(x, y);
     }
 
-    // else if(label.compare("UNUSED") == 0){ //  If it is empty, return NULL
-    //     return NULL;
-    // }
+    else if(label.compare("UNUSED") == 0){ //  If it is empty, return NULL
+        return EmptySlot(x, y);
+    }
 
     //  Otherwise, data represents a container
     return Container(label, weight, x, y);

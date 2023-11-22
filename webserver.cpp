@@ -12,7 +12,10 @@
 using namespace std;
 
 int main() {
+
+    //  Init sever and active ShipBay
     httplib::Server svr;
+    ShipBay* bay = nullptr;
 
     // Serve static files from the "webpage" directory
     svr.set_mount_point("/", "./webpage");
@@ -50,18 +53,24 @@ int main() {
                 entries++;
             }
 
-            string test = "QWERTY";
-
             //  @todo: Create new ShipBay Object Here
-            ShipBay* bay = new ShipBay(file.content);
+            try{
+                bay = new ShipBay(file.content);
+            }catch(std::invalid_argument error){
+                res.status = 500;
+                res.set_content("Manifest Parsing Error", "text/plain");
+                return;
+            }
 
             // Status code 200: Success
             res.status = 200;
             res.set_content("File successfully uploaded", "text/plain");
+            return;
         } else {
             // HTTP status code set to 400: Bad Request
             res.status = 400;
             res.set_content("No file uploaded", "text/plain");
+            return;
         }
     });
 

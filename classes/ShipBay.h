@@ -6,20 +6,23 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <sstream>
+#include <optional>
 #include "ContainerSlot.h"
 
 class ShipBay{
 
-    int size_x = 12;
-    int size_y = 8;
+    //  Change this back later
+    int size_x = 8;
+    int size_y = 12;
     std::vector<std::vector<ContainerSlot>> bayArea;
+    std::vector<ContainerSlot> temp;
 
-    void parseContent(std::string manifest);
+    void parseContent(const std::string manifest);
     ContainerSlot parseLine(std::string entry);
 
 
     public:
-
         ShipBay() = default;
 
         ShipBay(std::string manifestContent);

@@ -33,6 +33,11 @@ public:
     NANSlot(int x, int y);
 };
 
+class EmptySlot : public ContainerSlot{
+public: 
+    EmptySlot(int x, int y);
+};
+
 class Container: public ContainerSlot{
 
     float containerMass;
@@ -48,5 +53,7 @@ public:
 
     void toString();
 };
+
+
 
 #endif
