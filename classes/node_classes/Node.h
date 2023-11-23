@@ -8,13 +8,14 @@
 class Node{
     
     Node* parent;
-    ShipBay* bay;
+    ShipBay bay;
     int incoming_cost;
+    bool isPickingUp;
 
     public:
 
         Node() = default;
-        Node(Node* Parent, ShipBay* currBay, int cost); //  Constructor
+        Node(Node* parent, ShipBay currBay, int cost); //  Constructor
         int getCost();  //  Get current cost of node
         std::vector<Node> expand(); //  Expand all possible moves from the Node
         void printState(); 

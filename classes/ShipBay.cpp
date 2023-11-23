@@ -4,6 +4,7 @@
 
 
 /**
+ * 11/23/2023
  * @fn ShipBay (Constructor)
 */
 ShipBay::ShipBay(const std::string manifestContent){
@@ -12,6 +13,7 @@ ShipBay::ShipBay(const std::string manifestContent){
 }
 
 /**
+ * 11/23/2023
  * @fn parseContent
  * Parses string content and creates the Ship Bay Area from it
  * @param {string} manifest
@@ -34,56 +36,146 @@ void ShipBay::parseContent(std::string manifest){
     //  Get the next line of the file
     while (std::getline(filestream, curr_line)) {
 
-        //  Make a new container out of the current line
-        ContainerSlot curr_container = parseLine(curr_line);
+        curr_line.erase(std::remove(curr_line.begin(), curr_line.end(), '\r'), curr_line.end());
+
+        int y = std::stoi(curr_line.substr(1,2));    //  x Position
+        int x = std::stoi(curr_line.substr(4,2));    //  y Position
+        int weight = stoi(curr_line.substr(10,5));  //  Mass of Container
+        std::string label = curr_line.substr(18);   //  get name of container
         
-        //  Make a new column if 
-        if ((curr_container.getXPos() - 1) != curr_col) {
-            std::vector<ContainerSlot> new_column;
+        //  Make a new row if row has reached capacity
+        if ((y - 1) != curr_col) {
+            std::vector<ContainerSlot*> new_column;
             bayArea.push_back(new_column);
             curr_col++;
         }
-        bayArea.at(curr_col).push_back(curr_container);
+
+        //  If container is an NAN slot, return NAN object
+        if(label.compare("NAN") == 0){
+            bayArea.at(curr_col).push_back(new NANSlot(x, y));
+        }
+        else if(label.compare("UNUSED") == 0){ //  If it is empty, return NULL
+            bayArea.at(curr_col).push_back(new EmptySlot(x, y));
+        }else{
+             //  Otherwise, data represents a container
+            bayArea.at(curr_col).push_back(new Container(label, weight, x, y));
+        }
+
+       
     }
     return;
 }
 
-/**
- * @fn parseLine
- * Parses a line of string and creates a COntainerSlot object
- * @param {string} entry
- * @return {ContainerSlot}
-*/
-ContainerSlot ShipBay::parseLine(std::string entry){
+std::vector<int> ShipBay::getHeights(int start, int end){
 
-    //  Remove return value
-    entry.erase(std::remove(entry.begin(), entry.end(), '\r'), entry.end());
+    std::vector<int> heights;
 
-    //  First get name of container
-    int x = std::stoi(entry.substr(1,2));    //  x Position
-    int y = std::stoi(entry.substr(4,2));    //  y Position
-    int weight = stoi(entry.substr(10,5));  //  Mass of Container
-    std::string label = entry.substr(18);
+    int x, y;
 
-    //  If container is an NAN slot, return NAN object
-    if(label.compare("NAN") == 0){
-        return NANSlot(x, y);
+    for(x = start - 1; x < end - 1; x++){
+        for(y = 0; y < this->size_y; y++){
+            if(bayArea.at(x).at(y)->getName().compare("UNUSED") == 0){
+                heights.push_back(y);
+                break;
+            }
+        }
+        if(y == this->size_y){
+            heights.push_back(this->size_y);
+        }
+        
     }
 
-    else if(label.compare("UNUSED") == 0){ //  If it is empty, return NULL
-        return EmptySlot(x, y);
-    }
-
-    //  Otherwise, data represents a container
-    return Container(label, weight, x, y);
+    return heights;
 }
 
 /**
- * @fn moveContainer
- * moves a container within the ship bay, while finding the lowest cost
- * @param {Container} container
- * @return {int}
+ * 11/23/2023
+ * @fn pickUpCOntainer
+ * Picks up the top-most container from the given column
+ * @return Container*: Pointer erference to the top-most container
 */
-int ShipBay::moveContainer(Container& container,int endX){
+Container* ShipBay::pickUpContainer(int column){
+
+    //  Make sure column value is in range
+    if(column < 1 || column >= this->size_x){std::invalid_argument("Invalid Column value: " + column);}
+
+    //  Loop from the top, to find the topmost container object
+    for(int i = this->size_y - 1; i >= 0; i--){
+
+        //  If the object is an actual container(So not UNUSED or NAN)
+        if(!bayArea[i][column]->getName().compare("NAN") == 0 &&
+        !bayArea[i][column]->getName().compare("UNUSED") == 0){
+
+            //  Get pointer to the container
+            Container* curr_container = &bayArea[i][column]->getContainer();
+            
+            //  Replace container with a new Empty Slot
+            bayArea[i][column] = nullptr;
+            bayArea[i][column] = new EmptySlot(column, i);
+
+            std::cout << this->bayArea[i][column]->getName() << std::endl;
+
+            //  Return the container that was picked up
+            return curr_container;
+        }else if(bayArea[i][column]->getName().compare("NAN") == 0){   //  If we reach an NAN slot, there is not container in this column
+            return nullptr;
+        }
+    }
+    //  If all containers are "UNUSED", then colmun is empty
+    return nullptr;
+}
+
+/**
+ * 11/23/2023
+ * @fn putDownContainer
+ * Puts a container down at the lowest point of a column
+ * @param {Container*} Container to be put down
+ * @param {int} The column for container to be put down into
+ * @return int: The cost to put down
+*/
+int ShipBay::putDownDontainer(Container* container, int column){
+    if(container == nullptr){std::invalid_argument("Container is null.");}
+
+    //  Make sure column value is in range
+    if(column < 1 || column >= this->size_x){std::invalid_argument("Invalid Column value: " + column);}
     
+
+    //  Search bottom up, to find first empty slot
+    for(int i = 0; i < this->size_y; i++){
+        if(bayArea[i][column]->isEmpty()){
+            
+            //  Release the EmptySlot object
+            bayArea[i][column] = nullptr;
+
+            //  Assign the container, update the container's x-y position
+            bayArea[i][column] = container;
+            container->changeXPos(column + 1);
+            container->changeYPos(i + 1);
+
+            //  now return the cost, calculate by subtracting the i by the total height
+            return this->bayArea.size() - i;
+        }
+    }
+
+    //  return -1 meaning that the column is not empty
+    return -1;
+}
+
+/**
+ * 
+*/
+void ShipBay::printShipBay(){
+    for(int x = bayArea.size() - 1; x >= 0 ; x--){
+        for(int y = 0; y < bayArea[x].size(); y++){
+            if(bayArea[x][y]->getName().compare("NAN") == 0){
+                std::cout << "N|";
+            }else if(bayArea[x][y]->getName().compare("UNUSED") == 0){
+                std::cout << " |";
+            }else{
+                std::cout << "C|";
+            }
+        }
+        std::cout << "\n=========================\n";
+    }
+    std::cout << "\n\n\n";
 }

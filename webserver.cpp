@@ -55,6 +55,14 @@ int main() {
 
             try{
                 bay = new ShipBay(file.content);
+
+                int cost = 0;
+                bay->printShipBay();
+                Container* c = bay->pickUpContainer(3);
+                bay->printShipBay();
+                cost += bay->putDownDontainer(c, 4);
+                bay->printShipBay();
+
             }catch(std::invalid_argument error){
                 res.status = 500;
                 res.set_content("Manifest Parsing Error", "text/plain");
