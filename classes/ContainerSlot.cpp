@@ -17,6 +17,9 @@ NANSlot::NANSlot(int x, int y) : ContainerSlot("NAN", x, y, false){};
 */
 EmptySlot::EmptySlot(int x, int y) : ContainerSlot("UNUSED", x, y, true){};
 
+void EmptySlot::changeXPos(int x){this->xPos = x; return;};
+void EmptySlot::changeYPos(int y){this->yPos = y; return;};
+
 /**
  * Container Constructor
 */

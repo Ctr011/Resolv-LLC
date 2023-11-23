@@ -53,7 +53,6 @@ int main() {
                 entries++;
             }
 
-            //  @todo: Create new ShipBay Object Here
             try{
                 bay = new ShipBay(file.content);
             }catch(std::invalid_argument error){

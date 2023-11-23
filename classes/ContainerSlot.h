@@ -36,6 +36,9 @@ public:
 class EmptySlot : public ContainerSlot{
 public: 
     EmptySlot(int x, int y);
+
+    void changeXPos(int x);
+    void changeYPos(int y);
 };
 
 class Container: public ContainerSlot{

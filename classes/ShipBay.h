@@ -21,12 +21,17 @@ class ShipBay{
     void parseContent(const std::string manifest);
     ContainerSlot parseLine(std::string entry);
 
+    //  Following functions are used for A* between two points
+
+
 
     public:
         ShipBay() = default;
 
         ShipBay(std::string manifestContent);
         void addContainer(Container newContainer, int x, int y);
+
+        int moveContainer(Container& container, int x);
 
         virtual ~ShipBay(){};
 };

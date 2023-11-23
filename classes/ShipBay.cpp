@@ -79,9 +79,11 @@ ContainerSlot ShipBay::parseLine(std::string entry){
 }
 
 /**
- * @fn addContainer
- * @todo: Create addContainer function
+ * @fn moveContainer
+ * moves a container within the ship bay, while finding the lowest cost
+ * @param {Container} container
+ * @return {int}
 */
-void ShipBay::addContainer(Container newContainer, int x, int y){
-    return;
+int ShipBay::moveContainer(Container& container,int endX){
+    
 }
