@@ -8,6 +8,8 @@
 #include "classes/ContainerSlot.cpp"
 #include "classes/ShipBay.h"
 #include "classes/ShipBay.cpp"
+#include "classes/node_classes/Node.h"
+#include "classes/node_classes/Node.cpp"
 #include "dependencies/httplib.h"
 using namespace std;
 
@@ -55,12 +57,16 @@ int main() {
 
             try{
                 bay = new ShipBay(file.content);
-
-                int cost = 0;
                 bay->printShipBay();
+
+                //  init initial node
+                Node* testNode = new Node(bay, 0);
+
+                std::vector<Node*> expandResults = testNode->expand();
+
                 Container* c = bay->pickUpContainer(3);
                 bay->printShipBay();
-                cost += bay->putDownDontainer(c, 4);
+                bay->putDownDontainer(c, 5);
                 bay->printShipBay();
 
             }catch(std::invalid_argument error){
@@ -68,6 +74,9 @@ int main() {
                 res.set_content("Manifest Parsing Error", "text/plain");
                 return;
             }
+
+
+            bay->getHeights(1, 12);
 
             // Status code 200: Success
             res.status = 200;

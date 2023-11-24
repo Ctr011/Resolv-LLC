@@ -1,26 +1,26 @@
-//  Node.h
+// Node.h
 #ifndef NODE_H
 #define NODE_H
+
 #include <vector>
-#include <queue>
-#include "../classes/ShipBay.h"
+#include <iostream>
+#include "../ShipBay.h"
+#include "../ContainerSlot.h"
 
-class Node{
-    
+
+class Node {
     Node* parent;
-    ShipBay bay;
+    ShipBay* bay;
+    Container* pickedUp;
     int incoming_cost;
-    bool isPickingUp;
 
-    public:
-
-        Node() = default;
-        Node(Node* parent, ShipBay currBay, int cost); //  Constructor
-        int getCost();  //  Get current cost of node
-        std::vector<Node> expand(); //  Expand all possible moves from the Node
-        void printState(); 
-        void printAncestors();
-
+public:
+    Node() = default;
+    Node(ShipBay* currBay, int cost, Node* parent = nullptr, Container* container = nullptr);
+    int getCost();
+    std::vector<Node*> expand();
+    // void printState();
+    // void printAncestors();
 };
 
 #endif

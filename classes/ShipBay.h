@@ -17,6 +17,7 @@ class ShipBay{
     int size_y = 8;
     std::vector<std::vector<ContainerSlot*>> bayArea;
     std::vector<ContainerSlot> temp;
+    std::string originalText;
 
     void parseContent(const std::string manifest);
     ContainerSlot* parseLine(std::string entry);
@@ -35,6 +36,8 @@ class ShipBay{
 
         Container* pickUpContainer(int column);
         int putDownDontainer(Container* container, int column);
+
+        ShipBay* clone();
 
         void printShipBay();
 

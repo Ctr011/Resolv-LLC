@@ -8,6 +8,7 @@
  * @fn ShipBay (Constructor)
 */
 ShipBay::ShipBay(const std::string manifestContent){
+    this->originalText = manifestContent;
     parseContent(manifestContent);
     return;
 }
@@ -72,17 +73,18 @@ std::vector<int> ShipBay::getHeights(int start, int end){
 
     int x, y;
 
-    for(x = start - 1; x < end - 1; x++){
-        for(y = 0; y < this->size_y; y++){
+    
+
+    for(y = start - 1; y < end; y++){
+        for(x = 0; x < this->size_x; x++){
             if(bayArea.at(x).at(y)->getName().compare("UNUSED") == 0){
-                heights.push_back(y);
+                heights.push_back(x);
                 break;
             }
         }
-        if(y == this->size_y){
-            heights.push_back(this->size_y);
-        }
-        
+    }
+    if(y == this->size_y){
+        heights.push_back(this->size_y);
     }
 
     return heights;
@@ -143,8 +145,11 @@ int ShipBay::putDownDontainer(Container* container, int column){
     //  Search bottom up, to find first empty slot
     for(int i = 0; i < this->size_y; i++){
         if(bayArea[i][column]->isEmpty()){
-            
+
             //  Release the EmptySlot object
+            ContainerSlot* oldSlot = bayArea[i][column];
+            delete oldSlot;
+
             bayArea[i][column] = nullptr;
 
             //  Assign the container, update the container's x-y position
@@ -159,6 +164,15 @@ int ShipBay::putDownDontainer(Container* container, int column){
 
     //  return -1 meaning that the column is not empty
     return -1;
+}
+
+/**
+ * @fn clone()
+ * Creates and returns a clone of the current SHipBay object
+ * @return ShipBay*
+*/
+ShipBay* ShipBay::clone(){
+    return new ShipBay(this->originalText);
 }
 
 /**

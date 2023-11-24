@@ -33,6 +33,7 @@ Container& EmptySlot::getContainer(){
 */
 Container::Container(std::string name, float mass, int y, int x){
     
+    //  Standard checks here
     if(name.empty() || name == "NAN" || name == "UNUSED"){throw std::invalid_argument("Invalid Container name: " + name);}; //  Check for invalid names
     if(name.length() > 256){throw std::invalid_argument("Container name too long.");} //  Name length
     if(mass < 0 || mass > 99999.0){ throw std::invalid_argument("Invalid mass for container: " + std::to_string(mass));} //  Mass number
@@ -41,6 +42,7 @@ Container::Container(std::string name, float mass, int y, int x){
     this->xPos = x;
     this->yPos = y;
     this->containerMass = mass;
+    this->movable = true;
     this->empty = false;
 };
 
