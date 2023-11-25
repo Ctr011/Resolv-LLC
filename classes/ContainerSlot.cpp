@@ -16,6 +16,10 @@ Container& NANSlot::getContainer(){
     throw std::invalid_argument("Object is not of Container Type");
 };
 
+NANSlot* NANSlot::clone(){
+    return new NANSlot(this->yPos, this->xPos);
+}
+
 /**
  * EmptySlot Constructor
 */
@@ -27,6 +31,9 @@ Container& EmptySlot::getContainer(){
     throw std::invalid_argument("Object is not of Container Type");
 };
 
+EmptySlot* EmptySlot::clone(){
+    return new EmptySlot(this->yPos, this->xPos);
+}
 
 /**
  * Container Constructor
@@ -65,4 +72,8 @@ void Container::toString(){
     std::cout << "Mass: " << std::to_string(this->containerMass) << std::endl;
     std::cout << "Position: {" << std::to_string(this->xPos) << ", " << std::to_string(this->yPos) << "}" << std::endl;
     std::cout << "==================" << std::endl;
+}
+
+Container* Container::clone(){
+    return new Container(this->name, this->containerMass, this->yPos, this->xPos);
 }

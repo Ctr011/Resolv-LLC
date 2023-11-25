@@ -172,7 +172,18 @@ int ShipBay::putDownDontainer(Container* container, int column){
  * @return ShipBay*
 */
 ShipBay* ShipBay::clone(){
-    return new ShipBay(this->originalText);
+    
+    std::vector<std::vector<ContainerSlot*>> clonedBay;
+
+    int x,y;
+    for(x = 0; x < this->bayArea.size(); x++){
+        for(y = 0; y < this->bayArea[x].size(); y++){
+            clonedBay[x].push_back(this->bayArea[x][y]->clone());
+        }
+    }
+
+    
+
 }
 
 /**
