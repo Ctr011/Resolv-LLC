@@ -20,7 +20,9 @@ class ShipBay{
     std::string originalText;
 
     void parseContent(std::string manifest);
-    ContainerSlot* parseLine(std::string entry);
+
+    //  For looking for containers in the data
+    void replaceSubstring(std::string &input, const std::string &searchStr, const std::string &replaceStr);
 
     //  Following functions are used for A* between two points
 

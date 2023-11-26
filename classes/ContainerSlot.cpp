@@ -11,31 +11,25 @@ std::string ContainerSlot::getName(){return this->name;};
 /**
  * NANSlot Constructor
 */
-NANSlot::NANSlot(int y, int x) : ContainerSlot("NAN", y, x, false, false){
-    
+NANSlot::NANSlot(int y, int x) : ContainerSlot("NAN", y, x, false, false){};
+Container& NANSlot::getContainer(){
+    throw std::invalid_argument("Object is not of Container Type");
+};
+
+std::string NANSlot::toString(){
     //  Construct Container data here (text data):
     // Format integer values with leading zeros if necessary
     std::string formatted_x = (this->xPos < 10) ? "0" + std::to_string(this->xPos) : std::to_string(this->xPos);
     std::string formatted_y = (this->yPos < 10) ? "0" + std::to_string(this->yPos) : std::to_string(this->yPos);
 
-    this->containerData = "[" + formatted_y + "," + formatted_x + "], {00000}, " + this->name;
-};
-Container& NANSlot::getContainer(){
-    throw std::invalid_argument("Object is not of Container Type");
-};
+    return "[" + formatted_y + "," + formatted_x + "], {00000}, " + this->name + "\r\n";
+}
 
 
 /**
  * EmptySlot Constructor
 */
-EmptySlot::EmptySlot(int y, int x) : ContainerSlot("UNUSED", y, x, true, true){
-     //  Construct Container data here (text data):
-    // Format integer values with leading zeros if necessary
-    std::string formatted_x = (this->xPos < 10) ? "0" + std::to_string(this->xPos) : std::to_string(this->xPos);
-    std::string formatted_y = (this->yPos < 10) ? "0" + std::to_string(this->yPos) : std::to_string(this->yPos);
-
-    this->containerData = "[" + formatted_y + "," + formatted_x + "], {00000}, " + this->name;
-};
+EmptySlot::EmptySlot(int y, int x) : ContainerSlot("UNUSED", y, x, true, true){};
 
 void EmptySlot::changeXPos(int x){this->xPos = x; return;};
 void EmptySlot::changeYPos(int y){this->yPos = y; return;};
@@ -43,30 +37,26 @@ Container& EmptySlot::getContainer(){
     throw std::invalid_argument("Object is not of Container Type");
 };
 
-
-/**
- * Container Constructor
-*/
-Container::Container(std::string name, float mass, int y, int x){
-    
-    //  Standard checks here
-    if(name.empty() || name == "NAN" || name == "UNUSED"){throw std::invalid_argument("Invalid Container name: " + name);}; //  Check for invalid names
-    if(name.length() > 256){throw std::invalid_argument("Container name too long.");} //  Name length
-    if(mass < 0 || mass > 99999.0){ throw std::invalid_argument("Invalid mass for container: " + std::to_string(mass));} //  Mass number
-    
-    this->name = name;
-    this->xPos = x;
-    this->yPos = y;
-    this->containerMass = mass;
-    this->movable = true;
-    this->empty = false;
-
+std::string EmptySlot::toString(){
     //  Construct Container data here (text data):
     // Format integer values with leading zeros if necessary
     std::string formatted_x = (this->xPos < 10) ? "0" + std::to_string(this->xPos) : std::to_string(this->xPos);
     std::string formatted_y = (this->yPos < 10) ? "0" + std::to_string(this->yPos) : std::to_string(this->yPos);
 
-    this->containerData = "[" + formatted_y + "," + formatted_x + "], {00000}, " + this->name;
+    return "[" + formatted_y + "," + formatted_x + "], {00000}, " + this->name + "\r\n";
+}
+
+
+/**
+ * Container Constructor
+*/
+Container::Container(std::string name, float mass, int y, int x) : ContainerSlot(name, y, x, true, false){
+    
+    //  Standard checks here
+    if(name.empty() || name == "NAN" || name == "UNUSED"){throw std::invalid_argument("Invalid Container name: " + name);}; //  Check for invalid names
+    if(name.length() > 256){throw std::invalid_argument("Container name too long.");} //  Name length
+    if(mass < 0 || mass > 99999.0){ throw std::invalid_argument("Invalid mass for container: " + std::to_string(mass));} //  Mass number
+    this->containerMass = mass;
 };
 
 //  Container-Specific Getter
@@ -80,10 +70,17 @@ Container& Container::getContainer(){
     return *this;
 };
 
-
-//  For Debugging
 std::string Container::toString(){
+    //  Construct Container data here (text data):
+    // Format integer values with leading zeros if necessary
+    std::string formatted_x = (this->xPos < 10) ? "0" + std::to_string(this->xPos) : std::to_string(this->xPos);
+    std::string formatted_y = (this->yPos < 10) ? "0" + std::to_string(this->yPos) : std::to_string(this->yPos);
 
-    
-    
+    std::string formatted_mass = (this->containerMass < 10) ? "0000" + std::to_string(this->containerMass)
+                                                : (this->containerMass < 100) ? "000" + std::to_string(this->containerMass)
+                                                                   : (this->containerMass < 1000) ? "00" + std::to_string(this->containerMass)
+                                                                                        : (this->containerMass < 10000) ? "0" + std::to_string(this->containerMass)
+                                                                                                             : std::to_string(this->containerMass);
+
+    return "[" + formatted_y + "," + formatted_x + "], {" + formatted_mass + "}, " + this->name + "\r\n";
 }

@@ -64,10 +64,8 @@ int main() {
 
                 std::vector<Node*> expandResults = testNode->expand();
 
-                Container* c = bay->pickUpContainer(3);
-                bay->printShipBay();
-                bay->putDownDontainer(c, 5);
-                bay->printShipBay();
+                std::vector<Node*> expandResults2 = expandResults[3]->expand();
+
 
             }catch(std::invalid_argument error){
                 res.status = 500;

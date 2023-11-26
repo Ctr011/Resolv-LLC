@@ -16,8 +16,6 @@ protected:
     bool movable;
     bool empty;
 
-    std::string containerData;
-
 public:
     // Base Constructor here
     ContainerSlot(const std::string n, int x, int y, bool m, bool e) : name(n), yPos(y), xPos(x), movable(m), empty(e) {};
@@ -34,6 +32,8 @@ public:
     //  Returns a container object
     virtual Container& getContainer() = 0;
 
+    virtual std::string toString() = 0;
+
     // Destructor here
     virtual ~ContainerSlot(){};
 
@@ -44,6 +44,7 @@ public:
     NANSlot(int x, int y);
 
     Container& getContainer() override;
+    virtual std::string toString() override;
 };
 
 class EmptySlot : public ContainerSlot{
@@ -51,13 +52,14 @@ public:
     EmptySlot(int x, int y);
 
     Container& getContainer() override;
+    virtual std::string toString() override;
     void changeXPos(int x);
     void changeYPos(int y);
 };
 
 class Container: public ContainerSlot{
 
-    float containerMass;
+    int containerMass;
 
 public:
     Container(std::string name, float mass, int x, int y);
@@ -68,9 +70,8 @@ public:
     float getMass();
     void changeMass(float mass); //  Do we need this?
 
-    std::string toString();
-
     Container& getContainer() override;
+    virtual std::string toString() override;
 };
 
 

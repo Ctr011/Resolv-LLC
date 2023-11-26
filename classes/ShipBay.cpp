@@ -67,13 +67,19 @@ void ShipBay::parseContent(std::string manifest){
     return;
 }
 
+void replaceSubstring(std::string &input, const std::string &searchStr, const std::string &replaceStr) {
+    size_t pos = input.find(searchStr);
+    while (pos != std::string::npos) {
+        input.replace(pos, searchStr.length(), replaceStr);
+        pos = input.find(searchStr, pos + replaceStr.length());
+    }
+}
+
 std::vector<int> ShipBay::getHeights(int start, int end){
 
     std::vector<int> heights;
 
     int x, y;
-
-    
 
     for(y = start - 1; y < end; y++){
         for(x = 0; x < this->size_x; x++){
@@ -113,13 +119,9 @@ Container* ShipBay::pickUpContainer(int column){
             
             //  Replace container with a new Empty Slot
             bayArea[i][column] = nullptr;
-            bayArea[i][column] = new EmptySlot(column, i);
+            bayArea[i][column] = new EmptySlot(column + 1, i + 1);
 
             std::cout << this->bayArea[i][column]->getName() << std::endl;
-
-            //  Now modify the text info
-
-            curr_container->toString();
 
             //  Return the container that was picked up
             return curr_container;
@@ -176,7 +178,16 @@ int ShipBay::putDownDontainer(Container* container, int column){
  * @return ShipBay*
 */
 ShipBay* ShipBay::clone(){
-    return new ShipBay(this->originalText);
+    std::string cloneBayData = "";
+
+    int x,y;
+    for(x = 0; x < this->bayArea.size(); x++){
+        for(y=0; y < this->bayArea[x].size(); y++){
+            cloneBayData += bayArea[x][y]->toString();
+        }
+    }
+
+    return new ShipBay(cloneBayData);
 }
 
 /**

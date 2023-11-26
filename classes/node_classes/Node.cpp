@@ -52,9 +52,9 @@ std::vector<Node*> Node::expand(){
                 Container* heldContainer = bayCopy->pickUpContainer(i);
 
                 if(heldContainer){
-                    bayCopy->printShipBay();
                     Node* newNode = new Node(bayCopy, (this->incoming_cost + heldContainer->getYPos()), this, heldContainer);
                     expansionNodes.push_back(newNode);
+                    bayCopy->printShipBay();
                 }
             }
         }
@@ -62,8 +62,8 @@ std::vector<Node*> Node::expand(){
     }else{
         for(int i = 0; i < heights.size(); i++){
 
-            //  If height != 0 (Meaning it is not empty), pick it up
-            if(heights[i] != 0){
+            //  If height != 8 (Meaning it is not full), put it down
+            if(heights[i] != 8){
                 //  Make a new (deep) copy of current bay, one that no longer has the container that is picked up
                 //  Also, the container that is picked up
                 ShipBay* bayCopy = this->bay->clone();
@@ -74,6 +74,8 @@ std::vector<Node*> Node::expand(){
                 expansionNodes.push_back(newNode);
             }
         }
+
+        return expansionNodes;
     }
 
 }
