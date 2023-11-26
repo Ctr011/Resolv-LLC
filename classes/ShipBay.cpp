@@ -117,6 +117,10 @@ Container* ShipBay::pickUpContainer(int column){
 
             std::cout << this->bayArea[i][column]->getName() << std::endl;
 
+            //  Now modify the text info
+
+            curr_container->toString();
+
             //  Return the container that was picked up
             return curr_container;
         }else if(bayArea[i][column]->getName().compare("NAN") == 0){   //  If we reach an NAN slot, there is not container in this column
@@ -172,18 +176,7 @@ int ShipBay::putDownDontainer(Container* container, int column){
  * @return ShipBay*
 */
 ShipBay* ShipBay::clone(){
-    
-    std::vector<std::vector<ContainerSlot*>> clonedBay;
-
-    int x,y;
-    for(x = 0; x < this->bayArea.size(); x++){
-        for(y = 0; y < this->bayArea[x].size(); y++){
-            clonedBay[x].push_back(this->bayArea[x][y]->clone());
-        }
-    }
-
-    
-
+    return new ShipBay(this->originalText);
 }
 
 /**

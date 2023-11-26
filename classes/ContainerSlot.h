@@ -3,6 +3,7 @@
 #define CONTAINERSLOT_H
 
 #include <iostream>
+#include <format>
 #include <string>
 
 class Container;
@@ -14,6 +15,8 @@ protected:
     int yPos;
     bool movable;
     bool empty;
+
+    std::string containerData;
 
 public:
     // Base Constructor here
@@ -31,8 +34,6 @@ public:
     //  Returns a container object
     virtual Container& getContainer() = 0;
 
-    virtual ContainerSlot* clone() = 0;
-
     // Destructor here
     virtual ~ContainerSlot(){};
 
@@ -43,7 +44,6 @@ public:
     NANSlot(int x, int y);
 
     Container& getContainer() override;
-    NANSlot* clone() override;
 };
 
 class EmptySlot : public ContainerSlot{
@@ -51,7 +51,6 @@ public:
     EmptySlot(int x, int y);
 
     Container& getContainer() override;
-    EmptySlot* clone() override;
     void changeXPos(int x);
     void changeYPos(int y);
 };
@@ -69,10 +68,9 @@ public:
     float getMass();
     void changeMass(float mass); //  Do we need this?
 
-    void toString();
+    std::string toString();
 
     Container& getContainer() override;
-    Container* clone() override;
 };
 
 

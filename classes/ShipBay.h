@@ -19,7 +19,7 @@ class ShipBay{
     std::vector<ContainerSlot> temp;
     std::string originalText;
 
-    void parseContent(const std::string manifest);
+    void parseContent(std::string manifest);
     ContainerSlot* parseLine(std::string entry);
 
     //  Following functions are used for A* between two points

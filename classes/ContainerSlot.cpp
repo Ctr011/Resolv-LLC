@@ -11,19 +11,31 @@ std::string ContainerSlot::getName(){return this->name;};
 /**
  * NANSlot Constructor
 */
-NANSlot::NANSlot(int y, int x) : ContainerSlot("NAN", y, x, false, false){};
+NANSlot::NANSlot(int y, int x) : ContainerSlot("NAN", y, x, false, false){
+    
+    //  Construct Container data here (text data):
+    // Format integer values with leading zeros if necessary
+    std::string formatted_x = (this->xPos < 10) ? "0" + std::to_string(this->xPos) : std::to_string(this->xPos);
+    std::string formatted_y = (this->yPos < 10) ? "0" + std::to_string(this->yPos) : std::to_string(this->yPos);
+
+    this->containerData = "[" + formatted_y + "," + formatted_x + "], {00000}, " + this->name;
+};
 Container& NANSlot::getContainer(){
     throw std::invalid_argument("Object is not of Container Type");
 };
 
-NANSlot* NANSlot::clone(){
-    return new NANSlot(this->yPos, this->xPos);
-}
 
 /**
  * EmptySlot Constructor
 */
-EmptySlot::EmptySlot(int y, int x) : ContainerSlot("UNUSED", y, x, true, true){};
+EmptySlot::EmptySlot(int y, int x) : ContainerSlot("UNUSED", y, x, true, true){
+     //  Construct Container data here (text data):
+    // Format integer values with leading zeros if necessary
+    std::string formatted_x = (this->xPos < 10) ? "0" + std::to_string(this->xPos) : std::to_string(this->xPos);
+    std::string formatted_y = (this->yPos < 10) ? "0" + std::to_string(this->yPos) : std::to_string(this->yPos);
+
+    this->containerData = "[" + formatted_y + "," + formatted_x + "], {00000}, " + this->name;
+};
 
 void EmptySlot::changeXPos(int x){this->xPos = x; return;};
 void EmptySlot::changeYPos(int y){this->yPos = y; return;};
@@ -31,9 +43,6 @@ Container& EmptySlot::getContainer(){
     throw std::invalid_argument("Object is not of Container Type");
 };
 
-EmptySlot* EmptySlot::clone(){
-    return new EmptySlot(this->yPos, this->xPos);
-}
 
 /**
  * Container Constructor
@@ -51,6 +60,13 @@ Container::Container(std::string name, float mass, int y, int x){
     this->containerMass = mass;
     this->movable = true;
     this->empty = false;
+
+    //  Construct Container data here (text data):
+    // Format integer values with leading zeros if necessary
+    std::string formatted_x = (this->xPos < 10) ? "0" + std::to_string(this->xPos) : std::to_string(this->xPos);
+    std::string formatted_y = (this->yPos < 10) ? "0" + std::to_string(this->yPos) : std::to_string(this->yPos);
+
+    this->containerData = "[" + formatted_y + "," + formatted_x + "], {00000}, " + this->name;
 };
 
 //  Container-Specific Getter
@@ -66,14 +82,8 @@ Container& Container::getContainer(){
 
 
 //  For Debugging
-void Container::toString(){
-    std::cout << "==================" << std::endl;
-    std::cout << "Name: " << this->name << std::endl;
-    std::cout << "Mass: " << std::to_string(this->containerMass) << std::endl;
-    std::cout << "Position: {" << std::to_string(this->xPos) << ", " << std::to_string(this->yPos) << "}" << std::endl;
-    std::cout << "==================" << std::endl;
-}
+std::string Container::toString(){
 
-Container* Container::clone(){
-    return new Container(this->name, this->containerMass, this->yPos, this->xPos);
+    
+    
 }
