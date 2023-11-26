@@ -5,18 +5,20 @@
 #include <vector>
 #include <iostream>
 #include "../ShipBay.h"
+#include "../Buffer.h"
 #include "../ContainerSlot.h"
 
 
 class Node {
     Node* parent;
     ShipBay* bay;
+    Buffer* buffer;
     Container* pickedUp;
     int incoming_cost;
 
 public:
     Node() = default;
-    Node(ShipBay* currBay, int cost, Node* parent = nullptr, Container* container = nullptr);
+    Node(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent = nullptr, Container* container = nullptr);
     int getCost();
     std::vector<Node*> expand();
     // void printState();

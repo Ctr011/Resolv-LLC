@@ -8,6 +8,8 @@
 #include "classes/ContainerSlot.cpp"
 #include "classes/ShipBay.h"
 #include "classes/ShipBay.cpp"
+#include "classes/Buffer.h"
+#include "classes/Buffer.cpp"
 #include "classes/node_classes/Node.h"
 #include "classes/node_classes/Node.cpp"
 #include "dependencies/httplib.h"
@@ -17,7 +19,6 @@ int main() {
 
     //  Init sever and active ShipBay
     httplib::Server svr;
-    ShipBay* bay = nullptr;
 
     // Serve static files from the "webpage" directory
     svr.set_mount_point("/", "./webpage");
@@ -54,13 +55,17 @@ int main() {
                 data.push_back(curr_line);
                 entries++;
             }
+            ShipBay* bay = nullptr;
+            Buffer* buffer = nullptr;
 
             try{
                 bay = new ShipBay(file.content);
                 bay->printShipBay();
+                buffer = new Buffer("");
+                buffer->printBuffer();
 
                 //  init initial node
-                Node* testNode = new Node(bay, 0);
+                Node* testNode = new Node(bay, buffer, 0);
 
                 std::vector<Node*> expandResults = testNode->expand();
 

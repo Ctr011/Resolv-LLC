@@ -1,33 +1,47 @@
-//  ShipBay.cpp
-#include "ShipBay.h"
+//  Buffer.cpp
+#include "Buffer.h"
 #include "ContainerSlot.h"
 
-
 /**
- * 11/23/2023
- * @fn ShipBay (Constructor)
+ * 
 */
-ShipBay::ShipBay(const std::string manifestContent){
-    this->originalText = manifestContent;
-    parseContent(manifestContent);
+Buffer::Buffer(std::string bufferData){
+
+    //  If empty, init an empty buffer area
+    if(bufferData.empty()){
+        int x, y;
+        for(x = 0; x < this->size_x; x++){
+            
+            //  Push back new vector
+            std::vector<ContainerSlot*> new_row;
+            bufferArea.push_back(new_row);
+
+            //  Push back empty slots for now
+            for(y = 0; y < this->size_y; y++){
+                this->bufferArea[x].push_back(new EmptySlot(x + 1, y + 1));
+            }
+        }
+    }else{
+        parseContent(bufferData);
+    }
     return;
 }
 
 /**
- * 11/23/2023
+ * 11/26/2023
  * @fn parseContent
- * Parses string content and creates the Ship Bay Area from it
+ * Parses string content and creates the Buffer Area from it
  * @param {string} manifest
  * @return {void}
 */
-void ShipBay::parseContent(std::string manifest){
-    std::istringstream filestream(manifest);
+void Buffer::parseContent(std::string bufferData){
+    std::istringstream filestream(bufferData);
     std::vector<std::string> data;
     int entries = 0;
 
     if (!filestream) {
         std::cout << "File Error";
-        throw std::invalid_argument("Unable to parse manifest!");
+        throw std::invalid_argument("Unable to parse buffer!");
         return;
     }
 
@@ -40,11 +54,11 @@ void ShipBay::parseContent(std::string manifest){
         
         //  Push back new vector
         std::vector<ContainerSlot*> new_row;
-        bayArea.push_back(new_row);
+        bufferArea.push_back(new_row);
 
         //  Push back null for now
         for(y = 0; y < this->size_y; y++){
-            this->bayArea[x].push_back(nullptr);
+            this->bufferArea[x].push_back(nullptr);
         }
     }
 
@@ -65,20 +79,19 @@ void ShipBay::parseContent(std::string manifest){
         //  TODO: Out of bounds handling
         //  If container is an NAN slot, return NAN object
         if(label.compare("NAN") == 0){
-            bayArea[x - 1][y - 1] = new NANSlot(x, y);
+            bufferArea[x - 1][y - 1] = new NANSlot(x, y);
         }
         else if(label.compare("UNUSED") == 0){ //  If it is empty, return NULL
-            bayArea[x - 1][y - 1] = new EmptySlot(x, y);
+            bufferArea[x - 1][y - 1] = new EmptySlot(x, y);
         }else{
              //  Otherwise, data represents a container
-            bayArea[x - 1][y - 1] = new Container(label, weight, x, y);
+            bufferArea[x - 1][y - 1] = new Container(label, weight, x, y);
         }
 
        
     }
     return;
 }
-
 
 /**
  * @fn getHeights
@@ -87,7 +100,7 @@ void ShipBay::parseContent(std::string manifest){
  * @param end: last column to be searched
  * @returns std::vector<int>
 */
-std::vector<int> ShipBay::getHeights(int start, int end){
+std::vector<int> Buffer::getHeights(int start, int end){
 
     std::vector<int> heights;
 
@@ -95,7 +108,7 @@ std::vector<int> ShipBay::getHeights(int start, int end){
 
     for(x = start - 1; x < end; x++){
         for(y = 0; y < this->size_y; y++){
-            if(bayArea.at(x).at(y)->getName().compare("UNUSED") == 0){
+            if(bufferArea.at(x).at(y)->getName().compare("UNUSED") == 0){
                 heights.push_back(y);
                 break;
             }
@@ -111,12 +124,12 @@ std::vector<int> ShipBay::getHeights(int start, int end){
 }
 
 /**
- * 11/23/2023
+ * 11/26/2023
  * @fn pickUpCOntainer
  * Picks up the top-most container from the given column
  * @return Container*: Pointer erference to the top-most container
 */
-Container* ShipBay::pickUpContainer(int column){
+Container* Buffer::pickUpContainer(int column){
 
     //  Make sure column value is in range
     if(column < 0 || column >= this->size_x){std::invalid_argument("Invalid Ship Column value: " + column);}
@@ -125,21 +138,21 @@ Container* ShipBay::pickUpContainer(int column){
     for(int i = this->size_y - 1; i >= 0; i--){
 
         //  If the object is an actual container(So not UNUSED or NAN)
-        if(!bayArea[column][i]->getName().compare("NAN") == 0 &&
-        !bayArea[column][i]->getName().compare("UNUSED") == 0){
+        if(!bufferArea[column][i]->getName().compare("NAN") == 0 &&
+        !bufferArea[column][i]->getName().compare("UNUSED") == 0){
 
             //  Get pointer to the container
-            Container* curr_container = &bayArea[column][i]->getContainer();
+            Container* curr_container = &bufferArea[column][i]->getContainer();
             
             //  Replace container with a new Empty Slot
-            bayArea[column][i] = nullptr;
-            bayArea[column][i] = new EmptySlot(column + 1, i + 1);
+            bufferArea[column][i] = nullptr;
+            bufferArea[column][i] = new EmptySlot(column + 1, i + 1);
 
-            std::cout << this->bayArea[column][i]->getName() << std::endl;
+            std::cout << this->bufferArea[column][i]->getName() << std::endl;
 
             //  Return the container that was picked up
             return curr_container;
-        }else if(bayArea[column][i]->getName().compare("NAN") == 0){   //  If we reach an NAN slot, there is not container in this column
+        }else if(bufferArea[column][i]->getName().compare("NAN") == 0){   //  If we reach an NAN slot, there is not container in this column
             return nullptr;
         }
     }
@@ -155,7 +168,7 @@ Container* ShipBay::pickUpContainer(int column){
  * @param {int} The column for container to be put down into
  * @return int: The cost to put down
 */
-int ShipBay::putDownDontainer(Container* container, int column){
+int Buffer::putDownDontainer(Container* container, int column){
     if(container == nullptr){std::invalid_argument("Container is null.");}
 
     //  Make sure column value is in range
@@ -164,21 +177,21 @@ int ShipBay::putDownDontainer(Container* container, int column){
 
     //  Search bottom up, to find first empty slot
     for(int i = 0; i < this->size_y; i++){
-        if(bayArea[column][i]->isEmpty()){
+        if(bufferArea[column][i]->isEmpty()){
 
             //  Release the EmptySlot object
-            ContainerSlot* oldSlot = bayArea[column][i];
+            ContainerSlot* oldSlot = bufferArea[column][i];
             delete oldSlot;
 
-            bayArea[column][i] = nullptr;
+            bufferArea[column][i] = nullptr;
 
             //  Assign the container, update the container's x-y position
-            bayArea[column][i] = container;
+            bufferArea[column][i] = container;
             container->changeXPos(column + 1);
             container->changeYPos(i + 1);
 
             //  now return the cost, calculate by subtracting the i by the total height
-            return this->bayArea.size() - i;
+            return this->bufferArea.size() - i;
         }
     }
 
@@ -188,41 +201,41 @@ int ShipBay::putDownDontainer(Container* container, int column){
 
 /**
  * @fn clone()
- * Creates and returns a clone of the current SHipBay object
- * @return ShipBay*
+ * Creates and returns a clone of the current Buffer object
+ * @return Buffer*
 */
-ShipBay* ShipBay::clone(){
+Buffer* Buffer::clone(){
     std::string cloneBayData = "";
 
     int x,y;
     for(x = 0; x < this->size_x; x++){
         for(y=0; y < this->size_y; y++){
-            cloneBayData += bayArea[x][y]->toString();
+            cloneBayData += bufferArea[x][y]->toString();
         }
     }
 
-    return new ShipBay(cloneBayData);
+    return new Buffer(cloneBayData);
 }
 
 /**
  * 
 */
-void ShipBay::printShipBay(){
+void Buffer::printBuffer(){
 
 
     int x,y;
 
     for(y = this->size_y - 1; y >= 0; --y){
         for(x = 0; x < this->size_x; ++x){
-            if(bayArea[x][y]->getName().compare("NAN") == 0){
+            if(bufferArea[x][y]->getName().compare("NAN") == 0){
                 std::cout << "N|";
-            }else if(bayArea[x][y]->getName().compare("UNUSED") == 0){
+            }else if(bufferArea[x][y]->getName().compare("UNUSED") == 0){
                 std::cout << " |";
             }else{
                 std::cout << "C|";
             }
         }
-        std::cout << "\n========================\n";
+        std::cout << "\n ============================================== \n";
     }
     std::cout << "\n\n\n";
 }
