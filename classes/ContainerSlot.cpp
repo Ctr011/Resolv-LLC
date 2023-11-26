@@ -11,7 +11,7 @@ std::string ContainerSlot::getName(){return this->name;};
 /**
  * NANSlot Constructor
 */
-NANSlot::NANSlot(int y, int x) : ContainerSlot("NAN", y, x, false, false){};
+NANSlot::NANSlot(int x, int y) : ContainerSlot("NAN", x, y, false, false){};
 Container& NANSlot::getContainer(){
     throw std::invalid_argument("Object is not of Container Type");
 };
@@ -29,7 +29,7 @@ std::string NANSlot::toString(){
 /**
  * EmptySlot Constructor
 */
-EmptySlot::EmptySlot(int y, int x) : ContainerSlot("UNUSED", y, x, true, true){};
+EmptySlot::EmptySlot(int x, int y) : ContainerSlot("UNUSED", x, y, true, true){};
 
 void EmptySlot::changeXPos(int x){this->xPos = x; return;};
 void EmptySlot::changeYPos(int y){this->yPos = y; return;};
@@ -50,7 +50,7 @@ std::string EmptySlot::toString(){
 /**
  * Container Constructor
 */
-Container::Container(std::string name, float mass, int y, int x) : ContainerSlot(name, y, x, true, false){
+Container::Container(std::string name, float mass, int x, int y) : ContainerSlot(name, x, y, true, false){
     
     //  Standard checks here
     if(name.empty() || name == "NAN" || name == "UNUSED"){throw std::invalid_argument("Invalid Container name: " + name);}; //  Check for invalid names

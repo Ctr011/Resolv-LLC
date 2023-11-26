@@ -10,6 +10,17 @@
 ShipBay::ShipBay(const std::string manifestContent){
     this->originalText = manifestContent;
     parseContent(manifestContent);
+
+    //  11/25: Also instantiate the empty buffer here
+    int x,y;
+    for(x = 0; x < this->buffer_x; x++){
+        std::vector<ContainerSlot*> new_row;
+        bufferArea.push_back(new_row);
+        for(y = 0; y < this->buffer_y; y++){
+            bufferArea[x].push_back(new EmptySlot(y, x));
+        }
+    }
+
     return;
 }
 
@@ -33,33 +44,45 @@ void ShipBay::parseContent(std::string manifest){
 
     std::string curr_line;
     int curr_col = -1;
+
+    //  Init width and height of cargo bay as null
+    int x, y;
+    for(x = 0; x < this->size_x; x++){
+        
+        //  Push back new vector
+        std::vector<ContainerSlot*> new_row;
+        bayArea.push_back(new_row);
+
+        //  Push back null for now
+        for(y = 0; y < this->size_y; y++){
+            this->bayArea[x].push_back(nullptr);
+        }
+    }
+
+    x,y= 0;
     
     //  Get the next line of the file
     while (std::getline(filestream, curr_line)) {
 
         curr_line.erase(std::remove(curr_line.begin(), curr_line.end(), '\r'), curr_line.end());
 
-        int y = std::stoi(curr_line.substr(1,2));    //  x Position
-        int x = std::stoi(curr_line.substr(4,2));    //  y Position
+        y = std::stoi(curr_line.substr(1,2));    //  x Position
+        x = std::stoi(curr_line.substr(4,2));    //  y Position
         int weight = stoi(curr_line.substr(10,5));  //  Mass of Container
         std::string label = curr_line.substr(18);   //  get name of container
         
-        //  Make a new row if row has reached capacity
-        if ((y - 1) != curr_col) {
-            std::vector<ContainerSlot*> new_column;
-            bayArea.push_back(new_column);
-            curr_col++;
-        }
+        
 
+        //  TODO: Out of bounds handling
         //  If container is an NAN slot, return NAN object
         if(label.compare("NAN") == 0){
-            bayArea.at(curr_col).push_back(new NANSlot(x, y));
+            bayArea[x - 1][y - 1] = new NANSlot(x, y);
         }
         else if(label.compare("UNUSED") == 0){ //  If it is empty, return NULL
-            bayArea.at(curr_col).push_back(new EmptySlot(x, y));
+            bayArea[x - 1][y - 1] = new EmptySlot(x, y);
         }else{
              //  Otherwise, data represents a container
-            bayArea.at(curr_col).push_back(new Container(label, weight, x, y));
+            bayArea[x - 1][y - 1] = new Container(label, weight, x, y);
         }
 
        
@@ -67,30 +90,53 @@ void ShipBay::parseContent(std::string manifest){
     return;
 }
 
-void replaceSubstring(std::string &input, const std::string &searchStr, const std::string &replaceStr) {
-    size_t pos = input.find(searchStr);
-    while (pos != std::string::npos) {
-        input.replace(pos, searchStr.length(), replaceStr);
-        pos = input.find(searchStr, pos + replaceStr.length());
-    }
-}
 
+/**
+ * @fn getHeights
+ * Retrieve a vector of the total stack heighst of every column in the Ship Bay
+ * @param start: 1st column to be searched
+ * @param end: last column to be searched
+ * @returns std::vector<int>
+*/
 std::vector<int> ShipBay::getHeights(int start, int end){
 
     std::vector<int> heights;
 
     int x, y;
 
-    for(y = start - 1; y < end; y++){
-        for(x = 0; x < this->size_x; x++){
+    for(x = start - 1; x < end; x++){
+        for(y = 0; y < this->size_y; y++){
+            if(bayArea.at(x).at(y)->getName().compare("UNUSED") == 0){
+                heights.push_back(y);
+                break;
+            }
+        }
+    }
+
+    //  TODO: Consider the temporary row on top of cargo bay
+    if(y == this->size_y){
+        heights.push_back(this->size_y);
+    }
+
+    return heights;
+}
+
+std::vector<int> ShipBay::getBufferHeights(){
+
+    std::vector<int> heights;
+
+    int x, y;
+
+    for(x = 0; x < this->buffer_x; x++){
+        for(y = 0; y < this->buffer_y; y++){
             if(bayArea.at(x).at(y)->getName().compare("UNUSED") == 0){
                 heights.push_back(x);
                 break;
             }
         }
     }
-    if(y == this->size_y){
-        heights.push_back(this->size_y);
+    if(y == this->buffer_y){
+        heights.push_back(this->buffer_y);
     }
 
     return heights;
@@ -105,27 +151,58 @@ std::vector<int> ShipBay::getHeights(int start, int end){
 Container* ShipBay::pickUpContainer(int column){
 
     //  Make sure column value is in range
-    if(column < 1 || column >= this->size_x){std::invalid_argument("Invalid Column value: " + column);}
+    if(column < 0 || column >= this->size_x){std::invalid_argument("Invalid Ship Column value: " + column);}
 
     //  Loop from the top, to find the topmost container object
     for(int i = this->size_y - 1; i >= 0; i--){
 
         //  If the object is an actual container(So not UNUSED or NAN)
-        if(!bayArea[i][column]->getName().compare("NAN") == 0 &&
-        !bayArea[i][column]->getName().compare("UNUSED") == 0){
+        if(!bayArea[column][i]->getName().compare("NAN") == 0 &&
+        !bayArea[column][i]->getName().compare("UNUSED") == 0){
 
             //  Get pointer to the container
-            Container* curr_container = &bayArea[i][column]->getContainer();
+            Container* curr_container = &bayArea[column][i]->getContainer();
             
             //  Replace container with a new Empty Slot
-            bayArea[i][column] = nullptr;
-            bayArea[i][column] = new EmptySlot(column + 1, i + 1);
+            bayArea[column][i] = nullptr;
+            bayArea[column][i] = new EmptySlot(column + 1, i + 1);
 
-            std::cout << this->bayArea[i][column]->getName() << std::endl;
+            std::cout << this->bayArea[column][i]->getName() << std::endl;
 
             //  Return the container that was picked up
             return curr_container;
-        }else if(bayArea[i][column]->getName().compare("NAN") == 0){   //  If we reach an NAN slot, there is not container in this column
+        }else if(bayArea[column][i]->getName().compare("NAN") == 0){   //  If we reach an NAN slot, there is not container in this column
+            return nullptr;
+        }
+    }
+    //  If all containers are "UNUSED", then colmun is empty
+    return nullptr;
+}
+
+Container* ShipBay::pickUpContainerB(int column){
+
+    //  Make sure column value is in range
+    if(column < 1 || column >= this->buffer_x){std::invalid_argument("Invalid Buffer Column value: " + column);}
+
+    //  Loop from the top, to find the topmost container object
+    for(int i = this->buffer_y - 1; i >= 0; i--){
+
+        //  If the object is an actual container(So not UNUSED or NAN)
+        if(!bayArea[column][i]->getName().compare("NAN") == 0 &&
+        !bayArea[column][i]->getName().compare("UNUSED") == 0){
+
+            //  Get pointer to the container
+            Container* curr_container = &bufferArea[i][column]->getContainer();
+            
+            //  Replace container with a new Empty Slot
+            bufferArea[column][i] = nullptr;
+            bufferArea[column][i] = new EmptySlot(column + 1, i + 1);
+
+            std::cout << this->bufferArea[i][column]->getName() << std::endl;
+
+            //  Return the container that was picked up
+            return curr_container;
+        }else if(bufferArea[column][i]->getName().compare("NAN") == 0){   //  If we reach an NAN slot, there is not container in this column
             return nullptr;
         }
     }
@@ -150,16 +227,16 @@ int ShipBay::putDownDontainer(Container* container, int column){
 
     //  Search bottom up, to find first empty slot
     for(int i = 0; i < this->size_y; i++){
-        if(bayArea[i][column]->isEmpty()){
+        if(bayArea[column][i]->isEmpty()){
 
             //  Release the EmptySlot object
-            ContainerSlot* oldSlot = bayArea[i][column];
+            ContainerSlot* oldSlot = bayArea[column][i];
             delete oldSlot;
 
-            bayArea[i][column] = nullptr;
+            bayArea[column][i] = nullptr;
 
             //  Assign the container, update the container's x-y position
-            bayArea[i][column] = container;
+            bayArea[column][i] = container;
             container->changeXPos(column + 1);
             container->changeYPos(i + 1);
 
@@ -181,8 +258,8 @@ ShipBay* ShipBay::clone(){
     std::string cloneBayData = "";
 
     int x,y;
-    for(x = 0; x < this->bayArea.size(); x++){
-        for(y=0; y < this->bayArea[x].size(); y++){
+    for(x = 0; x < this->size_x; x++){
+        for(y=0; y < this->size_y; y++){
             cloneBayData += bayArea[x][y]->toString();
         }
     }
@@ -194,8 +271,12 @@ ShipBay* ShipBay::clone(){
  * 
 */
 void ShipBay::printShipBay(){
-    for(int x = bayArea.size() - 1; x >= 0 ; x--){
-        for(int y = 0; y < bayArea[x].size(); y++){
+
+
+    int x,y;
+
+    for(y = this->size_y - 1; y >= 0; --y){
+        for(x = 0; x < this->size_x; ++x){
             if(bayArea[x][y]->getName().compare("NAN") == 0){
                 std::cout << "N|";
             }else if(bayArea[x][y]->getName().compare("UNUSED") == 0){
@@ -204,7 +285,7 @@ void ShipBay::printShipBay(){
                 std::cout << "C|";
             }
         }
-        std::cout << "\n=========================\n";
+        std::cout << "\n========================\n";
     }
     std::cout << "\n\n\n";
 }
