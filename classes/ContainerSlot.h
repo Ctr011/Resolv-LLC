@@ -15,10 +15,11 @@ protected:
     int yPos;
     bool movable;
     bool empty;
+    int containerMass;
 
 public:
     // Base Constructor here
-    ContainerSlot(const std::string n, int x, int y, bool m, bool e) : name(n), yPos(y), xPos(x), movable(m), empty(e) {};
+    ContainerSlot(const std::string n, int x, int y, int mass, bool m, bool e) : name(n), yPos(y), xPos(x), containerMass(mass), movable(m), empty(e) {};
     
     //  @todo: Need to do research here. Not exactly sure why we need this but we do lol
     ContainerSlot() = default;
@@ -26,6 +27,7 @@ public:
     std::string getName();
     int getXPos();
     int getYPos();
+    int getMass();
     bool isMovable();
     bool isEmpty();
 
@@ -59,16 +61,11 @@ public:
 
 class Container: public ContainerSlot{
 
-    int containerMass;
-
 public:
     Container(std::string name, float mass, int x, int y);
 
     void changeXPos(int x);
     void changeYPos(int y);
-
-    float getMass();
-    void changeMass(float mass); //  Do we need this?
 
     Container& getContainer() override;
     virtual std::string toString() override;

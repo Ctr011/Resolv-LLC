@@ -25,6 +25,8 @@ class ShipBay{
     public:
         ShipBay() = default;
 
+        bool isBalanced();
+
         ShipBay(std::string manifestContent);
 
         std::vector<int>getHeights(int start, int end);

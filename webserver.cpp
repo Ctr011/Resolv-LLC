@@ -64,6 +64,8 @@ int main() {
                 buffer = new Buffer("");
                 buffer->printBuffer();
 
+                bool test = buffer->isEmpty();
+
                 //  init initial node
                 Node* testNode = new Node(bay, buffer, 0);
 

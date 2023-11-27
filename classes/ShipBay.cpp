@@ -81,6 +81,35 @@ void ShipBay::parseContent(std::string manifest){
 
 
 /**
+ * 11/26
+ * @fn isBalanced
+ * return boolean value if the carhgobay is balanced or not
+ * 
+*/
+bool ShipBay::isBalanced(){
+
+    int mass1, mass2 = 0;
+    int x, y;
+
+    //  Get mass of both sides
+    for(x = 0; x < this->size_x; x++){
+        for(y = 0; y < this->size_y; y++){
+            if(x <= 5){
+                mass1 += bayArea[x][y]->getMass();
+            }else{
+                mass2 += bayArea[x][y]->getMass();
+            }
+        }
+    }
+
+    //  Get 10% difference value, return if less than or qual to 10%
+    double diff = std::abs(mass1 - mass2) * 100 / std::max(std::abs(mass1), std::abs(mass2));
+    return diff <= 10;
+    
+}
+
+
+/**
  * @fn getHeights
  * Retrieve a vector of the total stack heighst of every column in the Ship Bay
  * @param start: 1st column to be searched
