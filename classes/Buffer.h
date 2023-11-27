@@ -23,6 +23,8 @@ public:
 
     Buffer() = default;
 
+    bool isEmpty();
+
     Buffer(std::string bufferData);
 
     std::vector<int>getHeights(int start, int end);

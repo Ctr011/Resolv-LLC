@@ -94,6 +94,23 @@ void Buffer::parseContent(std::string bufferData){
 }
 
 /**
+ * @fn isEmpty
+ * Returns boolean value depnding on if buffer is empty or not
+ * @return bool
+*/
+bool Buffer::isEmpty(){
+    int x, y;
+    for(x = 0; x < this->size_x; x++){
+        for(y = 0; y < this->size_y; y++){
+            if(bufferArea[x][y]->getName().compare("UNUSED") != 0){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+/**
  * @fn getHeights
  * Retrieve a vector of the total stack heighst of every column in the Ship Bay
  * @param start: 1st column to be searched
