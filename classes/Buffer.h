@@ -23,7 +23,10 @@ public:
 
     Buffer() = default;
 
+    ContainerSlot* getContainer(int x, int y);
+
     bool isEmpty();
+    bool compareBuffers(Buffer* otherBuffer);
 
     Buffer(std::string bufferData);
 

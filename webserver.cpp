@@ -56,18 +56,22 @@ int main() {
                 entries++;
             }
             ShipBay* bay = nullptr;
+            ShipBay* bay2 = nullptr;
             Buffer* buffer = nullptr;
+            Buffer* buffer2 = nullptr;
 
             try{
                 bay = new ShipBay(file.content);
-                bay->printShipBay();
-                buffer = new Buffer("");
-                buffer->printBuffer();
+                bay2 = new ShipBay(file.content);
 
-                bool test = buffer->isEmpty();
+                buffer = new Buffer("");
+                buffer2 = new Buffer("");
 
                 //  init initial node
                 Node* testNode = new Node(bay, buffer, 0);
+                Node* testNode2 = new Node(bay2, buffer2, 0);
+
+                bool test = testNode->compareNodes(testNode2);
 
                 std::vector<Node*> expandResults = testNode->expand();
 

@@ -16,11 +16,20 @@ class Node {
     Container* pickedUp;
     int incoming_cost;
 
+protected:
+
+    ShipBay* getBay();
+    Buffer* getBuffer();
+    Container* getPickUpContainer();
+
 public:
     Node() = default;
     Node(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent = nullptr, Container* container = nullptr);
     int getCost();
     std::vector<Node*> expand();
+
+    bool compareNodes(Node* otherNode);
+
     // void printState();
     // void printAncestors();
 };

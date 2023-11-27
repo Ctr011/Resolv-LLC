@@ -24,21 +24,18 @@ class ShipBay{
 
     public:
         ShipBay() = default;
-
-        bool isBalanced();
-
         ShipBay(std::string manifestContent);
 
+        ContainerSlot* getContainer(int x, int y);
+
+        bool isBalanced();
+        bool compareBays(ShipBay* otherBay);
+
         std::vector<int>getHeights(int start, int end);
-
         Container* pickUpContainer(int column);
-
         int putDownDontainer(Container* container, int column);
-
         ShipBay* clone();
-
         void printShipBay();
-
         virtual ~ShipBay(){};
 };
 

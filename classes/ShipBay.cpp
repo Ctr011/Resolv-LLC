@@ -79,6 +79,7 @@ void ShipBay::parseContent(std::string manifest){
     return;
 }
 
+ContainerSlot* ShipBay::getContainer(int x, int y){return this->bayArea[x][y];};
 
 /**
  * 11/26
@@ -88,7 +89,8 @@ void ShipBay::parseContent(std::string manifest){
 */
 bool ShipBay::isBalanced(){
 
-    int mass1, mass2 = 0;
+    int mass1 = 0;
+    int mass2 = 0;
     int x, y;
 
     //  Get mass of both sides
@@ -106,6 +108,23 @@ bool ShipBay::isBalanced(){
     double diff = std::abs(mass1 - mass2) * 100 / std::max(std::abs(mass1), std::abs(mass2));
     return diff <= 10;
     
+}
+
+bool ShipBay::compareBays(ShipBay* otherBay){
+    int x, y;
+    for(x = 0; x < this->size_x; x++){
+        for(y = 0; y < this->size_y; y++){
+            ContainerSlot* thisContainer = bayArea[x][y];
+            ContainerSlot* otherContainer = otherBay->getContainer(x,y);
+
+            if(thisContainer->getName().compare(otherContainer->getName()) != 0 
+                || thisContainer->getMass() != otherContainer->getMass()){
+                    return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 

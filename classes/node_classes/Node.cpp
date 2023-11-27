@@ -29,6 +29,11 @@ Node::Node(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent, Contain
 //  Getters
 int Node::getCost(){return this->incoming_cost;};
 
+//  Only available to other node classes, mostly for cthe compareNodes() function
+ShipBay* Node::getBay(){return this->bay;};
+Buffer* Node::getBuffer(){return this->buffer;};
+Container* Node::getPickUpContainer(){return this->pickedUp;};
+
 std::vector<Node*> Node::expand(){
 
     //  Create vector for expansion nodes
@@ -124,4 +129,54 @@ std::vector<Node*> Node::expand(){
         return expansionNodes;
     }
 
+}
+
+bool Node::compareNodes(Node* otherNode){
+
+    ContainerSlot* otherContainer = otherNode->getPickUpContainer();
+    ShipBay* otherBay = otherNode->getBay();
+    Buffer* otherBuffer = otherNode->getBuffer();
+
+    //  First, compare the container picked up
+
+    //  Handle nullptrs here
+    if(this->pickedUp == nullptr && otherContainer != nullptr 
+    ||  this->pickedUp != nullptr && otherContainer == nullptr){
+        return false;
+    }
+
+    //  If both are null, we can skip this. Otherwise, make sure they are the same.
+    if(this->pickedUp != nullptr && otherContainer != nullptr){
+            if(otherContainer->getName().compare(this->pickedUp->getName()) != 0
+                || otherContainer->getMass() != this->pickedUp->getMass()){
+                delete otherContainer;
+                delete otherBay;
+                delete otherBuffer;
+                return false;
+        }
+    }
+
+    //  Then compare bays
+    if(!otherBay->compareBays(this->bay)){
+        delete otherContainer;
+        delete otherBay;
+        delete otherBuffer;
+        return false;
+    }
+
+    //  Lastly compare Buffers
+    if(!otherBuffer->compareBuffers(this->buffer)){
+        delete otherContainer;
+        delete otherBay;
+        delete otherBuffer;
+        return false;
+    }
+
+    //  Delete pointers
+    delete otherContainer;
+    delete otherBay;
+    delete otherBuffer;
+
+    //  If all passes return true
+    return true;
 }

@@ -93,6 +93,8 @@ void Buffer::parseContent(std::string bufferData){
     return;
 }
 
+ContainerSlot* Buffer::getContainer(int x, int y){return this->bufferArea[x][y];};
+
 /**
  * @fn isEmpty
  * Returns boolean value depnding on if buffer is empty or not
@@ -107,6 +109,23 @@ bool Buffer::isEmpty(){
             }
         }
     }
+    return true;
+}
+
+bool Buffer::compareBuffers(Buffer* otherBuffer){
+    int x, y;
+    for(x = 0; x < this->size_x; x++){
+        for(y = 0; y < this->size_y; y++){
+            ContainerSlot* thisContainer = bufferArea[x][y];
+            ContainerSlot* otherContainer = otherBuffer->getContainer(x,y);
+
+            if(thisContainer->getName().compare(otherContainer->getName()) != 0 
+                || thisContainer->getMass() != otherContainer->getMass()){
+                    return false;
+            }
+        }
+    }
+
     return true;
 }
 
