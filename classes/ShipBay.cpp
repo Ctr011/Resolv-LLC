@@ -7,9 +7,18 @@
  * 11/23/2023
  * @fn ShipBay (Constructor)
 */
-ShipBay::ShipBay(const std::string manifestContent){
+ShipBay::ShipBay(const std::string manifestContent, std::vector<ContainerSlot*>* tempRow){
     this->originalText = manifestContent;
     parseContent(manifestContent);
+
+    if(tempRow == nullptr){
+        for(int x = 0; x < this->size_x; x++){
+            this->temp.push_back(new EmptySlot(x, this->size_y + 1));
+        }
+    }else{
+        this->temp = *tempRow;  //  Remember to dereference
+    }
+
     return;
 }
 
@@ -79,7 +88,18 @@ void ShipBay::parseContent(std::string manifest){
     return;
 }
 
-ContainerSlot* ShipBay::getContainer(int x, int y){return this->bayArea[x][y];};
+ContainerSlot* ShipBay::getContainer(int x, int y){
+
+    //  If within range, grab the normal containerslot
+    if(y <= this->size_y - 1){
+        return this->bayArea[x][y];
+    }else{
+        //  Otherwise, grab from temp
+        return this->temp[x];
+    }
+};
+
+std::vector<ContainerSlot*> ShipBay::getTempRow(){return this->temp;};
 
 /**
  * 11/26
@@ -87,7 +107,7 @@ ContainerSlot* ShipBay::getContainer(int x, int y){return this->bayArea[x][y];};
  * return boolean value if the carhgobay is balanced or not
  * 
 */
-bool ShipBay::isBalanced(){
+int ShipBay::calculateBalanceCost(){
 
     int mass1 = 0;
     int mass2 = 0;
@@ -106,7 +126,9 @@ bool ShipBay::isBalanced(){
 
     //  Get 10% difference value, return if less than or qual to 10%
     double diff = std::abs(mass1 - mass2) * 100 / std::max(std::abs(mass1), std::abs(mass2));
-    return diff <= 10;
+
+    //  Return % difference here
+    return diff;
     
 }
 
@@ -122,6 +144,16 @@ bool ShipBay::compareBays(ShipBay* otherBay){
                     return false;
             }
         }
+
+        ContainerSlot* thisTemp = this->temp[x];
+        ContainerSlot* otherTemp = otherBay->getContainer(x, this->size_y);
+
+        //  Also check the temp rows here
+        if(thisTemp->getName().compare(otherTemp->getName()) != 0
+            || thisTemp->getMass() != otherTemp->getMass()){
+            return false;
+        }
+
     }
 
     return true;
@@ -142,10 +174,18 @@ std::vector<int> ShipBay::getHeights(int start, int end){
     int x, y;
 
     for(x = start - 1; x < end; x++){
-        for(y = 0; y < this->size_y; y++){
-            if(bayArea.at(x).at(y)->getName().compare("UNUSED") == 0){
-                heights.push_back(y);
-                break;
+        for(y = 0; y <= this->size_y; y++){
+
+            if(y < this->size_y){
+                if(bayArea.at(x).at(y)->getName().compare("UNUSED") == 0){
+                    heights.push_back(y);
+                    break;
+                }
+            }else{
+                if(this->temp[x]->getName().compare("UNUSED") == 0){
+                    heights.push_back(y);
+                    break;
+                }
             }
         }
     }
@@ -167,27 +207,35 @@ std::vector<int> ShipBay::getHeights(int start, int end){
 Container* ShipBay::pickUpContainer(int column){
 
     //  Make sure column value is in range
-    if(column < 0 || column >= this->size_x){std::invalid_argument("Invalid Ship Column value: " + column);}
+    if(column < 0 || column > this->size_x){std::invalid_argument("Invalid Ship Column value: " + column);}
 
     //  Loop from the top, to find the topmost container object
-    for(int i = this->size_y - 1; i >= 0; i--){
+    for(int i = this->size_y; i >= 0; i--){
+
+        ContainerSlot* slot;
+        if(i >= this->size_y){
+            slot = this->temp[column];
+        }else{
+            slot = this->bayArea[column][i];
+        }
 
         //  If the object is an actual container(So not UNUSED or NAN)
-        if(!bayArea[column][i]->getName().compare("NAN") == 0 &&
-        !bayArea[column][i]->getName().compare("UNUSED") == 0){
+        if(slot->getName().compare("NAN") != 0 &&
+        slot->getName().compare("UNUSED") != 0){
 
             //  Get pointer to the container
-            Container* curr_container = &bayArea[column][i]->getContainer();
-            
-            //  Replace container with a new Empty Slot
-            bayArea[column][i] = nullptr;
-            bayArea[column][i] = new EmptySlot(column + 1, i + 1);
+            Container* curr_container = &slot->getContainer();
 
-            std::cout << this->bayArea[column][i]->getName() << std::endl;
+            //  Dependant on 
+            if(i >= this->size_y){
+                this->temp[i] = new EmptySlot(column + 1, i + 1);;
+            }else{
+                this->bayArea[column][i] = new EmptySlot(column + 1, i + 1);;
+            }
 
             //  Return the container that was picked up
             return curr_container;
-        }else if(bayArea[column][i]->getName().compare("NAN") == 0){   //  If we reach an NAN slot, there is not container in this column
+        }else if(slot->getName().compare("NAN") == 0){   //  If we reach an NAN slot, there is not container in this column
             return nullptr;
         }
     }
@@ -207,21 +255,28 @@ int ShipBay::putDownDontainer(Container* container, int column){
     if(container == nullptr){std::invalid_argument("Container is null.");}
 
     //  Make sure column value is in range
-    if(column < 1 || column >= this->size_x){std::invalid_argument("Invalid Column value: " + column);}
+    if(column < 1 || column > this->size_x){std::invalid_argument("Invalid Column value: " + column);}
     
 
     //  Search bottom up, to find first empty slot
-    for(int i = 0; i < this->size_y; i++){
+    for(int i = 0; i <= this->size_y; i++){
         if(bayArea[column][i]->isEmpty()){
 
-            //  Release the EmptySlot object
-            ContainerSlot* oldSlot = bayArea[column][i];
-            delete oldSlot;
-
-            bayArea[column][i] = nullptr;
+            //  Logic for temp row
+            ContainerSlot* oldSlot;
+            if(i >= this->size_y){
+                oldSlot = temp[i];
+                delete oldSlot;
+                temp[i] = nullptr;
+                temp[i] = container;
+            }else{
+                oldSlot = bayArea[column][i];
+                delete oldSlot;
+                bayArea[column][i] = nullptr;
+                bayArea[column][i] = container;
+            }
 
             //  Assign the container, update the container's x-y position
-            bayArea[column][i] = container;
             container->changeXPos(column + 1);
             container->changeYPos(i + 1);
 
@@ -241,15 +296,28 @@ int ShipBay::putDownDontainer(Container* container, int column){
 */
 ShipBay* ShipBay::clone(){
     std::string cloneBayData = "";
+    std::vector<ContainerSlot*> newTemp;
 
+    //  Clone bayArea using string info
     int x,y;
     for(x = 0; x < this->size_x; x++){
         for(y=0; y < this->size_y; y++){
             cloneBayData += bayArea[x][y]->toString();
         }
-    }
 
-    return new ShipBay(cloneBayData);
+        //  Also populate temp with new COntainers
+        if(this->temp[x]->getName().compare("NAN") == 0){
+            newTemp.push_back(new NANSlot(x, this->size_y));
+        }else if(this->temp[x]->getName().compare("UNUSED") == 0){
+            newTemp.push_back(new EmptySlot(x, this->size_y));
+        }else{
+            newTemp.push_back(new Container(this->temp[x]->getName(), this->temp[x]->getMass(), x, this->size_y));
+        }
+
+    }
+    
+    //  Return a new ShipBay Object after cloning
+    return new ShipBay(cloneBayData, &newTemp);
 }
 
 /**
@@ -260,6 +328,18 @@ void ShipBay::printShipBay(){
 
     int x,y;
 
+    //  First print temp
+    for(x = 0; x < this->size_x; ++x){
+            if(temp[x]->getName().compare("NAN") == 0){
+                std::cout << "N|";
+            }else if(temp[x]->getName().compare("UNUSED") == 0){
+                std::cout << " |";
+            }else{
+                std::cout << "C|";
+            }
+    }
+    std::cout << "\n========================\n";
+    std::cout << "\n========================\n";
     for(y = this->size_y - 1; y >= 0; --y){
         for(x = 0; x < this->size_x; ++x){
             if(bayArea[x][y]->getName().compare("NAN") == 0){

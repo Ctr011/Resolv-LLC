@@ -12,7 +12,7 @@ Node::Node(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent, Contain
     
     this->bay = currBay;
     this->buffer = currBuffer;
-    this->incoming_cost = cost;
+    this->incoming_cost = cost + 1; //  Set up for uniform now. Change later
 
     if(parent){
         this->parent = parent;
@@ -95,7 +95,7 @@ std::vector<Node*> Node::expand(){
         for(int i = 0; i < heights.size(); i++){
 
             //  If height != 8 (Meaning it is not full), put it down
-            if(heights[i] != 8){
+            if(heights[i] < 9){
                 //  Make a new (deep) copy of current bay, one that no longer has the container that is picked up
                 //  Also, the container that is picked up
                 ShipBay* bayCopy = this->bay->clone();
@@ -112,7 +112,7 @@ std::vector<Node*> Node::expand(){
         for(int i = 0; i < bufferHeights.size(); i++){
 
             //  If height != 8 (Meaning it is not full), put it down
-            if(bufferHeights[i] != 8){
+            if(bufferHeights[i] != 4){
                 //  Make a new (deep) copy of current bay, one that no longer has the container that is picked up
                 //  Also, the container that is picked up
                 ShipBay* bayCopy = this->bay->clone();

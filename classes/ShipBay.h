@@ -12,23 +12,23 @@
 
 class ShipBay{
 
-    //  Change this back later
     int size_x = 12;
     int size_y = 8;
 
     std::vector<std::vector<ContainerSlot*>> bayArea;
-    std::vector<ContainerSlot> temp;
+    std::vector<ContainerSlot*> temp;
     std::string originalText;
 
     void parseContent(std::string manifest);
 
     public:
         ShipBay() = default;
-        ShipBay(std::string manifestContent);
+        ShipBay(std::string manifestContent, std::vector<ContainerSlot*>* tempRow = nullptr);
 
         ContainerSlot* getContainer(int x, int y);
+        std::vector<ContainerSlot*> getTempRow();
 
-        bool isBalanced();
+        int calculateBalanceCost();
         bool compareBays(ShipBay* otherBay);
 
         std::vector<int>getHeights(int start, int end);
