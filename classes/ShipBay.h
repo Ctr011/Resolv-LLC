@@ -8,6 +8,7 @@
 #include <vector>
 #include <sstream>
 #include <algorithm>
+#include <cmath>
 #include "ContainerSlot.h"
 
 class ShipBay{
@@ -15,9 +16,6 @@ class ShipBay{
     int size_x = 12;
     int size_y = 8;
 
-    //  constant for container exit for 
-    const int exit_x = 0;
-    const int exit_y = 8;
 
     std::vector<std::vector<ContainerSlot*>> bayArea;
     std::vector<ContainerSlot*> temp;
@@ -41,6 +39,8 @@ class ShipBay{
         ShipBay* clone();
         void printShipBay();
         virtual ~ShipBay(){};
+
+        int calculateMovementCost(int x1, int y1, int x2, int y2);
 };
 
 #endif

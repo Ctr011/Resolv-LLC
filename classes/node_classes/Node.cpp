@@ -63,8 +63,7 @@ std::vector<Node*> Node::expand(){
                 if(heldContainer){
                     Node* newNode = new Node(bayCopy, bufferCopy, (this->incoming_cost + heldContainer->getYPos()), this, heldContainer);
                     expansionNodes.push_back(newNode);
-                    bayCopy->printShipBay();
-                    bufferCopy->printBuffer();
+                    newNode->printState();
                 }
             }
         }
@@ -84,8 +83,7 @@ std::vector<Node*> Node::expand(){
                 if(heldContainer){
                     Node* newNode = new Node(bayCopy, bufferCopy, (this->incoming_cost + heldContainer->getYPos()), this, heldContainer);
                     expansionNodes.push_back(newNode);
-                    bayCopy->printShipBay();
-                    bufferCopy->printBuffer();
+                    newNode->printState();
                 }
             }
         }
@@ -93,6 +91,14 @@ std::vector<Node*> Node::expand(){
 
         return expansionNodes;
     }else{
+
+        //  First, init picked up container's data
+        std::string p_name = this->pickedUp->getName();
+        int p_mass = this->pickedUp->getMass();
+        int p_x = this->pickedUp->getXPos();
+        int p_y = this->pickedUp->getYPos();
+        Origin p_origin = this->pickedUp->getOrigin();
+
         for(int i = 0; i < heights.size(); i++){
 
             //  If height != 8 (Meaning it is not full), put it down
@@ -102,11 +108,14 @@ std::vector<Node*> Node::expand(){
                 ShipBay* bayCopy = this->bay->clone();
                 Buffer* bufferCopy = this->buffer->clone();
 
-                int cost = bayCopy->putDownDontainer(this->pickedUp, i);
+                //  Create new container based off one picked up
+                
+
+                //  New copy of container
+                int cost = bayCopy->putDownDontainer(new Container(p_name, p_mass, p_x, p_y, p_origin), i);
                 Node* newNode = new Node(bayCopy, bufferCopy, cost, this);
+                newNode->printState();
                 expansionNodes.push_back(newNode);
-                bayCopy->printShipBay();
-                bufferCopy->printBuffer();
             }
         }
 
@@ -119,11 +128,11 @@ std::vector<Node*> Node::expand(){
                 ShipBay* bayCopy = this->bay->clone();
                 Buffer* bufferCopy = this->buffer->clone();
 
-                int cost = bufferCopy->putDownDontainer(this->pickedUp, i);
+                //  Put in new copy of container
+                int cost = bufferCopy->putDownDontainer(new Container(p_name, p_mass, p_x, p_y, p_origin), i);
                 Node* newNode = new Node(bayCopy, bufferCopy, cost, this);
+                newNode->printState();
                 expansionNodes.push_back(newNode);
-                bayCopy->printShipBay();
-                bufferCopy->printBuffer();
             }
         }
 
@@ -190,7 +199,7 @@ bool Node::compareNodes(Node* otherNode){
  * @todo: Need to adjust this accordingly
 */
 double Node::getDistanceFromBalanced(){
-
+    return 0.0;
 }
 
 void Node::printState(){

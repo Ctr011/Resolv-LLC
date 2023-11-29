@@ -6,11 +6,7 @@
 #include <format>
 #include <string>
 
-enum class Origin{
-    BAY = 0,
-    BUFFER = 1,
-    TRUCK = 2
-};
+#include "Misc.h"
 
 class Container;
 
@@ -32,6 +28,7 @@ public:
     //  @todo: Need to do research here. Not exactly sure why we need this but we do lol
     ContainerSlot() = default;
 
+    //  Getters
     std::string getName();
     int getXPos();
     int getYPos();
@@ -39,6 +36,9 @@ public:
     bool isMovable();
     bool isEmpty();
     Origin getOrigin();
+
+    //  Setters
+    void setOrigin(Origin newOrigin);
 
     //  Returns a container object
     virtual Container& getContainer() = 0;

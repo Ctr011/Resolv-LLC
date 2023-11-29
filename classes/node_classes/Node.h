@@ -30,7 +30,9 @@ public:
 
     bool compareNodes(Node* otherNode);
 
-    // void printState();
+    double getDistanceFromBalanced();
+
+    void printState();
     // void printAncestors();
 };
 

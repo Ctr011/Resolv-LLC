@@ -218,21 +218,46 @@ int Buffer::putDownDontainer(Container* container, int column){
             //  Release the EmptySlot object
             ContainerSlot* oldSlot = bufferArea[column][i];
             delete oldSlot;
+            bufferArea[column][i] = container;
 
-            bufferArea[column][i] = nullptr;
+            //  Return the cost
+            int cost = 0;
+
+             //  First, determine if there is any transfer penalty
+            if(container->getOrigin() == Origin::BAY){
+                //  Movement penalty
+                cost += 4;
+
+                //  Plus however long it take to get out of the bay (manhattan distance)
+                cost += calculateMovementCost(bay_exit_x, bay_exit_y, container->getXPos(), container->getYPos());
+
+            }else if(container->getOrigin() == Origin::TRUCK){
+                //  Just add the truck transfer penalty
+                cost += 2;
+            }
+
+            //  Then, find manhattan distance within bay
+            //  If container comes from the bay, just calculate manhattan distance bewteen the two spots
+            if(container->getOrigin() == Origin::BUFFER){
+                cost += calculateMovementCost((column + 1), (i + 1), container->getXPos(), container->getYPos());
+            }else{
+                //  Otherwise, calculate from the exit/enter point
+                cost += calculateMovementCost((column + 1), (i + 1), buffer_exit_x, buffer_exit_y);
+            }
 
             //  Assign the container, update the container's x-y position
-            bufferArea[column][i] = container;
+            this->bufferArea[column][i] = container;
             container->changeXPos(column + 1);
             container->changeYPos(i + 1);
+            container->setOrigin(Origin::BUFFER);
 
             //  now return the cost, calculate by subtracting the i by the total height
-            return this->bufferArea.size() - i;
+            return cost;
         }
     }
 
-    //  return -1 meaning that the column is not empty
-    return -1;
+    //  return absurdly high number meaning that the column is not empty
+    return 9999999999;
 }
 
 /**
@@ -274,4 +299,47 @@ void Buffer::printBuffer(){
         std::cout << "\n ============================================== \n";
     }
     std::cout << "\n\n\n";
+}
+
+int Buffer::calculateMovementCost(int x1, int y1, int x2, int y2){
+
+    //  If its the same spot, just return the y position
+    if(x1 == x2){return y1;};
+
+    //  First get the current heights of all columns between the two positions
+    std::vector<int> heights;
+    if(x1 < x2){
+        heights = getHeights(x1, x2);
+    }else{
+        heights = getHeights(x2, x1);
+    }
+
+    //  Find highest height of the vector
+    auto maxElement = std::max_element(heights.begin(), heights.end());
+    int maxVal = *maxElement;
+
+    //  Find max between y1, y2, and the list
+    int max_height = std::max(maxVal, std::max(y1, y2));
+
+    int cost = 0;
+    //  Meaning, if the position of one of the containers is taller than anything between the two
+    if(max_height > maxVal){
+        //  Calculate the basic manhattan distance
+        cost += std::abs(x1 - x2) + std::abs(y1 - y2);
+    }else{
+        //  Calculate the manhattan distance from the lowest y-position container to the highest y-position
+        //  Then the manhattan distance from there to the end position
+        int max_starting = std::max(y1, y2);
+        cost += max_height - max_starting;
+        
+        if(max_starting == y1){
+            cost += std::abs(x1 - x2) + std::abs(max_starting - y2);
+        }else{
+            cost += std::abs(x1 - x2) + std::abs(y2 - max_starting);
+        }
+    }
+
+    //  Return calculated cost
+    return cost;
+
 }

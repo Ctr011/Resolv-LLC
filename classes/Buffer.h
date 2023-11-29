@@ -11,10 +11,10 @@
 #include <algorithm>
 #include "ContainerSlot.h"
 
-
 class Buffer{
     int size_x = 24;
     int size_y = 4;
+
     std::vector<std::vector<ContainerSlot*>> bufferArea;
 
     void parseContent(const std::string bufferData);
@@ -33,11 +33,11 @@ public:
     std::vector<int>getHeights(int start, int end);
 
     Container* pickUpContainer(int column);
-
     int putDownDontainer(Container* container, int column);
 
-    Buffer* clone();
+    int calculateMovementCost(int x1, int y1, int x2, int y2);
 
+    Buffer* clone();
     void printBuffer();
 
     virtual ~Buffer(){};

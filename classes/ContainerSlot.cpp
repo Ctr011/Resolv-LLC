@@ -10,6 +10,8 @@ std::string ContainerSlot::getName(){return this->name;};
 int ContainerSlot::getMass(){return this->containerMass;};
 Origin ContainerSlot::getOrigin(){return this->origin;};
 
+void ContainerSlot::setOrigin(Origin newOrigin){this->origin = newOrigin;};
+
 /**
  * NANSlot Constructor
 */
