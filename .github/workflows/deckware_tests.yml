@@ -32,5 +32,19 @@ jobs:
         echo test, and deploy your project.
         pwd
         ls
+        
+    - name: Create build directory
+      run: |
+          mkdir build
+          cd build
+          pwd
+          ls
+
+    - name: Run Cmake to build project
+      run: cmake ..
+
+    - name: Run make to test
+      run: make
+      
       
 
