@@ -1,0 +1,32 @@
+name: Deckware Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up CMake
+      uses: actions/setup-cmake@v2
+      with:
+        cmake-version: 3.22  # Adjust version as needed
+
+    - name: Configure and build
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        cmake --build .
+
+    - name: Run tests
+      run: |
+        cd build
+        ctest
