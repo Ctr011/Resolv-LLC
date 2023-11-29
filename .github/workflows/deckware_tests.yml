@@ -35,10 +35,7 @@ jobs:
         
     - name: Create build directory
       run: |
-          mkdir build
-          cd build
-          pwd
-          ls
+          cmake
 
     - name: Run make to test
       run: make
