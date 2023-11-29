@@ -47,6 +47,7 @@ std::vector<Node*> Node::expand(){
     //  Actions if there is not a container currently picked up
     if(!this->pickedUp){
 
+
         //  Loop over every columns height in the ship bay
         for(int i = 0; i < heights.size(); i++){
 
@@ -133,6 +134,7 @@ std::vector<Node*> Node::expand(){
 
 bool Node::compareNodes(Node* otherNode){
 
+
     ContainerSlot* otherContainer = otherNode->getPickUpContainer();
     ShipBay* otherBay = otherNode->getBay();
     Buffer* otherBuffer = otherNode->getBuffer();
@@ -179,4 +181,19 @@ bool Node::compareNodes(Node* otherNode){
 
     //  If all passes return true
     return true;
+}
+
+/**
+ * @fn getDistanceFromBalanced
+ * Calculates a numberical value of how far the current ship bay is from being balanced
+ * @returns {double}: value represnting distance 
+ * @todo: Need to adjust this accordingly
+*/
+double Node::getDistanceFromBalanced(){
+
+}
+
+void Node::printState(){
+    this->bay->printShipBay();
+    this->buffer->printBuffer();
 }

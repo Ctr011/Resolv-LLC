@@ -18,7 +18,7 @@ Buffer::Buffer(std::string bufferData){
 
             //  Push back empty slots for now
             for(y = 0; y < this->size_y; y++){
-                this->bufferArea[x].push_back(new EmptySlot(x + 1, y + 1));
+                this->bufferArea[x].push_back(new EmptySlot(x + 1, y + 1, Origin::BUFFER));
             }
         }
     }else{
@@ -79,13 +79,13 @@ void Buffer::parseContent(std::string bufferData){
         //  TODO: Out of bounds handling
         //  If container is an NAN slot, return NAN object
         if(label.compare("NAN") == 0){
-            bufferArea[x - 1][y - 1] = new NANSlot(x, y);
+            bufferArea[x - 1][y - 1] = new NANSlot(x, y, Origin::BUFFER);
         }
         else if(label.compare("UNUSED") == 0){ //  If it is empty, return NULL
-            bufferArea[x - 1][y - 1] = new EmptySlot(x, y);
+            bufferArea[x - 1][y - 1] = new EmptySlot(x, y, Origin::BUFFER);
         }else{
              //  Otherwise, data represents a container
-            bufferArea[x - 1][y - 1] = new Container(label, weight, x, y);
+            bufferArea[x - 1][y - 1] = new Container(label, weight, x, y, Origin::BUFFER);
         }
 
        
@@ -182,7 +182,7 @@ Container* Buffer::pickUpContainer(int column){
             
             //  Replace container with a new Empty Slot
             bufferArea[column][i] = nullptr;
-            bufferArea[column][i] = new EmptySlot(column + 1, i + 1);
+            bufferArea[column][i] = new EmptySlot(column + 1, i + 1, Origin::BUFFER);
 
             std::cout << this->bufferArea[column][i]->getName() << std::endl;
 

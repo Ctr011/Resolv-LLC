@@ -6,6 +6,12 @@
 #include <format>
 #include <string>
 
+enum class Origin{
+    BAY = 0,
+    BUFFER = 1,
+    TRUCK = 2
+};
+
 class Container;
 
 class ContainerSlot {
@@ -17,9 +23,11 @@ protected:
     bool empty;
     int containerMass;
 
+    Origin origin;
+
 public:
     // Base Constructor here
-    ContainerSlot(const std::string n, int x, int y, int mass, bool m, bool e) : name(n), yPos(y), xPos(x), containerMass(mass), movable(m), empty(e) {};
+    ContainerSlot(const std::string n, int x, int y, int mass, bool m, bool e, Origin o) : name(n), yPos(y), xPos(x), containerMass(mass), movable(m), empty(e), origin(o) {};
     
     //  @todo: Need to do research here. Not exactly sure why we need this but we do lol
     ContainerSlot() = default;
@@ -30,9 +38,11 @@ public:
     int getMass();
     bool isMovable();
     bool isEmpty();
+    Origin getOrigin();
 
     //  Returns a container object
     virtual Container& getContainer() = 0;
+
 
     virtual std::string toString() = 0;
 
@@ -43,7 +53,7 @@ public:
 
 class NANSlot : public ContainerSlot {
 public:
-    NANSlot(int x, int y);
+    NANSlot(int x, int y, Origin o);
 
     Container& getContainer() override;
     virtual std::string toString() override;
@@ -51,7 +61,7 @@ public:
 
 class EmptySlot : public ContainerSlot{
 public: 
-    EmptySlot(int x, int y);
+    EmptySlot(int x, int y, Origin o);
 
     Container& getContainer() override;
     virtual std::string toString() override;
@@ -62,7 +72,7 @@ public:
 class Container: public ContainerSlot{
 
 public:
-    Container(std::string name, float mass, int x, int y);
+    Container(std::string name, float mass, int x, int y, Origin o);
 
     void changeXPos(int x);
     void changeYPos(int y);

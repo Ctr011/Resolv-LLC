@@ -13,10 +13,10 @@ ShipBay::ShipBay(const std::string manifestContent, std::vector<ContainerSlot*>*
 
     if(tempRow == nullptr){
         for(int x = 0; x < this->size_x; x++){
-            this->temp.push_back(new EmptySlot(x, this->size_y + 1));
+            this->temp.push_back(new EmptySlot(x, this->size_y + 1, Origin::BAY));
         }
     }else{
-        this->temp = *tempRow;  //  Remember to dereference
+        this->temp = *tempRow;
     }
 
     return;
@@ -74,13 +74,13 @@ void ShipBay::parseContent(std::string manifest){
         //  TODO: Out of bounds handling
         //  If container is an NAN slot, return NAN object
         if(label.compare("NAN") == 0){
-            bayArea[x - 1][y - 1] = new NANSlot(x, y);
+            bayArea[x - 1][y - 1] = new NANSlot(x, y, Origin::BAY);
         }
         else if(label.compare("UNUSED") == 0){ //  If it is empty, return NULL
-            bayArea[x - 1][y - 1] = new EmptySlot(x, y);
+            bayArea[x - 1][y - 1] = new EmptySlot(x, y, Origin::BAY);
         }else{
              //  Otherwise, data represents a container
-            bayArea[x - 1][y - 1] = new Container(label, weight, x, y);
+            bayArea[x - 1][y - 1] = new Container(label, weight, x, y, Origin::BAY);
         }
 
        
@@ -228,9 +228,9 @@ Container* ShipBay::pickUpContainer(int column){
 
             //  Dependant on 
             if(i >= this->size_y){
-                this->temp[i] = new EmptySlot(column + 1, i + 1);;
+                this->temp[i] = new EmptySlot(column + 1, i + 1, Origin::BAY);;
             }else{
-                this->bayArea[column][i] = new EmptySlot(column + 1, i + 1);;
+                this->bayArea[column][i] = new EmptySlot(column + 1, i + 1, Origin::BAY);;
             }
 
             //  Return the container that was picked up
@@ -280,8 +280,8 @@ int ShipBay::putDownDontainer(Container* container, int column){
             container->changeXPos(column + 1);
             container->changeYPos(i + 1);
 
-            //  now return the cost, calculate by subtracting the i by the total height
-            return this->bayArea.size() - i;
+            //  now return the cost
+            
         }
     }
 
@@ -307,11 +307,11 @@ ShipBay* ShipBay::clone(){
 
         //  Also populate temp with new COntainers
         if(this->temp[x]->getName().compare("NAN") == 0){
-            newTemp.push_back(new NANSlot(x, this->size_y));
+            newTemp.push_back(new NANSlot(x, this->size_y, Origin::BAY));
         }else if(this->temp[x]->getName().compare("UNUSED") == 0){
-            newTemp.push_back(new EmptySlot(x, this->size_y));
+            newTemp.push_back(new EmptySlot(x, this->size_y, Origin::BAY));
         }else{
-            newTemp.push_back(new Container(this->temp[x]->getName(), this->temp[x]->getMass(), x, this->size_y));
+            newTemp.push_back(new Container(this->temp[x]->getName(), this->temp[x]->getMass(), x, this->size_y, Origin::BAY));
         }
 
     }

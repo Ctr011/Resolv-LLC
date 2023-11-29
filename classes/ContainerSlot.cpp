@@ -8,11 +8,12 @@ bool ContainerSlot::isMovable(){return this->movable;}
 bool ContainerSlot::isEmpty(){return this->empty;};
 std::string ContainerSlot::getName(){return this->name;};
 int ContainerSlot::getMass(){return this->containerMass;};
+Origin ContainerSlot::getOrigin(){return this->origin;};
 
 /**
  * NANSlot Constructor
 */
-NANSlot::NANSlot(int x, int y) : ContainerSlot("NAN", x, y, 0, false, false){};
+NANSlot::NANSlot(int x, int y, Origin o) : ContainerSlot("NAN", x, y, 0, false, false, o){};
 Container& NANSlot::getContainer(){
     throw std::invalid_argument("Object is not of Container Type");
 };
@@ -30,7 +31,7 @@ std::string NANSlot::toString(){
 /**
  * EmptySlot Constructor
 */
-EmptySlot::EmptySlot(int x, int y) : ContainerSlot("UNUSED", x, y, 0, true, true){};
+EmptySlot::EmptySlot(int x, int y, Origin o) : ContainerSlot("UNUSED", x, y, 0, true, true, o){};
 
 void EmptySlot::changeXPos(int x){this->xPos = x; return;};
 void EmptySlot::changeYPos(int y){this->yPos = y; return;};
@@ -51,7 +52,7 @@ std::string EmptySlot::toString(){
 /**
  * Container Constructor
 */
-Container::Container(std::string name, float mass, int x, int y) : ContainerSlot(name, x, y, mass, true, false){
+Container::Container(std::string name, float mass, int x, int y, Origin o) : ContainerSlot(name, x, y, mass, true, false, o){
     
     //  Standard checks here
     if(name.empty() || name == "NAN" || name == "UNUSED"){throw std::invalid_argument("Invalid Container name: " + name);}; //  Check for invalid names
