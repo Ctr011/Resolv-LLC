@@ -40,10 +40,6 @@ jobs:
           pwd
           ls
 
-    - name: Run Cmake to build project
-      run: cmake ..
-      working-directory: build
-
     - name: Run make to test
       run: make
       working-directory: build
