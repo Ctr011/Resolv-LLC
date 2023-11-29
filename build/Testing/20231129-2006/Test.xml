@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="(empty)"
+	BuildStamp="20231129-2006-Experimental"
+	Name="(empty)"
+	Generator="ctest-3.22.0-rc3"
+	CompilerName=""
+	CompilerVersion=""
+	OSName="Windows"
+	Hostname="DESKTOP-B8TC275"
+	OSRelease=" Personal"
+	OSVersion=" (Build 19045)"
+	OSPlatform="AMD64"
+	Is64Bits="1"
+	VendorString="AuthenticAMD"
+	VendorID="Advanced Micro Devices"
+	FamilyID="15"
+	ModelID="1"
+	ProcessorCacheSize="64"
+	NumberOfLogicalCPU="12"
+	NumberOfPhysicalCPU="6"
+	TotalVirtualMemory="31158"
+	TotalPhysicalMemory="16310"
+	LogicalProcessorsPerPhysical="2"
+	ProcessorClockFrequency="3593"
+	>
+	<Testing>
+		<StartDateTime>Nov 29 12:55 Pacific Standard Time</StartDateTime>
+		<StartTestTime>1701291331</StartTestTime>
+		<TestList>
+			<Test>./test/DeckwareTests</Test>
+		</TestList>
+		<Test Status="passed">
+			<Name>DeckwareTests</Name>
+			<Path>./test</Path>
+			<FullName>./test/DeckwareTests</FullName>
+			<FullCommandLine>C:\Users\godfr\Desktop\CS_179M_Repo\build\test\Debug\DeckwareTests.exe</FullCommandLine>
+			<Results>
+				<NamedMeasurement type="numeric/double" name="Execution Time">
+					<Value>0.061628</Value>
+				</NamedMeasurement>
+				<NamedMeasurement type="numeric/double" name="Processors">
+					<Value>1</Value>
+				</NamedMeasurement>
+				<NamedMeasurement type="text/string" name="Completion Status">
+					<Value>Completed</Value>
+				</NamedMeasurement>
+				<NamedMeasurement type="text/string" name="Command Line">
+					<Value>C:\Users\godfr\Desktop\CS_179M_Repo\build\test\Debug\DeckwareTests.exe</Value>
+				</NamedMeasurement>
+				<NamedMeasurement type="text/string" name="Environment">
+					<Value>#CTEST_RESOURCE_GROUP_COUNT=</Value>
+				</NamedMeasurement>
+				<Measurement>
+					<Value encoding="base64" compression="gzip">eJyNkE9Lw0AQxe/7KebYHLLYkyh40FQ8iH9I6CkbwjadhuBmJuxO9OubuKU0otB3evB7zONNPhJ11EJvO1olcPDcQ3ZrtgF9MC3vD95sMHwIDyYr6vX1zUud48AT4tahYJBzG3xj2tnV8z3dNKq8O6mC/Fi2hjkTy44+jJ2gVmV6UgVPjnfWRY702XmmHmnKoqTj8Ct8fjNjkqkffeFYVAn59hV+VC2RfrABJx719vwnh9UV9CG5sC2mQVisS9RlewStT/f8Rctv/fcl8Jb0smea8H5fFI+beWLMavUNHMKXgg==</Value>
+				</Measurement>
+			</Results>
+		</Test>
+		<EndDateTime>Nov 29 12:55 Pacific Standard Time</EndDateTime>
+		<EndTestTime>1701291331</EndTestTime>
+		<ElapsedMinutes>0</ElapsedMinutes>
+	</Testing>
+</Site>

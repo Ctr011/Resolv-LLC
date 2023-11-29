@@ -1,0 +1,18 @@
+# CMake generation dependency list for this directory.
+C:/Users/godfr/Desktop/CS_179M_Repo/googletest/googletest/CMakeLists.txt
+C:/Users/godfr/Desktop/CS_179M_Repo/googletest/googletest/cmake/Config.cmake.in
+C:/Users/godfr/Desktop/CS_179M_Repo/googletest/googletest/cmake/gtest.pc.in
+C:/Users/godfr/Desktop/CS_179M_Repo/googletest/googletest/cmake/gtest_main.pc.in
+C:/Users/godfr/Desktop/CS_179M_Repo/googletest/googletest/cmake/internal_utils.cmake
+D:/Softwares/cmake-3.22.0-rc3-windows-x86_64/cmake-3.22.0-rc3-windows-x86_64/share/cmake-3.22/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in
+D:/Softwares/cmake-3.22.0-rc3-windows-x86_64/cmake-3.22.0-rc3-windows-x86_64/share/cmake-3.22/Modules/CMakePackageConfigHelpers.cmake
+D:/Softwares/cmake-3.22.0-rc3-windows-x86_64/cmake-3.22.0-rc3-windows-x86_64/share/cmake-3.22/Modules/CheckCSourceCompiles.cmake
+D:/Softwares/cmake-3.22.0-rc3-windows-x86_64/cmake-3.22.0-rc3-windows-x86_64/share/cmake-3.22/Modules/CheckIncludeFile.cmake
+D:/Softwares/cmake-3.22.0-rc3-windows-x86_64/cmake-3.22.0-rc3-windows-x86_64/share/cmake-3.22/Modules/CheckLibraryExists.cmake
+D:/Softwares/cmake-3.22.0-rc3-windows-x86_64/cmake-3.22.0-rc3-windows-x86_64/share/cmake-3.22/Modules/FindPackageHandleStandardArgs.cmake
+D:/Softwares/cmake-3.22.0-rc3-windows-x86_64/cmake-3.22.0-rc3-windows-x86_64/share/cmake-3.22/Modules/FindPackageMessage.cmake
+D:/Softwares/cmake-3.22.0-rc3-windows-x86_64/cmake-3.22.0-rc3-windows-x86_64/share/cmake-3.22/Modules/FindPython/Support.cmake
+D:/Softwares/cmake-3.22.0-rc3-windows-x86_64/cmake-3.22.0-rc3-windows-x86_64/share/cmake-3.22/Modules/FindPython3.cmake
+D:/Softwares/cmake-3.22.0-rc3-windows-x86_64/cmake-3.22.0-rc3-windows-x86_64/share/cmake-3.22/Modules/FindThreads.cmake
+D:/Softwares/cmake-3.22.0-rc3-windows-x86_64/cmake-3.22.0-rc3-windows-x86_64/share/cmake-3.22/Modules/Internal/CheckSourceCompiles.cmake
+D:/Softwares/cmake-3.22.0-rc3-windows-x86_64/cmake-3.22.0-rc3-windows-x86_64/share/cmake-3.22/Modules/WriteBasicConfigVersionFile.cmake
