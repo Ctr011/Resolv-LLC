@@ -24,8 +24,8 @@
 	ProcessorClockFrequency="3593"
 	>
 	<Testing>
-		<StartDateTime>Nov 29 12:55 Pacific Standard Time</StartDateTime>
-		<StartTestTime>1701291331</StartTestTime>
+		<StartDateTime>Nov 29 13:00 Pacific Standard Time</StartDateTime>
+		<StartTestTime>1701291643</StartTestTime>
 		<TestList>
 			<Test>./test/DeckwareTests</Test>
 		</TestList>
@@ -36,7 +36,7 @@
 			<FullCommandLine>C:\Users\godfr\Desktop\CS_179M_Repo\build\test\Debug\DeckwareTests.exe</FullCommandLine>
 			<Results>
 				<NamedMeasurement type="numeric/double" name="Execution Time">
-					<Value>0.061628</Value>
+					<Value>0.0086641</Value>
 				</NamedMeasurement>
 				<NamedMeasurement type="numeric/double" name="Processors">
 					<Value>1</Value>
@@ -55,8 +55,8 @@
 				</Measurement>
 			</Results>
 		</Test>
-		<EndDateTime>Nov 29 12:55 Pacific Standard Time</EndDateTime>
-		<EndTestTime>1701291331</EndTestTime>
+		<EndDateTime>Nov 29 13:00 Pacific Standard Time</EndDateTime>
+		<EndTestTime>1701291643</EndTestTime>
 		<ElapsedMinutes>0</ElapsedMinutes>
 	</Testing>
 </Site>

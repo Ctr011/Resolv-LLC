@@ -17,6 +17,15 @@
 	"dependencies" : 
 	[
 		{
+			"id" : "gmock_main::@d68da25237a7ca2351af"
+		},
+		{
+			"id" : "DeckwareTests::@36f028580bb02cc8272a"
+		},
+		{
+			"id" : "gmock::@d68da25237a7ca2351af"
+		},
+		{
 			"id" : "Deckware::@6890427a1f51a3e7e1df"
 		},
 		{
@@ -24,15 +33,6 @@
 		},
 		{
 			"id" : "gtest_main::@f95b5c00bd49b3b4698d"
-		},
-		{
-			"id" : "DeckwareTests::@36f028580bb02cc8272a"
-		},
-		{
-			"id" : "gmock_main::@d68da25237a7ca2351af"
-		},
-		{
-			"id" : "gmock::@d68da25237a7ca2351af"
 		},
 		{
 			"id" : "ZERO_CHECK::@6890427a1f51a3e7e1df"
