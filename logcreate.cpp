@@ -9,15 +9,16 @@
 using namespace std;
 
 /*
-    website for system time...https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtime
+    website for system time:: https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtime
+    SYSTEMTIME library:: https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime
     the parameters for log file:: https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime
-    specific file locations: https://stackoverflow.com/questions/49508779/how-to-create-a-file-in-a-specific-directory-in-c11
-    create directories: https://stackoverflow.com/questions/36386036/how-to-create-a-hidden-directory
-    find out if there is a directory: https://stackoverflow.com/questions/70924991/check-if-directory-exists-using-filesystem
+    specific file locations:: https://stackoverflow.com/questions/49508779/how-to-create-a-file-in-a-specific-directory-in-c11
+    create directories:: https://stackoverflow.com/questions/36386036/how-to-create-a-hidden-directory
+    find out if there is a directory:: https://stackoverflow.com/questions/70924991/check-if-directory-exists-using-filesystem
     find out user profile:: https://stackoverflow.com/questions/42371488/saving-to-userprofile
 
 
-    Attmepting to Create and Hide Log Files in C:\Users\%USERPROFILE%\AppData\Roaming\ResolvDeckware\
+    Attmepting to Create and Hide Log Files in C:\Users\%USERPROFILE%\AppData\Roaming\ResolvDeckware\ && C:\Users\%USERPROFILE%\AppData\Roaming\ResolvBack\
 */
 /*
     Declare Global Variables
@@ -150,8 +151,8 @@ void createFolder(){ //test system
 /*
     Initial Testing for Backup System...Assuming that the writing system is working 100%
 */
-
-void writingSystem(){ //not finished, testing to see if system would type the words being written to file
+/*
+void WritingSystem(){ //not finished, testing to see if system would type the words being written to file
     char userNote[256];
     //string userNote;
     //vector<char> userNote(255);
@@ -159,6 +160,7 @@ void writingSystem(){ //not finished, testing to see if system would type the wo
     cout << "Writing System Test... enter some words" << endl;
     cin.getline(userNote, 256, '\0');
     //cin.read(userNote, 255);
+
     cout << "The results: " << endl;
     cout << userNote << endl;
 
@@ -170,17 +172,121 @@ void writingSystem(){ //not finished, testing to see if system would type the wo
         cout << "File Non-Existent...Creating File..." << endl;
     }
     file.close();
-    /*
-    while(curr < max_char){
-        cin >> userNote[curr];
-        curr++;
-    }
 
-    cout << "the results: " << endl;
-    cout << userNote << endl;
-    */
+    // while(curr < max_char){
+    //     cin >> userNote[curr];
+    //     curr++;
+    // }
+
+    // cout << "the results: " << endl;
+    // cout << userNote << endl;
+
     
 }
+*/
+
+/*
+    Following function is just a safe-guard for the log file input. There should be no reason to 
+    use it, but better safe than sorry.
+*/
+bool CheckRestrictedChars(string n){ //checks for characters outside the ACII rating of
+    printf("TEST HAS HIT CHARACTER RESTRICTION FUNCTION\n");
+    int i = 0;
+    if(n.size() == 1){ //if size of user input is 1, we check if its just a space...considered empty string
+        if(n.at(i) == ' '){return true;}
+    }
+    while(n[i]){ //function which goes through entire user input
+        if(int(n[i]) < 32 || int(n[i]) > 126 ){
+            return true;
+        }
+        i++;
+    }
+    return false; //No Restricted Character was found
+}
+
+/*
+    Following function is just a safe-guard for the log file input. There should be no reason to 
+    use it, but better safe than sorry.
+*/
+bool CheckRestrictedWords(vector<string> &n){ //checks for the restricted words
+    printf("TEST HAS HIT WORD RESTRICTION FUNCTION\n");
+    for(int i = 0; i < n.size(); i++){
+        if(n.at(i) == "UNUSED"){return true;} //exits when UNUSED is detected
+        if(n.at(i) == "NAN"){return true;} //exists when NAN is detected
+    }
+    return false; //No Restricted Word was found
+}
+
+/*
+    Following function is just a safe-guard for the log file input. There should be no reason to 
+    use it, but better safe than sorry.
+*/
+bool UserLimit(string c){ //takes user input
+    if(c.size() > max_char){ //checks if user input is bigger than max character count
+        return true;} //return true if characters are exeeded
+    return false; //returns false if character limit is less or equal to max character count
+}
+
+
+void WritingSystem(string n){ //for parsing user input to file
+    vector<string> containerCheck;
+    string input;
+    SYSTEMTIME st;
+    /*
+        Setting up needed vars
+    */
+    string month,day; //date
+    string hour,minute; //time
+    string date, time;
+    printf("SYSTEM HAS DETECTED USER INPUT...\n");
+
+    if(UserLimit(n) == true){ //check if user input exceeds max character limit
+        printf("SYSTEM ERROR...CHARACTER LIMIT EXCEEDED...FORCING EXIT...\n"); //backend error
+        return;}
+
+    for(int i = 0; n[i]; i++){ //sets up the vector for checking 
+        if(n.at(i) != ' '){
+            input += n.at(i);    
+        }
+        else{
+            containerCheck.push_back(input); //put in all current words into vectors
+        }
+    }
+
+    if(CheckRestrictedChars(n) == true ) {//checking for Restricted Characters
+        printf("System Detected Restricted Character...Forcing EXIT... \n"); //backend error
+        return;} //error out
+    if(CheckRestrictedWords(containerCheck) == true) { //checking for restricted words
+        printf("System Detected Restricted Words...Forcing Exit... \n");
+        return;} //error out
+
+    /*
+        Setting all variables with their data. Since most will be pushed to txt file, we
+        need to create strings out of all time variables. Additional help needed to add "0"
+        to comply with MM/DD/YYYY format
+    */
+    GetSystemTime(&st); //getting current information...
+    if(st.wMonth < 10){month = "0"; month += to_string(st.wMonth);}
+    else {month = to_string(st.wMonth);}
+    if(st.wDay < 10){day = "0"; day+= to_string(st.wDay);}
+    else {day = to_string(st.wDay);}
+    if(st.wHour < 10){hour = "0"; hour += to_string(st.wHour);}
+    else {hour = to_string(st.wHour);}
+    if(st.wMinute < 10){minute = "0"; minute += to_string(st.wMinute);}
+    else{minute = to_string(st.wMinute);}
+    date = month +"/"+day+"/"+year;
+    time = hour +":" + minute;
+
+    ofstream file;
+    file.open(path, ios_base::app); //File opens in append mode
+    if(file){
+        file << date << " " << time;
+        file << " " << n << "\n";
+    }
+    else{printf("SYSTEM ERROR...FILE DOES NOT EXIST...\n");} //backend error
+    file.close();
+    return;
+} 
 
 /*
     This next file with global variable is just a test case for the system. 
@@ -232,6 +338,7 @@ int main(){ //test units...system testing
     cout << "Testing Backup Solution" << endl;
     BackupLogs();
 
+    /*
     cout << "test timing for backups" << endl;
     while(1){    //this loop will probably be the server which will continuously run, allowing us to add some sort of back up system
         //writingSystem();
@@ -245,7 +352,22 @@ int main(){ //test units...system testing
 
         //BREAK LOOP THROUGH CTRL+C COMBINATION
     }
-    //cout << "Testing Writing System" << endl;
-    //writingSystem();
+    */
+    cout << "Testing Writing System" << endl;
+    string test1 = "Today's container was throughly inspected and charged.";
+    string test2 = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. ";
+    test2+="Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, ";
+    test2+="nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,.";
+    string test3 = "abc def ghi jkl mno pqrs tuv wxyz ABC DEF GHI JKL MNO PQRS TUV WXYZ !";
+    test3 +="\"§ $%& /() =?* '<> #|; ²³~ @`´ ©«» ¤¼× {} abc def ghi jkl mno pqrs tuv wxyz ABC DEF GHI JKL MNO PQRS TUV WXYZ !";
+    test3 += "§ $%& /() =?* '<> #|; ²³~ @`´ ©«» ¤¼× {} abc def ghi jkl mno pqrs tuv wxyz ";
+    string test4 = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. ";
+    test4+="Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, ";
+    test4+="nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,";
+    WritingSystem(test1); //Normal Limit String Test
+    WritingSystem(test4); //Max Character Test
+    WritingSystem(test2); //Exceed Max Character Test
+    WritingSystem(test3); //Random Variable Test
+
     return 0;
 }
