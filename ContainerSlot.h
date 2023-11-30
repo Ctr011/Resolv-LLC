@@ -3,7 +3,6 @@
 #define CONTAINERSLOT_H
 
 #include <iostream>
-#include <format>
 #include <string>
 
 #include "Misc.h"
