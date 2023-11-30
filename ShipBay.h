@@ -30,7 +30,7 @@ class ShipBay{
         ContainerSlot* getContainer(int x, int y);
         std::vector<ContainerSlot*> getTempRow();
 
-        int calculateBalanceCost();
+        double calculateBalanceCost();
         bool compareBays(ShipBay* otherBay);
 
         std::vector<int>getHeights(int start, int end);

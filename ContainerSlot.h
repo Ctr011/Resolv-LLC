@@ -22,7 +22,22 @@ protected:
 
 public:
     // Base Constructor here
-    ContainerSlot(const std::string n, int x, int y, int mass, bool m, bool e, Origin o) : name(n), yPos(y), xPos(x), containerMass(mass), movable(m), empty(e), origin(o) {};
+    ContainerSlot(const std::string n, int x, int y, int mass, bool m, bool e, Origin o) : name(n), yPos(y), xPos(x), containerMass(mass), movable(m), empty(e), origin(o) {
+        //  Positional checks here for bay and buffer containers. Truck doesnt matter
+        if(this->origin == Origin::BAY){
+            if(x < 1 || x > BAY_MAX_X){
+                throw std::invalid_argument("Invalid x_position for Ship Bay: " + std::to_string(x));
+            }else if(y < 1 || y > BAY_TEMP_Y){
+                throw std::invalid_argument("Invalid y_position for Ship Bay: " + std::to_string(y));
+            }
+        }else if(this->origin == Origin::BUFFER){
+            if(y < 1 || y > BUFFER_MAX_X){
+                throw std::invalid_argument("Invalid x_position for Buffer: " + std::to_string(x));
+            }else if(y < 1 || y > BUFFER_MAX_Y){
+                throw std::invalid_argument("Invalid y_position for Buffer: " + std::to_string(y));
+            }
+        }
+    };
     
     //  @todo: Need to do research here. Not exactly sure why we need this but we do lol
     ContainerSlot() = default;
@@ -71,7 +86,7 @@ public:
 class Container: public ContainerSlot{
 
 public:
-    Container(std::string name, float mass, int x, int y, Origin o);
+    Container(std::string name, int mass, int x, int y, Origin o);
 
     void changeXPos(int x);
     void changeYPos(int y);

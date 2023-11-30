@@ -13,7 +13,7 @@ ShipBay::ShipBay(const std::string manifestContent, std::vector<ContainerSlot*>*
 
     if(tempRow == nullptr){
         for(int x = 0; x < this->size_x; x++){
-            this->temp.push_back(new EmptySlot(x, this->size_y + 1, Origin::BAY));
+            this->temp.push_back(new EmptySlot(x + 1, this->size_y + 1, Origin::BAY));
         }
     }else{
         this->temp = *tempRow;
@@ -107,10 +107,10 @@ std::vector<ContainerSlot*> ShipBay::getTempRow(){return this->temp;};
  * return boolean value if the carhgobay is balanced or not
  * 
 */
-int ShipBay::calculateBalanceCost(){
+double ShipBay::calculateBalanceCost(){
 
-    int mass1 = 0;
-    int mass2 = 0;
+    double mass1 = 0;
+    double mass2 = 0;
     int x, y;
 
     //  Get mass of both sides
@@ -315,7 +315,7 @@ int ShipBay::putDownDontainer(Container* container, int column){
     }
 
     //  return absurdly high number meaning that the column is not empty
-    return 9999999999;
+    return 99999;
 }
 
 /**
@@ -336,11 +336,11 @@ ShipBay* ShipBay::clone(){
 
         //  Also populate temp with new COntainers
         if(this->temp[x]->getName().compare("NAN") == 0){
-            newTemp.push_back(new NANSlot(x, this->size_y, Origin::BAY));
+            newTemp.push_back(new NANSlot(x + 1, BAY_TEMP_Y, Origin::BAY));
         }else if(this->temp[x]->getName().compare("UNUSED") == 0){
-            newTemp.push_back(new EmptySlot(x, this->size_y, Origin::BAY));
+            newTemp.push_back(new EmptySlot(x + 1, BAY_TEMP_Y, Origin::BAY));
         }else{
-            newTemp.push_back(new Container(this->temp[x]->getName(), this->temp[x]->getMass(), x, this->size_y, Origin::BAY));
+            newTemp.push_back(new Container(this->temp[x]->getName(), this->temp[x]->getMass(), x + 1, BAY_TEMP_Y, Origin::BAY));
         }
 
     }
