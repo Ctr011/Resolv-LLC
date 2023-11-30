@@ -1,4 +1,6 @@
 # Resolv LLC #
+![add_gtest](https://github.com/Ctr011/Resolv-LLC/actions/workflows/deckware_tests.yml/badge.svg)
+
 ## Founding ##
   We were started by a group of individuals who were ready to alter the way different industries work in 2023. They researched many differenet methods to automate and optimize the workflow of these industries. In their research journey they found what they were looking for. With their new found skills and techniques, they have now set their mission into motion.
 ## Mission ##
