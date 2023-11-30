@@ -1,13 +1,17 @@
-name: GTest
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
 on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: 
-      - master
-      - add_gtest
+    branches: [ "main" ]
   pull_request:
-    branches: 
-      - master
-      - add_gtest
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -17,20 +21,25 @@ jobs:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
-    steps: 
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-        
-    - name: "Create build directory"
-      run: |
-        mkdir build
-        cd build
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
 
-    - name: "Run cmake" 
-      run: cmake ..
-      
-    - name: "Run make"
-      run: make
-      
-      
+      - name: Clone gtest
+        run: git clone https://github.com/google/googletest.git
 
+      # Runs a set of commands using the runners shell
+      - name: Create Build dir, run cmake
+        run: cmake -S . -B build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build project
+        run: |
+          cmake --build build --target all --config Release -- -j4 
+          make -C build -j4
+
+      -  name: Look over environment
+         run:  | 
+           ls -R build/test/
+
+      - name: run tests
+        run: ./build/test/DeckwareTests
