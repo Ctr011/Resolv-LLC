@@ -1,3 +1,5 @@
+#ifndef LOGCREATE_CPP
+#define LOGCREATE_CPP
 #include <iostream>
 #include <fstream>
 #include <Windows.h>
@@ -43,6 +45,7 @@ string path, path_backup;
 string filename, file_back;
 string year;
 string user;
+int conma = 0;
 // vector<string> users;
 string craneop ="";
 bool back = false; //global var to stop system from wasting resources backing up for 1 minute
@@ -79,8 +82,6 @@ void initialStart(){ //initial start.
     file_back += "_" + year + "_backup.txt"; //full backup name
     path +=filename; //original file path
     path_backup += file_back; //backup file path
-    createFolder();
-    createFile();
 }
 
 /*
@@ -225,6 +226,7 @@ void UpdateFileM(string manifestName){//designed for initial and ending
     else{minute = to_string(st.wMinute);}
     date = month +"/"+day+"/"+year;
     time = hour +":" + minute;
+    
     ofstream file;
     file.open(path , ios_base::app);
     if(file){
@@ -232,8 +234,9 @@ void UpdateFileM(string manifestName){//designed for initial and ending
             printf("SYSTEM CANNOT DETECT PREVIOUS OP LOGIN...SIGNING IN NEW OP...\n");
             file << date << ": " << time;
             file << " ";//Here should be 19 characters, we want lines of 
-            file << "Manifest " << manifestName << "is opened, there are " << "CHANGE SOON" <<" containers on the ship";
+            file << "Manifest " << manifestName << "is opened, there are " << to_string(conma) <<" containers on the ship";
             file << "\n";
+            conma = 0;
      }
      else{printf("SYSTEM IS NOT DETECTING THE LOG FILE CURRENTLY...\n");}
 
@@ -295,10 +298,10 @@ void WritingSystem(string n){ //for parsing user input to file
     string month,day; //date
     string hour,minute; //time
     string date, time;
-    int spaces=0;
+
     printf("SYSTEM HAS DETECTED USER INPUT...\n");
 
-    if(UserLimit(n) == true){ //check if user input exceeds max character limit
+    if(UserLimit(n)){ //check if user input exceeds max character limit
         printf("SYSTEM ERROR...CHARACTER LIMIT EXCEEDED...FORCING EXIT...\n"); //backend error
         return;}    
 
@@ -310,19 +313,18 @@ void WritingSystem(string n){ //for parsing user input to file
             // cout << input<< endl;
             if(i+1 >= n.size()){//fixed issue where input was not getting final word
                 containerCheck.push_back(input);}
-        }
+             }
         else{
             // cout << input << endl;
             containerCheck.push_back(input);
             input ="";
-            spaces++; //put in all current words into vectors
         }
     }
 
-    if(CheckRestrictedChars(n) == true ) {//checking for Restricted Characters
+    if(CheckRestrictedChars(n) ) {//checking for Restricted Characters
         printf("System Detected Restricted Character...Forcing EXIT... \n"); //backend error
         return;} //error out
-    if(CheckRestrictedWords(containerCheck) == true) { //checking for restricted words
+    if(CheckRestrictedWords(containerCheck)) { //checking for restricted words
         printf("System Detected Restricted Words...Forcing Exit... \n");
         return;} //error out
 
@@ -375,19 +377,19 @@ void WritingSystem(string n){ //for parsing user input to file
     Was attempting to see if the backup function would work correctly with this function.
     COMMENT OUT BEFORE DEPLOYMENT
 */
-int sTime = 0;
-void counter(){
-    ofstream file;
-    file.open(path, ios_base::app);  //Words in append mode 
-    if(file){
-        file << to_string(sTime) << endl; //send data to backup file
-        sTime++;
-    }
-    else{
-        cout <<"there is no file here..." << endl;
-    }
-    file.close(); //close file
-}
+// int sTime = 0;
+// void counter(){
+//     ofstream file;
+//     file.open(path, ios_base::app);  //Words in append mode 
+//     if(file){
+//         file << to_string(sTime) << endl; //send data to backup file
+//         sTime++;
+//     }
+//     else{
+//         cout <<"there is no file here..." << endl;
+//     }
+//     file.close(); //close file
+// }
 
 void BackupLogs(){ //backup system
     string backUp; //uses getline to copy data
@@ -411,3 +413,5 @@ void BackupLogs(){ //backup system
 
 
 // ship balanced...when goal state print to log...
+
+#endif
