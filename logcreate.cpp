@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <stdio.h>
 #include <string>
+//#include "./webserver/webserver.cpp"
 using namespace std;
 
 /*
@@ -19,15 +20,31 @@ using namespace std;
 
 
     Attmepting to Create and Hide Log Files in C:\Users\%USERPROFILE%\AppData\Roaming\ResolvDeckware\ && C:\Users\%USERPROFILE%\AppData\Roaming\ResolvBack\
+
+    Currently debating whether this should turn into a class instead of an instruction file
 */
 /*
     Declare Global Variables
 */
+// class logging{ 
+//     private:
+//         const int max_char = 255;
+//         string path, path_backup;
+//         string filename, file_back;
+//         string year;
+//         string user;
+//     bool back = false; //global var to stop system from wasting resources backing up for 1 minute
+
+// };
+
 const int max_char = 255;
+const int max_line = 110;
 string path, path_backup;
 string filename, file_back;
 string year;
 string user;
+// vector<string> users;
+string craneop ="";
 bool back = false; //global var to stop system from wasting resources backing up for 1 minute
 
 string GetUserProfile(){ //changing this to string function from void
@@ -56,12 +73,14 @@ void initialStart(){ //initial start.
     file_back = "log"; //backup log file
     path = "C:/Users/" + user+"/AppData/Roaming/ResolvDeckware/"; //current directory, user is obtained from GetUserProfile()
     path_backup = "C:/Users/" + user+"/AppData/Roaming/ResolvBack/"; //current backup directory, user is obtained from GetUserProfile()
-    GetSystemTime(&st); //getting system time
+    GetLocalTime(&st); //getting system time
     year = to_string(st.wYear); //setting the year
     filename += "_"+ year + ".txt"; //full file name
     file_back += "_" + year + "_backup.txt"; //full backup name
     path +=filename; //original file path
     path_backup += file_back; //backup file path
+    createFolder();
+    createFile();
 }
 
 /*
@@ -148,47 +167,6 @@ void createFolder(){ //test system
     }
 }
 
-/*
-    Initial Testing for Backup System...Assuming that the writing system is working 100%
-*/
-/*
-void WritingSystem(){ //not finished, testing to see if system would type the words being written to file
-    char userNote[256];
-    //string userNote;
-    //vector<char> userNote(255);
-    int curr = 0;
-    cout << "Writing System Test... enter some words" << endl;
-    cin.getline(userNote, 256, '\0');
-    //cin.read(userNote, 255);
-
-    cout << "The results: " << endl;
-    cout << userNote << endl;
-
-    ofstream file(path, ios_base::app); //running file in append mode to force system to add onto file instead of removing data
-    if(file){ //we are checking to see if the file is created
-        file << userNote << endl;
-    }   
-    else{ //file does not exist, we create the file
-        cout << "File Non-Existent...Creating File..." << endl;
-    }
-    file.close();
-
-    // while(curr < max_char){
-    //     cin >> userNote[curr];
-    //     curr++;
-    // }
-
-    // cout << "the results: " << endl;
-    // cout << userNote << endl;
-
-    
-}
-*/
-
-/*
-    Following function is just a safe-guard for the log file input. There should be no reason to 
-    use it, but better safe than sorry.
-*/
 bool CheckRestrictedChars(string n){ //checks for characters outside the ACII rating of
     printf("TEST HAS HIT CHARACTER RESTRICTION FUNCTION\n");
     int i = 0;
@@ -227,10 +205,89 @@ bool UserLimit(string c){ //takes user input
     return false; //returns false if character limit is less or equal to max character count
 }
 
+void UpdateFileM(string manifestName){//designed for initial and ending
+    SYSTEMTIME st;
+    string month,day; //date
+    string hour,minute; //time
+    string date, time;
+    GetLocalTime(&st);
+    printf("INITIAL TEST FOR MANIFEST FILE...\n");
+    cout << manifestName << endl;
+
+
+    if(st.wMonth < 10){month = "0"; month += to_string(st.wMonth);}
+    else {month = to_string(st.wMonth);}
+    if(st.wDay < 10){day = "0"; day+= to_string(st.wDay);}
+    else {day = to_string(st.wDay);}
+    if(st.wHour < 10){hour = "0"; hour += to_string(st.wHour);}
+    else {hour = to_string(st.wHour);}
+    if(st.wMinute < 10){minute = "0"; minute += to_string(st.wMinute);}
+    else{minute = to_string(st.wMinute);}
+    date = month +"/"+day+"/"+year;
+    time = hour +":" + minute;
+    ofstream file;
+    file.open(path , ios_base::app);
+    if(file){
+
+            printf("SYSTEM CANNOT DETECT PREVIOUS OP LOGIN...SIGNING IN NEW OP...\n");
+            file << date << ": " << time;
+            file << " ";//Here should be 19 characters, we want lines of 
+            file << "Manifest " << manifestName << "is opened, there are " << "CHANGE SOON" <<" containers on the ship";
+            file << "\n";
+     }
+     else{printf("SYSTEM IS NOT DETECTING THE LOG FILE CURRENTLY...\n");}
+
+    return;
+}
+void UpdateFileLogin(string userlogging){ //deisgned for user login
+    SYSTEMTIME st;
+    string month,day; //date
+    string hour,minute; //time
+    string date, time;
+    GetLocalTime(&st);
+
+    if(st.wMonth < 10){month = "0"; month += to_string(st.wMonth);}
+    else {month = to_string(st.wMonth);}
+    if(st.wDay < 10){day = "0"; day+= to_string(st.wDay);}
+    else {day = to_string(st.wDay);}
+    if(st.wHour < 10){hour = "0"; hour += to_string(st.wHour);}
+    else {hour = to_string(st.wHour);}
+    if(st.wMinute < 10){minute = "0"; minute += to_string(st.wMinute);}
+    else{minute = to_string(st.wMinute);}
+    date = month +"/"+day+"/"+year;
+    time = hour +":" + minute;
+
+    ofstream file;
+    file.open(path , ios_base::app);
+    if(file){
+        if(craneop == ""){//System Restarted, now there is no crane op logged in
+            printf("SYSTEM CANNOT DETECT PREVIOUS OP LOGIN...SIGNING IN NEW OP...\n");
+            file << date << ": " << time;
+            file << " ";//Here should be 19 characters, we want lines of 
+            file << userlogging << " signs in" << "\n";
+
+        }
+        else if(craneop != userlogging){
+            printf("SYSTEM DETECTED NEW OPERATOR LOGIN...SIGNING OUT PREVIOUS OP...\n");
+            file << date << ": " << time;
+            file << " ";//Here should be 19 characters, we want lines of 
+            file << craneop << " signs out" << "\n";
+            file << date << ": " << time;
+            file << " ";//Here should be 19 characters, we want lines of 
+            file << userlogging << " signs in" << "\n";
+
+
+     }
+     craneop = userlogging;
+    }
+    else{printf("SYSTEM IS NOT DETECTING THE LOG FILE CURRENTLY...\n");}
+    file.close();
+    return;
+}
 
 void WritingSystem(string n){ //for parsing user input to file
     vector<string> containerCheck;
-    string input;
+    string input="";
     SYSTEMTIME st;
     /*
         Setting up needed vars
@@ -238,18 +295,27 @@ void WritingSystem(string n){ //for parsing user input to file
     string month,day; //date
     string hour,minute; //time
     string date, time;
+    int spaces=0;
     printf("SYSTEM HAS DETECTED USER INPUT...\n");
 
     if(UserLimit(n) == true){ //check if user input exceeds max character limit
         printf("SYSTEM ERROR...CHARACTER LIMIT EXCEEDED...FORCING EXIT...\n"); //backend error
-        return;}
+        return;}    
 
-    for(int i = 0; n[i]; i++){ //sets up the vector for checking 
+    // cout << n.size() << endl;
+    // cout << n << endl;
+    for(int i = 0; i < n.size(); i++){ //sets up the vector for checking 
         if(n.at(i) != ' '){
             input += n.at(i);    
+            // cout << input<< endl;
+            if(i+1 >= n.size()){//fixed issue where input was not getting final word
+                containerCheck.push_back(input);}
         }
         else{
-            containerCheck.push_back(input); //put in all current words into vectors
+            // cout << input << endl;
+            containerCheck.push_back(input);
+            input ="";
+            spaces++; //put in all current words into vectors
         }
     }
 
@@ -265,7 +331,7 @@ void WritingSystem(string n){ //for parsing user input to file
         need to create strings out of all time variables. Additional help needed to add "0"
         to comply with MM/DD/YYYY format
     */
-    GetSystemTime(&st); //getting current information...
+    GetLocalTime(&st); //getting current information...
     if(st.wMonth < 10){month = "0"; month += to_string(st.wMonth);}
     else {month = to_string(st.wMonth);}
     if(st.wDay < 10){day = "0"; day+= to_string(st.wDay);}
@@ -280,8 +346,24 @@ void WritingSystem(string n){ //for parsing user input to file
     ofstream file;
     file.open(path, ios_base::app); //File opens in append mode
     if(file){
-        file << date << " " << time;
-        file << " " << n << "\n";
+        int cnt = 19;
+        file << date << ": " << time;
+        file << " ";//Here should be 19 characters, we want lines of 
+        int i = 0;
+        while(containerCheck.size() > i){
+            cnt += containerCheck.at(i).size()+1;
+            if(cnt <= max_line){
+                file << containerCheck.at(i);
+                file << " ";
+            }
+            else{
+                file << "\n" << containerCheck.at(i); 
+                file << " ";
+                cnt = containerCheck.at(i).size()+1; 
+            }
+            i++;
+        }
+        file << '\n';
     }
     else{printf("SYSTEM ERROR...FILE DOES NOT EXIST...\n");} //backend error
     file.close();
@@ -327,47 +409,5 @@ void BackupLogs(){ //backup system
 
 }
 
-int main(){ //test units...system testing 
-    //GetUserProfile();
-    cout << "Initialize Global Vars..." << endl;
-    initialStart();
-    cout << "Testing Folder Creation" << endl;
-    createFolder();
-    cout << "Testing File Creation" << endl;
-    createFile();
-    cout << "Testing Backup Solution" << endl;
-    BackupLogs();
 
-    /*
-    cout << "test timing for backups" << endl;
-    while(1){    //this loop will probably be the server which will continuously run, allowing us to add some sort of back up system
-        //writingSystem();
-        counter(); //test function for backup, just loads numbers to the log file. NOT FOR DEPLOYMENT
-        if((getTime() == 00 || getTime() == 30) && back == false ){ //this system inside the loop (webserver)
-            BackupLogs();
-        }
-        if(getTime() != 00 && getTime() != 30){ //resets the flag for backup server
-            back=false;
-        }
-
-        //BREAK LOOP THROUGH CTRL+C COMBINATION
-    }
-    */
-    cout << "Testing Writing System" << endl;
-    string test1 = "Today's container was throughly inspected and charged.";
-    string test2 = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. ";
-    test2+="Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, ";
-    test2+="nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,.";
-    string test3 = "abc def ghi jkl mno pqrs tuv wxyz ABC DEF GHI JKL MNO PQRS TUV WXYZ !";
-    test3 +="\"§ $%& /() =?* '<> #|; ²³~ @`´ ©«» ¤¼× {} abc def ghi jkl mno pqrs tuv wxyz ABC DEF GHI JKL MNO PQRS TUV WXYZ !";
-    test3 += "§ $%& /() =?* '<> #|; ²³~ @`´ ©«» ¤¼× {} abc def ghi jkl mno pqrs tuv wxyz ";
-    string test4 = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. ";
-    test4+="Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, ";
-    test4+="nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,";
-    WritingSystem(test1); //Normal Limit String Test
-    WritingSystem(test4); //Max Character Test
-    WritingSystem(test2); //Exceed Max Character Test
-    WritingSystem(test3); //Random Variable Test
-
-    return 0;
-}
+// ship balanced...when goal state print to log...
