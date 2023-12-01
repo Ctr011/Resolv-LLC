@@ -32,6 +32,8 @@ public:
 
     double getDistanceFromBalanced();
 
+    Node* getSIFT();
+
     void printState();
     // void printAncestors();
 };

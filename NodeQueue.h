@@ -19,14 +19,14 @@ public:
      * @return true: Means that the order of the two nodes are fine where they are
      * @return false: Means that the two nodes are in the wrong position and need tobe swapped
     */
-    bool operator()(Node node1, Node node2){
+    bool operator()(Node* node1, Node* node2){
         
         //  Get cost of both nodes
-        int cost1 = node1.getCost();
-        int cost2 = node2.getCost();
+        int cost1 = node1->getCost();
+        int cost2 = node2->getCost();
         
         //  Determine order here, and return result
-        if(cost1 < cost2){
+        if(cost1 > cost2){
             return true;
         }else{
             return false;
@@ -36,14 +36,16 @@ public:
 
 class NodeQueue{
 
-    //  Define our prioirty queue object here
-    std::priority_queue<Node, std::vector<Node>, NodeComparator> ds;
+    //  Define our prioirty queue object here, using our custom comparator
+    std::priority_queue<Node*, std::vector<Node*>, NodeComparator> ds;
     int maxNodes;
 
 public:
 
+    NodeQueue();
+
     //  Start with the unifrom function first
-    void addUniform();
+    void add(Node* newNode);
     
     bool isEmpty(); //  Checks if NodeQueue is Empty
     Node* pop();    //  Pops top-most Node from priority queue

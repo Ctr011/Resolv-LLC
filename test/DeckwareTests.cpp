@@ -42,3 +42,11 @@ TEST(ContainerSlots, ContainerSlot_EdgeCases){
     EXPECT_NO_THROW(new Container("MAX_WEIGHT", 99999, 1, 1, Origin::BUFFER));
     EXPECT_NO_THROW(new Container("MIN_WEIGHT", 0, 1, 1, Origin::BAY));
 }
+
+TEST(Bays, BaseCases){
+    EXPECT_NO_THROW(new ShipBay(base_manifest));
+    EXPECT_NO_THROW(new Buffer(""));
+
+    //  Too big ship bay
+    EXPECT_THROW(new ShipBay(overload_manifest), std::invalid_argument);
+}

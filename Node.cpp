@@ -12,7 +12,7 @@ Node::Node(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent, Contain
     
     this->bay = currBay;
     this->buffer = currBuffer;
-    this->incoming_cost = cost + 1; //  Set up for uniform now. Change later
+    this->incoming_cost = cost; //  Set up for uniform now. Change later
 
     if(parent){
         this->parent = parent;
@@ -63,7 +63,6 @@ std::vector<Node*> Node::expand(){
                 if(heldContainer){
                     Node* newNode = new Node(bayCopy, bufferCopy, (this->incoming_cost + heldContainer->getYPos()), this, heldContainer);
                     expansionNodes.push_back(newNode);
-                    newNode->printState();
                 }
             }
         }
@@ -83,7 +82,6 @@ std::vector<Node*> Node::expand(){
                 if(heldContainer){
                     Node* newNode = new Node(bayCopy, bufferCopy, (this->incoming_cost + heldContainer->getYPos()), this, heldContainer);
                     expansionNodes.push_back(newNode);
-                    newNode->printState();
                 }
             }
         }
@@ -114,7 +112,6 @@ std::vector<Node*> Node::expand(){
                 //  New copy of container
                 int cost = bayCopy->putDownDontainer(new Container(p_name, p_mass, p_x, p_y, p_origin), i);
                 Node* newNode = new Node(bayCopy, bufferCopy, cost, this);
-                newNode->printState();
                 expansionNodes.push_back(newNode);
             }
         }
@@ -131,7 +128,6 @@ std::vector<Node*> Node::expand(){
                 //  Put in new copy of container
                 int cost = bufferCopy->putDownDontainer(new Container(p_name, p_mass, p_x, p_y, p_origin), i);
                 Node* newNode = new Node(bayCopy, bufferCopy, cost, this);
-                newNode->printState();
                 expansionNodes.push_back(newNode);
             }
         }

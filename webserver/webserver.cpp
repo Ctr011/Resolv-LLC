@@ -12,6 +12,8 @@
 #include "../Buffer.cpp"
 #include "../Node.h"
 #include "../Node.cpp"
+#include "../NodeQueue.h"
+#include "../NodeQueue.cpp"
 #include "./httplib.h"
 using namespace std;
 
@@ -76,6 +78,14 @@ int main() {
                 std::vector<Node*> expandResults = testNode->expand();
 
                 std::vector<Node*> expandResults2 = expandResults[3]->expand();
+
+                NodeQueue* nq = new NodeQueue();
+
+                for(Node* node : expandResults2){
+                    nq->add(node);
+                }
+
+                nq->printFrontier();
 
 
             }catch(std::invalid_argument error){

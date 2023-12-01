@@ -58,7 +58,7 @@ Container::Container(std::string name, int mass, int x, int y, Origin o) : Conta
     
     //  Standard checks here
     if(name.empty() || name == "NAN" || name == "UNUSED"){throw std::invalid_argument("Invalid Container name: " + name);}; //  Check for invalid names
-    if(name.length() > 256){throw std::invalid_argument("Container name too long.");} //  Name length
+    if(name.length() > 256){throw std::invalid_argument("Container name too long: " + name);} //  Name length
     if(mass < 0 || mass > 99999){ throw std::invalid_argument("Invalid mass for container: " + std::to_string(mass));} //  Mass number
 };
 

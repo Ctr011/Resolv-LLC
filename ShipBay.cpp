@@ -60,6 +60,7 @@ void ShipBay::parseContent(std::string manifest){
     x,y= 0;
     
     //  Get the next line of the file
+    int container_count = 0;
     while (std::getline(filestream, curr_line)) {
 
         curr_line.erase(std::remove(curr_line.begin(), curr_line.end(), '\r'), curr_line.end());
@@ -68,8 +69,12 @@ void ShipBay::parseContent(std::string manifest){
         x = std::stoi(curr_line.substr(4,2));    //  y Position
         int weight = stoi(curr_line.substr(10,5));  //  Mass of Container
         std::string label = curr_line.substr(18);   //  get name of container
-        
-        
+
+        //  Handle invalid x and y values
+        if(x < 1 || x > 12 || y < 1 || y > 8){
+            std::cout << "Debug Info: " << curr_line << std::endl;
+            throw std::invalid_argument("Invalid ContainerSlot Coordinates: ");
+        }
 
         //  TODO: Out of bounds handling
         //  If container is an NAN slot, return NAN object
@@ -82,9 +87,12 @@ void ShipBay::parseContent(std::string manifest){
              //  Otherwise, data represents a container
             bayArea[x - 1][y - 1] = new Container(label, weight, x, y, Origin::BAY);
         }
-
-       
+       container_count++;
     }
+
+    //  Throw if wrong number of containers
+    if(container_count != 96){throw std::invalid_argument("Wrong number of containers in manifest. Count: " + container_count);}
+
     return;
 }
 
@@ -400,6 +408,11 @@ int ShipBay::calculateMovementCost(int x1, int y1, int x2, int y2){
     //  Find highest height of the vector
     auto maxElement = std::max_element(heights.begin(), heights.end());
     int maxVal = *maxElement;
+
+    //  If the max height of any given one is 9, we cannot pass over. Pass a large number
+    if(maxVal >= 9){
+        return 999999;
+    }
 
     //  Find max between y1, y2, and the list
     int max_height = std::max(maxVal, std::max(y1, y2));
