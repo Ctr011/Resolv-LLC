@@ -14,6 +14,8 @@
 #include "../Node.cpp"
 #include "../NodeQueue.h"
 #include "../NodeQueue.cpp"
+#include "../Tree.h"
+#include "../Tree.cpp"
 #include "./httplib.h"
 using namespace std;
 
@@ -71,21 +73,9 @@ int main() {
 
                 //  init initial node
                 Node* testNode = new Node(bay, buffer, 0);
-                Node* testNode2 = new Node(bay2, buffer2, 0);
 
-                bool test = testNode->compareNodes(testNode2);
-
-                std::vector<Node*> expandResults = testNode->expand();
-
-                std::vector<Node*> expandResults2 = expandResults[3]->expand();
-
-                NodeQueue* nq = new NodeQueue();
-
-                for(Node* node : expandResults2){
-                    nq->add(node);
-                }
-
-                nq->printFrontier();
+                Tree* tree = new Tree(testNode);
+                tree->solveBalance();
 
 
             }catch(std::invalid_argument error){

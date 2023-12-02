@@ -21,6 +21,7 @@ protected:
     ShipBay* getBay();
     Buffer* getBuffer();
     Container* getPickUpContainer();
+    Node* getParent();
 
 public:
     Node() = default;
@@ -29,8 +30,10 @@ public:
     std::vector<Node*> expand();
 
     bool compareNodes(Node* otherNode);
+    bool isBalanced();
 
     double getDistanceFromBalanced();
+
 
     Node* getSIFT();
 

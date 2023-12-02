@@ -27,7 +27,22 @@ Node::Node(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent, Contain
 }
 
 //  Getters
-int Node::getCost(){return this->incoming_cost;};
+int Node::getCost(){
+
+    //  Below can be tweaked
+    const double distanceWeight = 0.6;
+    const double balanceWeight = 0.4;
+    if(this->buffer->isEmpty()){
+        return (distanceWeight * this->incoming_cost) + (balanceWeight * this->bay->calculateBalanceCost());
+    }else{
+        return (distanceWeight * this->incoming_cost) + (balanceWeight * this->bay->calculateBalanceCost()) + 10 * this->incoming_cost;
+    }
+
+};
+
+Node* Node::getParent(){
+    return this->parent;
+}
 
 //  Only available to other node classes, mostly for cthe compareNodes() function
 ShipBay* Node::getBay(){return this->bay;};
@@ -156,36 +171,30 @@ bool Node::compareNodes(Node* otherNode){
     if(this->pickedUp != nullptr && otherContainer != nullptr){
             if(otherContainer->getName().compare(this->pickedUp->getName()) != 0
                 || otherContainer->getMass() != this->pickedUp->getMass()){
-                delete otherContainer;
-                delete otherBay;
-                delete otherBuffer;
                 return false;
         }
     }
 
     //  Then compare bays
     if(!otherBay->compareBays(this->bay)){
-        delete otherContainer;
-        delete otherBay;
-        delete otherBuffer;
         return false;
     }
 
     //  Lastly compare Buffers
     if(!otherBuffer->compareBuffers(this->buffer)){
-        delete otherContainer;
-        delete otherBay;
-        delete otherBuffer;
         return false;
     }
 
-    //  Delete pointers
-    delete otherContainer;
-    delete otherBay;
-    delete otherBuffer;
-
     //  If all passes return true
     return true;
+}
+
+bool Node::isBalanced(){
+    if(bay->calculateBalanceCost() < 10 && buffer->isEmpty() && pickedUp == nullptr){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 /**

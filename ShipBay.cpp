@@ -125,7 +125,7 @@ double ShipBay::calculateBalanceCost(){
     for(x = 0; x < this->size_x; x++){
         for(y = 0; y < this->size_y; y++){
             if(x <= 5){
-                mass1 += bayArea[x][y]->getMass();
+                mass1 += bayArea[x][y]->getMass(); //   Here
             }else{
                 mass2 += bayArea[x][y]->getMass();
             }
@@ -399,6 +399,7 @@ int ShipBay::calculateMovementCost(int x1, int y1, int x2, int y2){
 
     //  First get the current heights of all columns between the two positions
     std::vector<int> heights;
+
     if(x1 < x2){
          heights = getHeights(x1, x2);
     }else{
