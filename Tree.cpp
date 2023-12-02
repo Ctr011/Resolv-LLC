@@ -35,6 +35,15 @@ void Tree::solveBalance(){
             next_node->printState();
             std::cout << "Goal Cost: " << next_node->getCost() << std::endl;
 
+            Node* solutionNode = next_node;
+
+            while (solutionNode->getParent() != nullptr) {
+                std::cout << solutionNode->getDescription() << std::endl;
+
+                // Move to the parent for the next iteration
+                solutionNode = solutionNode->getParent();
+            }
+
             return;
         }
 

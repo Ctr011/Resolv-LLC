@@ -49,6 +49,15 @@ ShipBay* Node::getBay(){return this->bay;};
 Buffer* Node::getBuffer(){return this->buffer;};
 Container* Node::getPickUpContainer(){return this->pickedUp;};
 
+std::string Node::getDescription(){
+    return move_description;
+}
+
+// Setter for move_description
+void Node::setDescription(const std::string& description) {
+    move_description = description;
+}
+
 std::vector<Node*> Node::expand(){
 
     //  Create vector for expansion nodes
@@ -77,6 +86,7 @@ std::vector<Node*> Node::expand(){
 
                 if(heldContainer){
                     Node* newNode = new Node(bayCopy, bufferCopy, (this->incoming_cost + heldContainer->getYPos()), this, heldContainer);
+                    newNode->setDescription("UP: '" + heldContainer->getName() + "' {" + std::to_string(heldContainer->getXPos()) + ", " + std::to_string(heldContainer->getYPos()) + "}");
                     expansionNodes.push_back(newNode);
                 }
             }
@@ -96,6 +106,7 @@ std::vector<Node*> Node::expand(){
 
                 if(heldContainer){
                     Node* newNode = new Node(bayCopy, bufferCopy, (this->incoming_cost + heldContainer->getYPos()), this, heldContainer);
+                    newNode->setDescription("UP: '" + heldContainer->getName() + "' *{" + std::to_string(heldContainer->getXPos()) + ", " + std::to_string(heldContainer->getYPos()) + "}");
                     expansionNodes.push_back(newNode);
                 }
             }
@@ -125,8 +136,10 @@ std::vector<Node*> Node::expand(){
                 
 
                 //  New copy of container
-                int cost = bayCopy->putDownDontainer(new Container(p_name, p_mass, p_x, p_y, p_origin), i);
+                Container* newContainer = new Container(p_name, p_mass, p_x, p_y, p_origin);
+                int cost = bayCopy->putDownDontainer(newContainer, i);
                 Node* newNode = new Node(bayCopy, bufferCopy, cost, this);
+                newNode->setDescription("DN: '" + p_name + "' {" + std::to_string(newContainer->getXPos()) + ", " + std::to_string(newContainer->getYPos()) + "}");
                 expansionNodes.push_back(newNode);
             }
         }
@@ -141,8 +154,10 @@ std::vector<Node*> Node::expand(){
                 Buffer* bufferCopy = this->buffer->clone();
 
                 //  Put in new copy of container
-                int cost = bufferCopy->putDownDontainer(new Container(p_name, p_mass, p_x, p_y, p_origin), i);
+                Container* newContainer = new Container(p_name, p_mass, p_x, p_y, p_origin);
+                int cost = bufferCopy->putDownDontainer(newContainer, i);
                 Node* newNode = new Node(bayCopy, bufferCopy, cost, this);
+                newNode->setDescription("DN: '" + p_name + "' *{" + std::to_string(newContainer->getXPos()) + ", " + std::to_string(newContainer->getYPos()) + "}");
                 expansionNodes.push_back(newNode);
             }
         }
