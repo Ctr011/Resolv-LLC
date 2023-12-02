@@ -66,16 +66,29 @@ int main() {
 
             try{
                 bay = new ShipBay(file.content);
-                bay2 = new ShipBay(file.content);
+
+                ShipBay* siftTest = bay->siftBay();
+                siftTest->printShipBay();
+                bay->setSIFTState(siftTest);
+
+                // bay2 = new ShipBay(file.content);
 
                 buffer = new Buffer("");
-                buffer2 = new Buffer("");
+                // buffer2 = new Buffer("");
 
                 //  init initial node
                 Node* testNode = new Node(bay, buffer, 0);
 
-                Tree* tree = new Tree(testNode);
-                tree->solveBalance();
+                Tree* tree;
+
+                if(bay->canBalance()){
+                    tree = new Tree(testNode, new BalanceQueue());
+                    tree->solveBalance();
+                }else{
+                    tree = new Tree(testNode, new SIFTQueue());
+                    tree->solveSIFT(siftTest);
+                }
+                
 
 
             }catch(std::invalid_argument error){

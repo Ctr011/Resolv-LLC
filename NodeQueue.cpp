@@ -2,39 +2,64 @@
 
 #include "NodeQueue.h"
 
-/**
- * @fn Constructor
-*/
-NodeQueue::NodeQueue(){
-    //  Only need to init the max nodes    
-    this->maxNodes = 0;
-};
+BalanceQueue::BalanceQueue(){}
 
 /**
  * @fn addUniform
  * Add a Node to the queue using a UCS heuristic
 */
-void NodeQueue::add(Node* newNode){
+void BalanceQueue::add(Node* newNode){
     this->ds.push(newNode);
-    maxNodes++;
 }
 
-bool NodeQueue::isEmpty(){return ds.empty();}
+bool BalanceQueue::isEmpty(){return ds.empty();}
 
 /**
  * 
 */
-Node* NodeQueue::pop(){
+Node* BalanceQueue::pop(){
     Node* topNode = ds.top();
     ds.pop();
     return topNode;
 }
 
-void NodeQueue::printFrontier(){
-    std::priority_queue<Node*, std::vector<Node*>, NodeComparator> dsCopy = ds;
+void BalanceQueue::printFrontier(){
+    std::priority_queue<Node*, std::vector<Node*>, NodeBalanceComparator> dsCopy = ds;
 
     while (!dsCopy.empty()) {
-        std::cout << ' ' << dsCopy.top()->getCost() <<std::endl;
+        std::cout << ' ' << dsCopy.top()->getBalanceCost() <<std::endl;
+        dsCopy.top()->printState();
+        dsCopy.pop();
+    }
+    std::cout << '\n';
+}
+
+SIFTQueue::SIFTQueue(){}
+
+/**
+ * @fn addUniform
+ * Add a Node to the queue using a UCS heuristic
+*/
+void SIFTQueue::add(Node* newNode){
+    this->ds.push(newNode);
+}
+
+bool SIFTQueue::isEmpty(){return ds.empty();}
+
+/**
+ * 
+*/
+Node* SIFTQueue::pop(){
+    Node* topNode = ds.top();
+    ds.pop();
+    return topNode;
+}
+
+void SIFTQueue::printFrontier(){
+    std::priority_queue<Node*, std::vector<Node*>, NodeSIFTComparator> dsCopy = ds;
+
+    while (!dsCopy.empty()) {
+        std::cout << ' ' << dsCopy.top()->getSIFTCost() <<std::endl;
         dsCopy.top()->printState();
         dsCopy.pop();
     }

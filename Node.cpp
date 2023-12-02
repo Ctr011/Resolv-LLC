@@ -27,7 +27,7 @@ Node::Node(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent, Contain
 }
 
 //  Getters
-int Node::getCost(){
+int Node::getBalanceCost(){
 
     //  Below can be tweaked
     const double distanceWeight = 0.6;
@@ -39,6 +39,43 @@ int Node::getCost(){
     }
 
 };
+
+int Node::getSIFTCost(){
+
+    int cost = 0;
+
+    //  Get all containers from the current bay
+    std::priority_queue<Container*, std::vector<Container*>, ContainerComparator> allContainers = this->bay->getAllContainers();
+
+    //  And the sift'd bay
+    std::priority_queue<Container*, std::vector<Container*>, ContainerComparator> siftContainers = this->bay->getSIFTState()->getAllContainers();
+
+    while(!siftContainers.empty()){
+
+        //  Get both containers
+        Container* sift_c = siftContainers.top();
+        Container* init_c = allContainers.top();
+
+        if(sift_c->getOrigin() != init_c->getOrigin()){
+            //  Callculate the manhattan distance between, add to cost
+        cost += std::abs(sift_c->getXPos() - init_c->getXPos() + (28 - init_c->getXPos())) + std::abs(sift_c->getYPos() - init_c->getYPos() + 4);
+        }else{
+            //  Callculate the manhattan distance between, add to cost
+        cost += std::abs(sift_c->getXPos() - init_c->getXPos()) + std::abs(sift_c->getYPos() - init_c->getYPos());
+        }
+
+        //  Pop both 
+        siftContainers.pop();
+        allContainers.pop();
+    }
+
+    return cost + this->incoming_cost;
+
+}
+
+int Node::getMoveCost(){
+    return this->incoming_cost;
+}
 
 Node* Node::getParent(){
     return this->parent;
@@ -85,7 +122,7 @@ std::vector<Node*> Node::expand(){
                 Container* heldContainer = bayCopy->pickUpContainer(i);
 
                 if(heldContainer){
-                    Node* newNode = new Node(bayCopy, bufferCopy, (this->incoming_cost + heldContainer->getYPos()), this, heldContainer);
+                    Node* newNode = new Node(bayCopy, bufferCopy, this->incoming_cost, this, heldContainer);
                     newNode->setDescription("UP: '" + heldContainer->getName() + "' {" + std::to_string(heldContainer->getXPos()) + ", " + std::to_string(heldContainer->getYPos()) + "}");
                     expansionNodes.push_back(newNode);
                 }
@@ -105,7 +142,7 @@ std::vector<Node*> Node::expand(){
                 Container* heldContainer = bufferCopy->pickUpContainer(i);
 
                 if(heldContainer){
-                    Node* newNode = new Node(bayCopy, bufferCopy, (this->incoming_cost + heldContainer->getYPos()), this, heldContainer);
+                    Node* newNode = new Node(bayCopy, bufferCopy, this->incoming_cost, this, heldContainer);
                     newNode->setDescription("UP: '" + heldContainer->getName() + "' *{" + std::to_string(heldContainer->getXPos()) + ", " + std::to_string(heldContainer->getYPos()) + "}");
                     expansionNodes.push_back(newNode);
                 }
@@ -138,7 +175,7 @@ std::vector<Node*> Node::expand(){
                 //  New copy of container
                 Container* newContainer = new Container(p_name, p_mass, p_x, p_y, p_origin);
                 int cost = bayCopy->putDownDontainer(newContainer, i);
-                Node* newNode = new Node(bayCopy, bufferCopy, cost, this);
+                Node* newNode = new Node(bayCopy, bufferCopy, cost + this->incoming_cost, this);
                 newNode->setDescription("DN: '" + p_name + "' {" + std::to_string(newContainer->getXPos()) + ", " + std::to_string(newContainer->getYPos()) + "}");
                 expansionNodes.push_back(newNode);
             }
@@ -156,7 +193,7 @@ std::vector<Node*> Node::expand(){
                 //  Put in new copy of container
                 Container* newContainer = new Container(p_name, p_mass, p_x, p_y, p_origin);
                 int cost = bufferCopy->putDownDontainer(newContainer, i);
-                Node* newNode = new Node(bayCopy, bufferCopy, cost, this);
+                Node* newNode = new Node(bayCopy, bufferCopy, cost + this->incoming_cost, this);
                 newNode->setDescription("DN: '" + p_name + "' *{" + std::to_string(newContainer->getXPos()) + ", " + std::to_string(newContainer->getYPos()) + "}");
                 expansionNodes.push_back(newNode);
             }

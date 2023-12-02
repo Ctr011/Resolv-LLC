@@ -28,7 +28,12 @@ public:
 
     Node() = default;
     Node(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent = nullptr, Container* container = nullptr);
-    int getCost();
+    
+    //  12/2 Different costs for different tasks
+    int getBalanceCost();
+    int getSIFTCost();  //  12/2 Added arg, since sift state will not change between nodes
+    int getMoveCost(); //   Gets the pure movement cost to th current stats
+    
     std::vector<Node*> expand();
 
     bool compareNodes(Node* otherNode);

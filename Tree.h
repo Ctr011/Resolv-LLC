@@ -8,17 +8,18 @@ class Tree{
     
     //  These are set immeditaley
     int expansions = 0;
-    NodeQueue* frontier = new NodeQueue();
+    NodeQueue* frontier;
 
     Node* startState;
 
 public:
     
-    Tree(Node* startNode);
+    Tree(Node* startNode, NodeQueue* queueType);
 
 
     //  void for now
     void solveBalance();
+    void solveSIFT(ShipBay* siftedState);
     void solveLoad();
 };
 
