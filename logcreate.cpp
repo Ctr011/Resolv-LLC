@@ -8,47 +8,10 @@
 #include <filesystem>
 #include <stdio.h>
 #include <string>
+#include "logcreate.h"
 //#include "./webserver/webserver.cpp"
 using namespace std;
 
-/*
-    website for system time:: https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtime
-    SYSTEMTIME library:: https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime
-    the parameters for log file:: https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime
-    specific file locations:: https://stackoverflow.com/questions/49508779/how-to-create-a-file-in-a-specific-directory-in-c11
-    create directories:: https://stackoverflow.com/questions/36386036/how-to-create-a-hidden-directory
-    find out if there is a directory:: https://stackoverflow.com/questions/70924991/check-if-directory-exists-using-filesystem
-    find out user profile:: https://stackoverflow.com/questions/42371488/saving-to-userprofile
-
-
-    Attmepting to Create and Hide Log Files in C:\Users\%USERPROFILE%\AppData\Roaming\ResolvDeckware\ && C:\Users\%USERPROFILE%\AppData\Roaming\ResolvBack\
-
-    Currently debating whether this should turn into a class instead of an instruction file
-*/
-/*
-    Declare Global Variables
-*/
-// class logging{ 
-//     private:
-//         const int max_char = 255;
-//         string path, path_backup;
-//         string filename, file_back;
-//         string year;
-//         string user;
-//     bool back = false; //global var to stop system from wasting resources backing up for 1 minute
-
-// };
-
-const int max_char = 255;
-const int max_line = 110;
-string path, path_backup;
-string filename, file_back;
-string year;
-string user;
-int conma = 0;
-// vector<string> users;
-string craneop ="";
-bool back = false; //global var to stop system from wasting resources backing up for 1 minute
 
 string GetUserProfile(){ //changing this to string function from void
     const char* env_p = getenv("USERPROFILE"); //checks user system for path
@@ -68,7 +31,7 @@ string GetUserProfile(){ //changing this to string function from void
     ALL FUNCTIONS SHOULD RUN ON PROGRAM RESET 
 */
 
-void initialStart(){ //initial start.
+void InitialStart(){ //initial start.
     cout << "Getting %%USERPROFILE% " << endl; //initial statement
     user = GetUserProfile(); //call system info
     SYSTEMTIME st; //enter in system time
@@ -84,6 +47,22 @@ void initialStart(){ //initial start.
     path_backup += file_back; //backup file path
 }
 
+void DateTime(){
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+
+    if(st.wMonth < 10){month = "0"; month += to_string(st.wMonth);}
+    else {month = to_string(st.wMonth);}
+    if(st.wDay < 10){day = "0"; day+= to_string(st.wDay);}
+    else {day = to_string(st.wDay);}
+    if(st.wHour < 10){hour = "0"; hour += to_string(st.wHour);}
+    else {hour = to_string(st.wHour);}
+    if(st.wMinute < 10){minute = "0"; minute += to_string(st.wMinute);}
+    else{minute = to_string(st.wMinute);}
+    date = month +"/"+day+"/"+year;
+    times = hour +":" + minute;
+}
+
 /*
     current system is working under the assumption that the system continues
     working throughout the day none stop. If program stops right before hour changes 
@@ -95,7 +74,7 @@ int getTime(){
     GetSystemTime(&st); 
     return st.wMinute; //using minutes
 }
-void createFile(){
+void CreateFile(){
     bool bFile = false; //not necessary
     bool oFile = false; //not necessary
 
@@ -143,7 +122,7 @@ void createFile(){
     windows/file/system libraries to figure out any system to add this feature. 
     FUTURE INTERATIONS NEED TO INCLUDE PASSWORD OR ENCRYPTION OF DIRECTORY
 */
-void createFolder(){ //test system
+void CreateFolder(){ //test system
     string path_dir = "C:/Users/" + user +"/AppData/Roaming/"; //file system we can use
     string  path_folder = "ResolvDeckware"; //folder I want to hide
     string backup_folder = "ResolvBack"; //backup folder I want to hide
@@ -207,98 +186,61 @@ bool UserLimit(string c){ //takes user input
 }
 
 void UpdateFileM(string manifestName){//designed for initial and ending
-    SYSTEMTIME st;
-    string month,day; //date
-    string hour,minute; //time
-    string date, time;
-    GetLocalTime(&st);
     printf("INITIAL TEST FOR MANIFEST FILE...\n");
-    cout << manifestName << endl;
+    //cout << manifestName << endl; //checking to see if manifest is correct, backend system
 
-
-    if(st.wMonth < 10){month = "0"; month += to_string(st.wMonth);}
-    else {month = to_string(st.wMonth);}
-    if(st.wDay < 10){day = "0"; day+= to_string(st.wDay);}
-    else {day = to_string(st.wDay);}
-    if(st.wHour < 10){hour = "0"; hour += to_string(st.wHour);}
-    else {hour = to_string(st.wHour);}
-    if(st.wMinute < 10){minute = "0"; minute += to_string(st.wMinute);}
-    else{minute = to_string(st.wMinute);}
-    date = month +"/"+day+"/"+year;
-    time = hour +":" + minute;
-    
+    DateTime(); //set time and date
     ofstream file;
-    file.open(path , ios_base::app);
-    if(file){
-
-            printf("SYSTEM CANNOT DETECT PREVIOUS OP LOGIN...SIGNING IN NEW OP...\n");
-            file << date << ": " << time;
+    file.open(path , ios_base::app); //open file in append mode to not delete old files
+    if(file){ //check if we have a log file
+            printf("SYSTEM HAS DETECTED LOG FILE...ATTEMPTING TO LOAD MANIFEST INTO LOG...\n");
+            file << date << ": " << times;
             file << " ";//Here should be 19 characters, we want lines of 
-            file << "Manifest " << manifestName << "is opened, there are " << to_string(conma) <<" containers on the ship";
+            file << "Manifest " << manifestName << " is opened, there are "; //place in manifest file
+            file << to_string(conma) <<" containers on the ship"; //output the container count when loaded
             file << "\n";
-            conma = 0;
+            conma = 0; //reset count
+            block = false; //reset block feature for initial check
      }
-     else{printf("SYSTEM IS NOT DETECTING THE LOG FILE CURRENTLY...\n");}
+    else{printf("SYSTEM IS NOT DETECTING THE LOG FILE CURRENTLY...\n");}
+    file.close(); //close the file to free resources.
 
     return;
 }
+
 void UpdateFileLogin(string userlogging){ //deisgned for user login
-    SYSTEMTIME st;
-    string month,day; //date
-    string hour,minute; //time
-    string date, time;
-    GetLocalTime(&st);
-
-    if(st.wMonth < 10){month = "0"; month += to_string(st.wMonth);}
-    else {month = to_string(st.wMonth);}
-    if(st.wDay < 10){day = "0"; day+= to_string(st.wDay);}
-    else {day = to_string(st.wDay);}
-    if(st.wHour < 10){hour = "0"; hour += to_string(st.wHour);}
-    else {hour = to_string(st.wHour);}
-    if(st.wMinute < 10){minute = "0"; minute += to_string(st.wMinute);}
-    else{minute = to_string(st.wMinute);}
-    date = month +"/"+day+"/"+year;
-    time = hour +":" + minute;
-
+    DateTime(); //get time and date
     ofstream file;
-    file.open(path , ios_base::app);
-    if(file){
+    file.open(path , ios_base::app); //open file in append mode
+    if(file){//check if we have a log file
         if(craneop == ""){//System Restarted, now there is no crane op logged in
-            printf("SYSTEM CANNOT DETECT PREVIOUS OP LOGIN...SIGNING IN NEW OP...\n");
-            file << date << ": " << time;
+            printf("SYSTEM CANNOT DETECT PREVIOUS OP LOGIN...SIGNING IN NEW OP...\n"); //can also be that this is the first time the system turns on
+            file << date << ": " << times;
             file << " ";//Here should be 19 characters, we want lines of 
-            file << userlogging << " signs in" << "\n";
+            file << userlogging << " signs in" << "\n"; //first user log in
 
         }
         else if(craneop != userlogging){
             printf("SYSTEM DETECTED NEW OPERATOR LOGIN...SIGNING OUT PREVIOUS OP...\n");
-            file << date << ": " << time;
+            file << date << ": " << times;
             file << " ";//Here should be 19 characters, we want lines of 
             file << craneop << " signs out" << "\n";
-            file << date << ": " << time;
+            file << date << ": " << times;
             file << " ";//Here should be 19 characters, we want lines of 
             file << userlogging << " signs in" << "\n";
 
 
      }
-     craneop = userlogging;
+     craneop = userlogging; //setting current operator to the one passing through the system
     }
-    else{printf("SYSTEM IS NOT DETECTING THE LOG FILE CURRENTLY...\n");}
-    file.close();
+    else{printf("SYSTEM IS NOT DETECTING THE LOG FILE CURRENTLY...\n");} 
+    file.close(); //free the file
     return;
 }
 
 void WritingSystem(string n){ //for parsing user input to file
     vector<string> containerCheck;
-    string input="";
-    SYSTEMTIME st;
-    /*
-        Setting up needed vars
-    */
-    string month,day; //date
-    string hour,minute; //time
-    string date, time;
-
+    string input=""; //setting input container to null
     printf("SYSTEM HAS DETECTED USER INPUT...\n");
 
     if(UserLimit(n)){ //check if user input exceeds max character limit
@@ -333,32 +275,22 @@ void WritingSystem(string n){ //for parsing user input to file
         need to create strings out of all time variables. Additional help needed to add "0"
         to comply with MM/DD/YYYY format
     */
-    GetLocalTime(&st); //getting current information...
-    if(st.wMonth < 10){month = "0"; month += to_string(st.wMonth);}
-    else {month = to_string(st.wMonth);}
-    if(st.wDay < 10){day = "0"; day+= to_string(st.wDay);}
-    else {day = to_string(st.wDay);}
-    if(st.wHour < 10){hour = "0"; hour += to_string(st.wHour);}
-    else {hour = to_string(st.wHour);}
-    if(st.wMinute < 10){minute = "0"; minute += to_string(st.wMinute);}
-    else{minute = to_string(st.wMinute);}
-    date = month +"/"+day+"/"+year;
-    time = hour +":" + minute;
 
+    DateTime();  //get date and time
     ofstream file;
     file.open(path, ios_base::app); //File opens in append mode
     if(file){
         int cnt = 19;
-        file << date << ": " << time;
+        file << date << ": " << times;
         file << " ";//Here should be 19 characters, we want lines of 
         int i = 0;
-        while(containerCheck.size() > i){
-            cnt += containerCheck.at(i).size()+1;
-            if(cnt <= max_line){
-                file << containerCheck.at(i);
+        while(containerCheck.size() > i){ //we want to do lines of 110 characters 
+            cnt += containerCheck.at(i).size()+1; //setting size for cnt
+            if(cnt <= max_line){ //checking if current line cnt is fine
+                file << containerCheck.at(i); //put words if its alright
                 file << " ";
             }
-            else{
+            else{ //go down a line when a word reaches the 110 character line
                 file << "\n" << containerCheck.at(i); 
                 file << " ";
                 cnt = containerCheck.at(i).size()+1; 
@@ -368,9 +300,72 @@ void WritingSystem(string n){ //for parsing user input to file
         file << '\n';
     }
     else{printf("SYSTEM ERROR...FILE DOES NOT EXIST...\n");} //backend error
-    file.close();
+    file.close(); //free file
     return;
 } 
+
+void UpdateContainerLog(string cont, string movs){//has three options onload and offload
+    printf("SYSTEM HAS DETECTED CONTAINER MOVEMENT\n");
+    DateTime(); //get time and date
+    //printf("INITIAL TEST FOR CONTAINER LOGS...\n");
+
+    ofstream file;
+    file.open(path, ios_base::app); //open file in append mode
+    if(file){
+        file << date << ": " << time;
+        file << " ";//Here should be 19 characters, we want lines of 
+        file << "\"" << cont << "\" is " << movs << endl;
+    }
+    else {printf("SYSTEM CANNOT DETECT LOG FILE...\n");}
+    file.close(); //free file
+}
+
+void UpdateBalanceLog(string manifest){//we will get the ship name from manifest, though we can just say that the manifest was balanced
+    printf("SYSTEM HAS DETECTED SOME SORT OF BALANCE OF SHIP\n");
+    DateTime(); //get date and time
+    string ship =""; //creating container for name
+    for(int i = 0; i < manifest.size(); i++){
+        if(manifest.at(i) != '.'){
+            ship += manifest.at(i); //adding initial parts of the name, assuming first part of manifest is the ship name
+        }
+        else if(manifest.at(i) != '.' && manifest.at(i+1) != 't' && manifest.at(i+2) != 'x' && manifest.at(i+3) != 't'){ //checking the next few characters
+            i = manifest.size();
+        }
+    }
+
+    ofstream file;
+    file.open(path, ios_base::app);
+    if(file){ //we might not need to have a input
+        file << date << ": " << time;
+        file << " ";//Here should be 19 characters, we want lines of 
+        
+        // if(baltype == "SIFT"){//input should be the type, "SIFT" or "Normal Means"
+        //     file << "Ship was balanced through SIFT" << endl;
+        // }
+        // else if(baltype == "NORMAL"){
+        //     file << "Ship was balanced" << endl;
+        // }
+        file << ship <<" is balanced" << endl; //we probably done need to use input
+    }
+    else{printf("SYSTEM DOES NOT DETECT CURRENT LOG FILE...\n");}
+    file.close(); //free file
+
+}
+
+void FinalUpdateLog(string n){ //takes output manifest
+    printf("SYSTEM DETECTS THAT OPERATOR FINISHED WORKING ON SHIP\n");
+    DateTime(); //get date and time
+    ofstream file;
+    file.open(path, ios_base::app); //open file in append mode
+    if(file){
+        file << date << ": " << time;
+        file << " ";//Here should be 19 characters, we want lines of 
+        file << "Finished a Cycle. Manifest ";
+        file << n << " was written to desktop, and a reminder pop-up to operator to send file was displayed.\n";
+    }
+    else{printf("SYSTEM DOES NOT DETECT THE LOG FILE...\n");}
+    file.close();
+}
 
 /*
     This next file with global variable is just a test case for the system. 
@@ -411,7 +406,11 @@ void BackupLogs(){ //backup system
 
 }
 
-
+void StartLib(){
+    InitialStart();
+    CreateFolder();
+    CreateFile();
+}
 // ship balanced...when goal state print to log...
-
+//need to create txt file that explains how to use the functions...
 #endif

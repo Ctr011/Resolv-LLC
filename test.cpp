@@ -15,11 +15,11 @@ using namespace std;
 int main(){ //test units...system testing 
     //GetUserProfile();
     cout << "Initialize Global Vars..." << endl;
-    initialStart();
+    InitialStart();
     cout << "Testing Folder Creation" << endl;
-    createFolder();
+    CreateFolder();
     cout << "Testing File Creation" << endl;
-    createFile();
+    CreateFile();
     cout << "Testing Backup Solution" << endl;
     BackupLogs();
 
