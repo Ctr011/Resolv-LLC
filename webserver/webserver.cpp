@@ -79,15 +79,17 @@ int main() {
                 //  init initial node
                 Node* testNode = new Node(bay, buffer, 0);
 
-                Tree* tree;
+                Tree* tree = new Tree(testNode, new UnloadQueue());
 
-                if(bay->canBalance()){
-                    tree = new Tree(testNode, new BalanceQueue());
-                    tree->solveBalance();
-                }else{
-                    tree = new Tree(testNode, new SIFTQueue());
-                    tree->solveSIFT(siftTest);
-                }
+                // if(bay->canBalance()){
+                //     tree = new Tree(testNode, new BalanceQueue());
+                //     tree->solveBalance();
+                // }else{
+                //     tree = new Tree(testNode, new SIFTQueue());
+                //     tree->solveSIFT(siftTest);
+                // }
+                testNode->setUnloadTarget("Cat");
+                tree->solveUnLoad("Cat", testNode);
                 
 
 

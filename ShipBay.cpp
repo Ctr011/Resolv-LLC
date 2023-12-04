@@ -109,6 +109,29 @@ ContainerSlot* ShipBay::getContainer(int x, int y){
     }
 };
 
+/**
+ * 12/2/2023
+ * @fn getContainerByNam,e
+ * Searches for container in the bay, returns if found
+ * @param {string} name: name of container being searched
+*/
+ContainerSlot* ShipBay::getContainerByName(std::string name){
+    int x,y;
+
+    //  Restricted names
+    if(name.compare("NAN") == 0 || name.compare("UNUSED") == 0){return nullptr;};
+
+    for(x = 0; x < this->size_x; x++){
+        for(y = this->size_y - 1; y >= 0; y--){
+            if(bayArea[x][y]->getName().compare(name) == 0){
+                return bayArea[x][y];
+            }
+        }
+    }
+
+    return nullptr;
+}
+
 ShipBay* ShipBay::getSIFTState(){return this->siftState;};
 void ShipBay::setSIFTState(ShipBay* state){this->siftState = state;};
 
@@ -144,6 +167,8 @@ double ShipBay::calculateBalanceCost(){
     return diff;
     
 }
+
+
 
 bool ShipBay::compareBays(ShipBay* otherBay){
     int x, y;
@@ -324,6 +349,24 @@ std::vector<int> ShipBay::getHeights(int start, int end){
 
     std::vector<int> heights;
 
+    if(start == end){
+        int y;
+        for(y = 0; y <= this->size_y; y++){
+
+            if(y < this->size_y){
+                if(bayArea.at(start).at(y)->getName().compare("UNUSED") == 0){
+                    heights.push_back(y);
+                    return heights;
+                }
+            }else{
+                if(this->temp[start]->getName().compare("UNUSED") == 0){
+                    heights.push_back(y);
+                    return heights;
+                }
+            }
+        }
+    }
+
     int x, y;
 
     for(x = start - 1; x < end; x++){
@@ -405,11 +448,34 @@ Container* ShipBay::pickUpContainer(int column){
  * @return int: The cost to put down
 */
 int ShipBay::putDownDontainer(Container* container, int column){
+
+    //  init cost
+    int cost = 0;
+
     if(container == nullptr){std::invalid_argument("Container is null.");}
 
     //  Make sure column value is in range
     if(column < 1 || column > this->size_x){std::invalid_argument("Invalid Column value: " + column);}
     
+    //  12/2/2023
+    //  If the container is to be unloaded onto the truck, then handle special case here
+    if(column == TRUCK_COLUMN){
+        cost += 2;  //  Transfer penalty
+
+        //  Calculate cost to exit
+        cost += calculateMovementCost((container->getXPos() + 1), (container->getYPos() + 1), bay_exit_x, bay_exit_y);
+
+        //  Replace container with empty spot
+        this->bayArea.at(container->getXPos() + 1).at(container->getYPos() + 1) = new EmptySlot(container->getXPos(), container->getYPos(), Origin::BAY);
+
+
+        //  Delete container now that it is offloaded
+        delete container;
+
+        //  return cost
+        return cost;
+
+    }
 
     //  Search bottom up, to find first empty slot
     for(int i = 0; i <= this->size_y; i++){
@@ -430,7 +496,7 @@ int ShipBay::putDownDontainer(Container* container, int column){
             }
 
             //  now return the cost.
-            int cost = 0;
+            
 
             //  First, determine if there is any transfer penalty
             if(container->getOrigin() == Origin::BUFFER){

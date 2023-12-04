@@ -26,6 +26,23 @@ Node::Node(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent, Contain
     }
 }
 
+std::string Node::getDescription(){
+    return move_description;
+}
+
+// Setter for move_description
+void Node::setDescription(const std::string& description) {
+    move_description = description;
+}
+
+void Node::setUnloadTarget(std::string target){
+    this->unloadTarget = target;
+}
+
+std::string Node::getUnloadTarget(){
+    return this->unloadTarget;
+}
+
 //  Getters
 int Node::getBalanceCost(){
 
@@ -73,6 +90,31 @@ int Node::getSIFTCost(){
 
 }
 
+int Node::getUnloadCost(){
+    const double containersRemainingWeight = 0.7f;
+    const double movesWeight = 0.3f;
+
+    //  Get the containerPosition
+    ContainerSlot* target = this->bay->getContainerByName(unloadTarget);
+
+    //  Get the height of the column the container is in
+
+    
+
+    int height = this->bay->getHeights(target->getXPos() - 1, target->getXPos() - 1)[0];
+
+    //  We are closer if the number of containers on top of the target is smaller
+    int locationCost =  height - target->getYPos();
+
+
+    //  12/4: Probably a better way to measure this, track the number of remaining containers to be unloaded
+    if(this->buffer->isEmpty()){
+        return (movesWeight * this->incoming_cost) + (containersRemainingWeight * height);
+    }else{
+        return (movesWeight * this->incoming_cost) + (containersRemainingWeight * height) + 10 * this->incoming_cost;
+    }
+}
+
 int Node::getMoveCost(){
     return this->incoming_cost;
 }
@@ -85,15 +127,6 @@ Node* Node::getParent(){
 ShipBay* Node::getBay(){return this->bay;};
 Buffer* Node::getBuffer(){return this->buffer;};
 Container* Node::getPickUpContainer(){return this->pickedUp;};
-
-std::string Node::getDescription(){
-    return move_description;
-}
-
-// Setter for move_description
-void Node::setDescription(const std::string& description) {
-    move_description = description;
-}
 
 std::vector<Node*> Node::expand(){
 
@@ -202,6 +235,74 @@ std::vector<Node*> Node::expand(){
         return expansionNodes;
     }
 
+}
+
+std::vector<Node*> Node:: expandUnload(std::string unload){
+
+    std::vector<Node*> expansions;
+    ShipBay* baycopy = this->bay->clone();
+    Buffer* bufferCopy = this->buffer->clone();
+
+    //  Get heights, to find out where we can put the other onctainers
+    std::vector<int> heights = baycopy->getHeights(1, 12);
+
+    //  If we are holding onto an unrelated container, move it somewhere
+    if(this->pickedUp != nullptr){
+        
+        int x;
+        for(x = 0; x < BAY_MAX_X; x++){
+            //  Clone
+            baycopy = this->bay->clone();
+            bufferCopy = this->buffer->clone();
+
+            //  Create copy of picked up container
+            Container* containerCopy = new Container(this->pickedUp->getName(), this->pickedUp->getMass(), this->pickedUp->getXPos(), this->pickedUp->getYPos(), this->pickedUp->getOrigin());
+
+            //  Unload options here
+            if(heights[x] < 8){
+                int cost = baycopy->putDownDontainer(containerCopy, x);
+                Node* newNode = new Node(baycopy, bufferCopy, this->incoming_cost + cost, this);
+                newNode->setUnloadTarget(this->unloadTarget);
+                expansions.push_back(newNode);
+            }
+        }
+
+        return expansions;
+    }
+
+    //  Search for container
+    Container* foundContainer = &baycopy->getContainerByName(unload)->getContainer();
+
+    //  if found, unload
+    int cost = 0;
+    if(foundContainer != nullptr){
+
+        //  pick up the container in this copy
+        Container* picked_up = baycopy->pickUpContainer(foundContainer->getXPos() - 1);
+
+        //  If container is not what we wanted, move to side somewhere
+        if(picked_up->getName().compare(unload) != 0){
+
+            //  Copy the container
+            Container* pickedUp_copy = new Container(picked_up->getName(), picked_up->getMass(), picked_up->getXPos(), picked_up->getYPos(), picked_up->getOrigin());
+
+            //  Push back this copy
+            Node* newNode = new Node(baycopy, bufferCopy, this->incoming_cost, this, pickedUp_copy);
+            newNode->setUnloadTarget(this->unloadTarget);
+            expansions.push_back(newNode);
+        }else{
+            //  Load onto a truck
+            int cost = baycopy->putDownDontainer(foundContainer, TRUCK_COLUMN);
+
+            //  Add to expansions
+            Node* newNode = new Node(baycopy, bufferCopy, this->incoming_cost + cost, this);
+            newNode->printState();
+            newNode->setUnloadTarget("DONE");
+            expansions.push_back(newNode);
+        }
+    }
+
+    return expansions;
 }
 
 bool Node::compareNodes(Node* otherNode){

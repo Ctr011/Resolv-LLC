@@ -56,21 +56,25 @@ class ShipBay{
         ShipBay(std::string manifestContent, ShipBay* sift = nullptr, std::vector<ContainerSlot*>* tempRow = nullptr);
 
         ContainerSlot* getContainer(int x, int y);
+        ContainerSlot* getContainerByName(std::string name);
         std::vector<ContainerSlot*> getTempRow();
         ShipBay* getSIFTState();
+        std::vector<int> getHeights(int start, int end);
         void setSIFTState(ShipBay* state);
         ShipBay* siftBay();
 
+        bool canBalance();
         double calculateBalanceCost();
         bool compareBays(ShipBay* otherBay);
 
         //  12/2: Required to use SIFT if needed
         std::priority_queue<Container*, std::vector<Container*>, ContainerComparator> getAllContainers();
-        bool canBalance();
 
-        std::vector<int> getHeights(int start, int end);
+        int unloadContainer(std::string name, int column);
+        int loadContainer(Container* newContainer, int column);
         Container* pickUpContainer(int column);
         int putDownDontainer(Container* container, int column);
+
         ShipBay* clone();
         void printShipBay();
         virtual ~ShipBay(){};

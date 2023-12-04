@@ -20,6 +20,7 @@ public:
     //  void for now
     void solveBalance();
     void solveSIFT(ShipBay* siftedState);
+    Node* solveUnLoad(std::string unload, Node* state = nullptr);
     void solveLoad();
 };
 

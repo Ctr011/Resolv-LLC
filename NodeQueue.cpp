@@ -37,7 +37,7 @@ void BalanceQueue::printFrontier(){
 SIFTQueue::SIFTQueue(){}
 
 /**
- * @fn addUniform
+ * @fn add
  * Add a Node to the queue using a UCS heuristic
 */
 void SIFTQueue::add(Node* newNode){
@@ -57,6 +57,38 @@ Node* SIFTQueue::pop(){
 
 void SIFTQueue::printFrontier(){
     std::priority_queue<Node*, std::vector<Node*>, NodeSIFTComparator> dsCopy = ds;
+
+    while (!dsCopy.empty()) {
+        std::cout << ' ' << dsCopy.top()->getSIFTCost() <<std::endl;
+        dsCopy.top()->printState();
+        dsCopy.pop();
+    }
+    std::cout << '\n';
+}
+
+UnloadQueue::UnloadQueue(){}
+
+/**
+ * @fn add
+ * Add a Node to the queue using a UCS heuristic
+*/
+void UnloadQueue::add(Node* newNode){
+    this->ds.push(newNode);
+}
+
+bool UnloadQueue::isEmpty(){return ds.empty();}
+
+/**
+ * 
+*/
+Node* UnloadQueue::pop(){
+    Node* topNode = ds.top();
+    ds.pop();
+    return topNode;
+}
+
+void UnloadQueue::printFrontier(){
+    std::priority_queue<Node*, std::vector<Node*>, NodeUnloadComparator> dsCopy = ds;
 
     while (!dsCopy.empty()) {
         std::cout << ' ' << dsCopy.top()->getSIFTCost() <<std::endl;
