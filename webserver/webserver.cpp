@@ -67,10 +67,6 @@ int main() {
             try{
                 bay = new ShipBay(file.content);
 
-                ShipBay* siftTest = bay->siftBay();
-                siftTest->printShipBay();
-                bay->setSIFTState(siftTest);
-
                 // bay2 = new ShipBay(file.content);
 
                 buffer = new Buffer("");

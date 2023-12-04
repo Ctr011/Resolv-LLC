@@ -177,11 +177,7 @@ Node* Tree::solveUnLoad(std::string unload, Node* state){
     std::vector<Node> explored;
     explored.push_back(*this->startState);
 
-    //  Add first nodes to Node Queue
-    std::vector<Node*> init_frontier = this->startState->expandUnload(unload);
-    for(Node* node : init_frontier){
-        this->frontier->add(node);
-    }
+    this->frontier->add(this->startState);
 
     while(!this->frontier->isEmpty()){
          //  Pop next frontier
