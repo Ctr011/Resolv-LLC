@@ -126,8 +126,10 @@ void CreateFolder(){ //test system
     string path_dir = "C:/Users/" + user +"/AppData/Roaming/"; //file system we can use
     string  path_folder = "ResolvDeckware"; //folder I want to hide
     string backup_folder = "ResolvBack"; //backup folder I want to hide
+    string hidden_selection = "userhide";//hiddent selection from js
     string sys_path = path_dir + path_folder; //system path for directory
     string sys_back = path_dir + backup_folder; //backup path 
+    string sys_user = path_dir + hidden_selection;
 
     /*
         could seperate systems if needed...
@@ -150,9 +152,12 @@ void CreateFolder(){ //test system
 bool CheckRestrictedChars(string n){ //checks for characters outside the ACII rating of
     printf("TEST HAS HIT CHARACTER RESTRICTION FUNCTION\n");
     int i = 0;
+    string name;
     if(n.size() == 1){ //if size of user input is 1, we check if its just a space...considered empty string
         if(n.at(i) == ' '){return true;}
+        if(n.empty()){return true;}
     }
+    if(n.size() == 0){return true;}
     while(n[i]){ //function which goes through entire user input
         if(int(n[i]) < 32 || int(n[i]) > 126 ){
             return true;
@@ -209,12 +214,42 @@ void UpdateFileM(string manifestName){//designed for initial and ending
 }
 
 void UpdateFileLogin(string userlogging){ //deisgned for user login
+    vector<string> containerCheck;
+    string input ="";//checking name if is correct format (UNUSABLE CHARACTERS AND CHARACTER LIMIT)
+    
+    if(UserLimit(userlogging)){ //check if user input exceeds max character limit
+        printf("SYSTEM ERROR...CHARACTER LIMIT EXCEEDED...FORCING EXIT...\n"); //backend error
+        return;}    //checking if user is puttin
+
+    // cout << n.size() << endl;
+    // cout << n << endl;
+    for(int i = 0; i < userlogging.size(); i++){ //sets up the vector for checking 
+        if(userlogging.at(i) != ' '){
+            input += userlogging.at(i);    
+            // cout << input<< endl;
+            if(i+1 >= userlogging.size()){//fixed issue where input was not getting final word
+                containerCheck.push_back(input);}
+             }
+        else{
+            // cout << input << endl;
+            containerCheck.push_back(input);
+            input ="";
+        }}
+
+    if(CheckRestrictedChars(userlogging) ) {//checking for Restricted Characters
+        printf("System Detected Restricted Character...Forcing EXIT... \n"); //backend error
+        return;} //error out
+    if(CheckRestrictedWords(containerCheck)) { //checking for restricted words
+        printf("System Detected Restricted Words...Forcing Exit... \n");
+        return;} //error out
+
     DateTime(); //get time and date
     ofstream file;
     file.open(path , ios_base::app); //open file in append mode
     if(file){//check if we have a log file
-        if(craneop == ""){//System Restarted, now there is no crane op logged in
+        if(craneop == "" || craneop != " "){//System Restarted, now there is no crane op logged in
             printf("SYSTEM CANNOT DETECT PREVIOUS OP LOGIN...SIGNING IN NEW OP...\n"); //can also be that this is the first time the system turns on
+            cout << "USER SIZE: " << userlogging.size() << endl;
             file << date << ": " << times;
             file << " ";//Here should be 19 characters, we want lines of 
             file << userlogging << " signs in" << "\n"; //first user log in
