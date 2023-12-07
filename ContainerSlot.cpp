@@ -65,6 +65,11 @@ Container::Container(std::string name, int mass, int x, int y, Origin o) : Conta
 //  Container changing positions/Mass
 void Container::changeXPos(int x){this->xPos = x; return;};
 void Container::changeYPos(int y){this->yPos = y; return;};
+
+Container* Container::clone(){
+    return new Container(getName(), getMass(), getXPos(), getYPos(), getOrigin());
+}
+
 Container& Container::getContainer(){
     return *this;
 };
