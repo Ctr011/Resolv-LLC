@@ -1,7 +1,8 @@
 // Set up the event listener for the form submission
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', (event) => {
     const form = document.querySelector('#uploadForm');
-    form.addEventListener('submit', uploadFile);
+    if(form){
+    form.addEventListener('submit', uploadFile, true);}
 });
 
 
@@ -14,20 +15,24 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 async function uploadFile(event) {
     const form = event.currentTarget;
-    const fileInput = document.getElementById("file")
+    const fileInput = document.getElementById("file");
+    const ids = document.createElement('id');
     const file = fileInput.files[0];    //  Get teh file
+    const id = fileInput.form.id;
 
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('id', id)
 
     try {
-        const response = await fetch('/upload', {
+        const response = await fetch('/balance', {
             method: 'POST',
             body: formData
         });
 
         const data = await response;
         console.log('Success:', data);
+        console.log('ID Upload: ', id);
     } catch (error) {
         console.error('Error:', error);
     }
