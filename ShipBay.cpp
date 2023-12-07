@@ -98,7 +98,7 @@ void ShipBay::parseContent(std::string manifest){
     return;
 }
 
-ContainerSlot* ShipBay::getContainer(int x, int y){
+ContainerSlot* ShipBay::getSlot(int x, int y){
 
     //  If within range, grab the normal containerslot
     if(y <= this->size_y - 1){
@@ -175,7 +175,7 @@ bool ShipBay::compareBays(ShipBay* otherBay){
     for(x = 0; x < this->size_x; x++){
         for(y = 0; y < this->size_y; y++){
             ContainerSlot* thisContainer = bayArea[x][y];
-            ContainerSlot* otherContainer = otherBay->getContainer(x,y);
+            ContainerSlot* otherContainer = otherBay->getSlot(x,y);
 
             if(thisContainer->getName().compare(otherContainer->getName()) != 0 
                 || thisContainer->getMass() != otherContainer->getMass()){
@@ -184,7 +184,7 @@ bool ShipBay::compareBays(ShipBay* otherBay){
         }
 
         ContainerSlot* thisTemp = this->temp[x];
-        ContainerSlot* otherTemp = otherBay->getContainer(x, this->size_y);
+        ContainerSlot* otherTemp = otherBay->getSlot(x, this->size_y);
 
         //  Also check the temp rows here
         if(thisTemp->getName().compare(otherTemp->getName()) != 0
@@ -214,7 +214,7 @@ std::priority_queue<Container*, std::vector<Container*>, ContainerComparator> Sh
             ContainerSlot* slot = this->bayArea[x][y];
             if(slot->getName().compare("NAN") != 0 
             && slot->getName().compare("UNUSED") != 0){
-                all.push(new Container(slot->getName(), slot->getMass(), slot->getXPos(), slot->getYPos(), slot->getOrigin()));
+                all.push(slot->getContainer().clone());
             }
         }
     }
@@ -604,9 +604,6 @@ void ShipBay::printShipBay(){
 }
 
 int ShipBay::calculateMovementCost(int x1, int y1, int x2, int y2){
-
-    //  If its the same spot, just return the y position
-    if(x1 == x2){return y1;};
 
     //  First get the current heights of all columns between the two positions
     std::vector<int> heights;

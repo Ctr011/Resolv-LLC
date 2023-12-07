@@ -93,6 +93,24 @@ public:
     }
 };
 
+class NodeLoadComparator{
+
+public:
+     bool operator()(Node* node1, Node* node2){
+        
+        //  Get cost of both nodes
+        int cost1 = node1->getLoadCost();
+        int cost2 = node2->getLoadCost();
+        
+        //  Determine order here, and return result
+        if(cost1 > cost2){
+            return true;
+        }else{
+            return false;
+        }
+    }
+};
+
 class NodeQueue{
 
     //  Define our prioirty queue object here, using our custom comparator
@@ -152,6 +170,22 @@ class UnloadQueue : public NodeQueue{
 public:
 
     UnloadQueue();
+
+    virtual void add(Node* newNode) override;
+    virtual bool isEmpty() override; //  Checks if NodeQueue is Empty
+    virtual Node* pop() override;   //  Pops top-most Node from priority queue
+    virtual void printFrontier() override;   //  Debugging purposes?
+
+};
+
+class LoadQueue : public NodeQueue{
+
+    std::priority_queue<Node*, std::vector<Node*>, NodeLoadComparator> ds;
+    ShipBay* siftState;
+
+public:
+
+    LoadQueue();
 
     virtual void add(Node* newNode) override;
     virtual bool isEmpty() override; //  Checks if NodeQueue is Empty

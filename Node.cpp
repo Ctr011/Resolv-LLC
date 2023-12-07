@@ -115,6 +115,33 @@ int Node::getUnloadCost(){
     }
 }
 
+int Node::getLoadCost(){
+    const double closestSlotWeight = 0.5f;
+    const double movesWeight = 0.5f;
+
+    //  Find all UNUSED slots
+    int x, y, curr_distance;
+    int shortest_distance = 99999;
+
+    //  Find shortest distance of the unused spot
+    for(x = 0; x < BAY_MAX_X; x++){
+        for(y = 0; y < BAY_MAX_Y; y++){
+
+            ContainerSlot* slot = this->bay->getSlot(x,y);
+            if(slot->getName().compare("UNUSED") == 0){
+                curr_distance = abs(slot->getXPos() - bay_exit_x) + abs(slot->getYPos() - bay_exit_y);
+
+                if(curr_distance < shortest_distance){  
+                    shortest_distance = curr_distance;
+                }
+            }
+        }
+    }
+
+    //  Return weighted cost
+    return (movesWeight * this->incoming_cost) + (closestSlotWeight * shortest_distance);
+}
+
 int Node::getMoveCost(){
     return this->incoming_cost;
 }
@@ -186,12 +213,8 @@ std::vector<Node*> Node::expand(){
         return expansionNodes;
     }else{
 
-        //  First, init picked up container's data
+        //  First, init picked up container's name
         std::string p_name = this->pickedUp->getName();
-        int p_mass = this->pickedUp->getMass();
-        int p_x = this->pickedUp->getXPos();
-        int p_y = this->pickedUp->getYPos();
-        Origin p_origin = this->pickedUp->getOrigin();
 
         for(int i = 0; i < heights.size(); i++){
 
@@ -206,7 +229,7 @@ std::vector<Node*> Node::expand(){
                 
 
                 //  New copy of container
-                Container* newContainer = new Container(p_name, p_mass, p_x, p_y, p_origin);
+                Container* newContainer = this->pickedUp->clone();
                 int cost = bayCopy->putDownDontainer(newContainer, i);
                 Node* newNode = new Node(bayCopy, bufferCopy, cost + this->incoming_cost, this);
                 newNode->setDescription("DN: '" + p_name + "' {" + std::to_string(newContainer->getXPos()) + ", " + std::to_string(newContainer->getYPos()) + "}");
@@ -224,7 +247,7 @@ std::vector<Node*> Node::expand(){
                 Buffer* bufferCopy = this->buffer->clone();
 
                 //  Put in new copy of container
-                Container* newContainer = new Container(p_name, p_mass, p_x, p_y, p_origin);
+                Container* newContainer = pickedUp->clone();
                 int cost = bufferCopy->putDownDontainer(newContainer, i);
                 Node* newNode = new Node(bayCopy, bufferCopy, cost + this->incoming_cost, this);
                 newNode->setDescription("DN: '" + p_name + "' *{" + std::to_string(newContainer->getXPos()) + ", " + std::to_string(newContainer->getYPos()) + "}");
@@ -237,7 +260,7 @@ std::vector<Node*> Node::expand(){
 
 }
 
-std::vector<Node*> Node:: expandUnload(std::string unload){
+std::vector<Node*> Node::expandUnload(std::string unload){
 
     std::vector<Node*> expansions;
     ShipBay* baycopy = this->bay->clone();
@@ -284,7 +307,8 @@ std::vector<Node*> Node:: expandUnload(std::string unload){
         if(picked_up->getName().compare(unload) != 0){
 
             //  Copy the container
-            Container* pickedUp_copy = new Container(picked_up->getName(), picked_up->getMass(), picked_up->getXPos(), picked_up->getYPos(), picked_up->getOrigin());
+            Container* pickedUp_copy = picked_up->clone();
+            
 
             //  Push back this copy
             Node* newNode = new Node(baycopy, bufferCopy, this->incoming_cost, this, pickedUp_copy);
@@ -303,6 +327,36 @@ std::vector<Node*> Node:: expandUnload(std::string unload){
     }
 
     return expansions;
+}
+
+std::vector<Node*> Node::expandLoad(Container* newContainer){
+
+    //  init cots
+    int cost;
+
+    std::vector<Node*> expansions;
+    
+
+    //  Put down container in every possible column
+    int x;
+    for(x = 0; x < BAY_MAX_X; x++){
+
+         //  Create a copy of the newContainer
+        Container* container_copy = new Container(newContainer->getName(), newContainer->getMass(), newContainer->getXPos(), newContainer->getYPos(), Origin::TRUCK);
+
+        ShipBay* baycopy = this->bay->clone();
+        Buffer* bufferCopy = this->buffer->clone();
+
+        //  Put down container into copy of bay
+        cost = baycopy->putDownDontainer(container_copy, x);
+        Node* newNode = new Node(baycopy, bufferCopy, this->incoming_cost + cost, this);
+        newNode->printState();
+        expansions.push_back(newNode);
+        
+    }
+
+    return expansions;
+
 }
 
 bool Node::compareNodes(Node* otherNode){

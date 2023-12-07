@@ -98,3 +98,35 @@ void UnloadQueue::printFrontier(){
     std::cout << '\n';
 }
 
+LoadQueue::LoadQueue(){}
+
+/**
+ * @fn add
+ * Add a Node to the queue using a UCS heuristic
+*/
+void LoadQueue::add(Node* newNode){
+    this->ds.push(newNode);
+}
+
+bool LoadQueue::isEmpty(){return ds.empty();}
+
+/**
+ * 
+*/
+Node* LoadQueue::pop(){
+    Node* topNode = ds.top();
+    ds.pop();
+    return topNode;
+}
+
+void LoadQueue::printFrontier(){
+    std::priority_queue<Node*, std::vector<Node*>, NodeLoadComparator> dsCopy = ds;
+
+    while (!dsCopy.empty()) {
+        std::cout << ' ' << dsCopy.top()->getLoadCost() <<std::endl;
+        dsCopy.top()->printState();
+        dsCopy.pop();
+    }
+    std::cout << '\n';
+}
+

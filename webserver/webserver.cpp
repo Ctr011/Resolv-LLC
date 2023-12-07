@@ -75,7 +75,7 @@ int main() {
                 //  init initial node
                 Node* testNode = new Node(bay, buffer, 0);
 
-                Tree* tree = new Tree(testNode, new UnloadQueue());
+                Tree* tree = new Tree(testNode, new LoadQueue());
 
                 // if(bay->canBalance()){
                 //     tree = new Tree(testNode, new BalanceQueue());
@@ -84,8 +84,8 @@ int main() {
                 //     tree = new Tree(testNode, new SIFTQueue());
                 //     tree->solveSIFT(siftTest);
                 // }
-                testNode->setUnloadTarget("Cat");
-                tree->solveUnLoad("Cat", testNode);
+                Container* batteries = new Container("Batteries", 431, 1, 1, Origin::TRUCK);
+                tree->solveLoad(batteries);
                 
 
 

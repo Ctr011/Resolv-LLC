@@ -159,13 +159,11 @@ void Tree::solveSIFT(ShipBay* siftedState){
 */
 Node* Tree::solveUnLoad(std::string unload, Node* state){
 
+
     if(unload.size() == 0){
         //  If there are no unloads, we are finished
         return this->startState;
     }
-
-    //  init cost
-    int cost = 0;
 
     //  init initial size
     int initSize = state->getBay()->getAllContainers().size();
@@ -180,11 +178,8 @@ Node* Tree::solveUnLoad(std::string unload, Node* state){
     this->frontier->add(this->startState);
 
     while(!this->frontier->isEmpty()){
-         //  Pop next frontier
+        //  Pop next frontier
         Node* next_node = this->frontier->pop();
-
-        //  get size of popped Node
-        int newSize = next_node->getBay()->getAllContainers().size();
 
         //  Add node to explored set
         explored.push_back(*next_node);
@@ -240,4 +235,37 @@ Node* Tree::solveUnLoad(std::string unload, Node* state){
     }
 
     return nullptr;
+}
+
+void Tree::solveLoad(Container* newContainer){
+
+    //  If no container, retunr this state
+    if(newContainer == nullptr){
+        return;
+    }
+
+    //  Expand node only if not in explored
+    std::vector<Node*> new_nodes = this->startState->expandLoad(newContainer);
+
+    //  add all nodes to frontier
+    for(Node* node : new_nodes){
+        this->frontier->add(node);
+    }
+
+    //  Get lowest cost Node
+    Node* low = this->frontier->pop();
+
+    std::cout << "GOAL" << std::endl;
+    low->printState();
+    std::cout << "Goal Cost: " << low->getMoveCost() << std::endl;
+
+    Node* solutionNode = low;
+
+    while (solutionNode->getParent() != nullptr) {
+        std::cout << solutionNode->getDescription() << std::endl;
+
+        // Move to the parent for the next iteration
+        solutionNode = solutionNode->getParent();
+    }
+
 }
