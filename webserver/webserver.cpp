@@ -72,18 +72,27 @@ int main() {
                 buffer = new Buffer("");
                 // buffer2 = new Buffer("");
 
-                Node* testNode = new BalanceNode(bay, buffer, 0);
-                testNode->isSIFT = true;
+                Node* testNode = new UnloadNode(bay, buffer, 0, "Cat");
+                
 
                 Tree* tree = new Tree(testNode);
 
-                if(bay->canBalance()){
-                    tree->solveBalance();
-                }else{
-                    tree->solveSIFT(bay->getSIFTState());
-                }
-                
+                // if(bay->canBalance()){
+                //     tree->solveBalance();
+                // }else{
+                //     testNode->isSIFT = true;
+                //     tree->solveSIFT(bay->getSIFTState());
+                // }
 
+                Node* first = tree->solveUnLoad("Cat", testNode);
+
+                delete tree;
+
+                Node* testNode2 = new UnloadNode(first->getBay(), first->getBuffer(), first->getMoveCost(), "Dog");
+                tree = new Tree(testNode2);
+                Node* second = tree->solveUnLoad("Dog", testNode2);
+                
+                second->printState();
 
             }catch(std::invalid_argument error){
                 res.status = 500;

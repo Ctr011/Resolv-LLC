@@ -465,7 +465,7 @@ int ShipBay::putDownDontainer(Container* container, int column){
         cost += calculateMovementCost((container->getXPos() + 1), (container->getYPos() + 1), bay_exit_x, bay_exit_y);
 
         //  Replace container with empty spot
-        this->bayArea.at(container->getXPos() + 1).at(container->getYPos() + 1) = new EmptySlot(container->getXPos(), container->getYPos(), Origin::BAY);
+        this->bayArea.at(container->getXPos() - 1).at(container->getYPos() - 1) = new EmptySlot(container->getXPos(), container->getYPos(), Origin::BAY);
 
 
         //  Delete container now that it is offloaded
