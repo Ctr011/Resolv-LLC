@@ -8,6 +8,9 @@
 #include "./Buffer.h"
 #include "./ContainerSlot.h"
 
+class BalanceNode;
+class UnloadNode;
+class LoadNode;
 
 class Node {
 
@@ -20,6 +23,9 @@ protected:
     std::string move_description;
 
 public:
+
+    //  I'm too lazy to implement getters/setters lol
+    bool isSIFT = false;
 
     //  Base constuctor
     Node() = default;
@@ -39,6 +45,7 @@ public:
     //  Required by subclasses
     virtual int getCost() = 0;
     virtual std::vector<Node*> expand() = 0;
+    virtual bool isGoal() = 0;
 
     //   Gets the pure movement cost to th current stats
     int getMoveCost();
@@ -53,14 +60,18 @@ class BalanceNode : public Node {
 
 protected:
 
+    bool canSIFT;
+
 public:
     BalanceNode() = default;
     BalanceNode(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent = nullptr, Container* container = nullptr);
 
-    int getCost() override;
     int getSIFTCost();  //  12/2 Added arg, since sift state will not change between nodes
 
+    int getCost() override;
     std::vector<Node*> expand() override;
+    bool isGoal() override;
+    
 
     bool isBalanced();
 
@@ -79,10 +90,8 @@ public:
     UnloadNode(ShipBay* currBay, Buffer* currBuffer, int cost, std::string unloadTarget, Node* parent = nullptr, Container* container = nullptr);
 
     int getCost() override;
-
-    std::string getUnloadTarget();
-
     std::vector<Node*> expand() override;
+    bool isGoal() override;
 
     //bool isDoneUnloading(std::vector<std::string> allContainers);
 };
@@ -90,11 +99,13 @@ public:
 class LoadNode : public Node{
 
 public:
+
+    //  Container picked up is required, to load into bay
     LoadNode() = default;
-    LoadNode(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent = nullptr, Container* container = nullptr);
+    LoadNode(ShipBay* currBay, Buffer* currBuffer, int cost, Container* container, Node* parent = nullptr);
 
     int getCost() override;
-
     std::vector<Node*> expand() override;
+    bool isGoal() override;
 };
 #endif

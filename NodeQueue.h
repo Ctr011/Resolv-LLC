@@ -25,16 +25,15 @@ public:
 
 class NodeQueue{
 
+    std::priority_queue<Node*, std::vector<Node*>, NodeComparator> ds;
+
 public:
 
-    NodeQueue(){};
+    NodeQueue();
 
     //  Start with the unifrom function first
     void add(Node* newNode);
     bool isEmpty(); //  Checks if NodeQueue is Empty
     Node* pop();   //  Pops top-most Node from priority queue
-    void printFrontier();   //  Debugging purposes?
-
-
 };
 #endif

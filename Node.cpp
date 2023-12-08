@@ -1,31 +1,5 @@
 #include "Node.h"
 
-
-/**
- * @fn Node
- * Constructor for the Node class
- * @param {Node*} parent: The parent node of this node. Allowed to be NULL
- * @param {ShipBay} currBay: A copy of the next ShipBay object
- * @param {int} cost: The total cost of the Node
-*/
-Node::Node(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent, Container* container){
-    
-    this->bay = currBay;
-    this->buffer = currBuffer;
-    this->incoming_cost = cost; //  Set up for uniform now. Change later
-
-    if(parent){
-        this->parent = parent;
-    }else{
-        this->parent = nullptr;
-    }
-    if(container){
-        this->pickedUp = container;
-    }else{
-        this->pickedUp = nullptr;
-    }
-}
-
 std::string Node::getDescription(){
     return move_description;
 }
@@ -90,7 +64,22 @@ void Node::printState(){
     this->buffer->printBuffer();
 }
 
-BalanceNode::BalanceNode(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent = nullptr, Container* container = nullptr) : Node(currBay, currBuffer, cost, parent, container){}
+BalanceNode::BalanceNode(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent, Container* container){
+    this->bay = currBay;
+    this->buffer = currBuffer;
+    this->incoming_cost = cost; //  Set up for uniform now. Change later
+
+    if(parent){
+        this->parent = parent;
+    }else{
+        this->parent = nullptr;
+    }
+    if(container){
+        this->pickedUp = container;
+    }else{
+        this->pickedUp = nullptr;
+    }
+}
 
 /**
  * 12/6
@@ -127,6 +116,7 @@ std::vector<Node*> BalanceNode::expand(){
 
                 if(heldContainer){
                     Node* newNode = new BalanceNode(bayCopy, bufferCopy, this->incoming_cost, this, heldContainer);
+                    newNode->isSIFT = this->isSIFT;
                     newNode->setDescription("UP: '" + heldContainer->getName() + "' {" + std::to_string(heldContainer->getXPos()) + ", " + std::to_string(heldContainer->getYPos()) + "}");
                     expansionNodes.push_back(newNode);
                 }
@@ -147,6 +137,7 @@ std::vector<Node*> BalanceNode::expand(){
 
                 if(heldContainer){
                     Node* newNode = new BalanceNode(bayCopy, bufferCopy, this->incoming_cost, this, heldContainer);
+                    newNode->isSIFT = this->isSIFT;
                     newNode->setDescription("UP: '" + heldContainer->getName() + "' *{" + std::to_string(heldContainer->getXPos()) + ", " + std::to_string(heldContainer->getYPos()) + "}");
                     expansionNodes.push_back(newNode);
                 }
@@ -176,6 +167,7 @@ std::vector<Node*> BalanceNode::expand(){
                 Container* newContainer = this->pickedUp->clone();
                 int cost = bayCopy->putDownDontainer(newContainer, i);
                 Node* newNode = new BalanceNode(bayCopy, bufferCopy, cost + this->incoming_cost, this);
+                newNode->isSIFT = this->isSIFT;
                 newNode->setDescription("DN: '" + p_name + "' {" + std::to_string(newContainer->getXPos()) + ", " + std::to_string(newContainer->getYPos()) + "}");
                 expansionNodes.push_back(newNode);
             }
@@ -194,6 +186,7 @@ std::vector<Node*> BalanceNode::expand(){
                 Container* newContainer = pickedUp->clone();
                 int cost = bufferCopy->putDownDontainer(newContainer, i);
                 Node* newNode = new BalanceNode(bayCopy, bufferCopy, cost + this->incoming_cost, this);
+                newNode->isSIFT = this->isSIFT;
                 newNode->setDescription("DN: '" + p_name + "' *{" + std::to_string(newContainer->getXPos()) + ", " + std::to_string(newContainer->getYPos()) + "}");
                 expansionNodes.push_back(newNode);
             }
@@ -229,10 +222,10 @@ int BalanceNode::getSIFTCost(){
 
         if(sift_c->getOrigin() != init_c->getOrigin()){
             //  Callculate the manhattan distance between, add to cost
-        cost += std::abs(sift_c->getXPos() - init_c->getXPos() + (28 - init_c->getXPos())) + std::abs(sift_c->getYPos() - init_c->getYPos() + 4);
+            cost += std::sqrt(std::pow(sift_c->getXPos() - (init_c->getXPos() + 28), 2) + std::pow(sift_c->getYPos() - (init_c->getYPos() + 4), 2));
         }else{
             //  Callculate the manhattan distance between, add to cost
-        cost += std::abs(sift_c->getXPos() - init_c->getXPos()) + std::abs(sift_c->getYPos() - init_c->getYPos());
+            cost += std::sqrt(std::pow(sift_c->getXPos() - (init_c->getXPos()), 2) + std::pow(sift_c->getYPos() - (init_c->getYPos()), 2));
         }
 
         //  Pop both 
@@ -240,11 +233,14 @@ int BalanceNode::getSIFTCost(){
         allContainers.pop();
     }
 
-    return cost + this->incoming_cost;
-
+    return (3 * cost) + this->incoming_cost;
 }
 
 int BalanceNode::getCost(){
+
+    if(this->isSIFT){
+        return this->getSIFTCost();
+    }
 
     //  Below can be tweaked
     const double distanceWeight = 0.6;
@@ -263,7 +259,7 @@ int BalanceNode::getCost(){
  * @param NONE
  * @return bool
 */
-bool BalanceNode::isBalanced(){
+bool BalanceNode::isGoal(){
     if(bay->calculateBalanceCost() < 10 && buffer->isEmpty() && pickedUp == nullptr){
         return true;
     }else{
@@ -271,7 +267,27 @@ bool BalanceNode::isBalanced(){
     }
 }
 
-UnloadNode::UnloadNode(ShipBay* currBay, Buffer* currBuffer, int cost, std::string unloadTarget, Node* parent = nullptr, Container* container = nullptr) : Node(currBay, currBuffer, cost, parent, container){this->unloadTarget = unloadTarget;}
+
+
+UnloadNode::UnloadNode(ShipBay* currBay, Buffer* currBuffer, int cost, std::string unloadTarget, Node* parent, Container* container){
+    
+    this->bay = currBay;
+    this->buffer = currBuffer;
+    this->incoming_cost = cost; //  Set up for uniform now. Change later
+
+    if(parent){
+        this->parent = parent;
+    }else{
+        this->parent = nullptr;
+    }
+    if(container){
+        this->pickedUp = container;
+    }else{
+        this->pickedUp = nullptr;
+    }
+    
+    this->unloadTarget = unloadTarget;
+}
 
 int UnloadNode::getCost(){
     const double containersRemainingWeight = 0.7f;
@@ -298,8 +314,12 @@ int UnloadNode::getCost(){
     }
 }
 
-std::string UnloadNode::getUnloadTarget(){
-    return this->unloadTarget;
+bool UnloadNode::isGoal(){
+    if(this->unloadTarget.compare("DONE") == 0){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 std::vector<Node*> UnloadNode::expand(){
@@ -369,7 +389,22 @@ std::vector<Node*> UnloadNode::expand(){
 
 
 
-LoadNode::LoadNode(ShipBay* currBay, Buffer* currBuffer, int cost, Node* parent = nullptr, Container* container = nullptr) : Node(currBay, currBuffer, cost, parent, container){};
+LoadNode::LoadNode(ShipBay* currBay, Buffer* currBuffer, int cost, Container* container, Node* parent){
+    this->bay = currBay;
+    this->buffer = currBuffer;
+    this->incoming_cost = cost; //  Set up for uniform now. Change later
+
+    if(parent){
+        this->parent = parent;
+    }else{
+        this->parent = nullptr;
+    }
+    if(container){
+        this->pickedUp = container;
+    }else{
+        this->pickedUp = nullptr;
+    }
+};
 
 int LoadNode::getCost(){
     const double closestSlotWeight = 0.5f;
@@ -418,7 +453,7 @@ std::vector<Node*> LoadNode::expand(){
 
         //  Put down container into copy of bay
         cost = baycopy->putDownDontainer(container_copy, x);
-        Node* newNode = new LoadNode(baycopy, bufferCopy, this->incoming_cost + cost, this);
+        Node* newNode = new LoadNode(baycopy, bufferCopy, this->incoming_cost + cost, container_copy, this);
         newNode->printState();
         expansions.push_back(newNode);
         
@@ -427,3 +462,6 @@ std::vector<Node*> LoadNode::expand(){
     return expansions;
 
 }
+
+//  Probably a better way to handle this lmao
+bool LoadNode::isGoal(){return false;}

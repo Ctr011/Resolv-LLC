@@ -1,23 +1,23 @@
 //  Tree.cpp
 #include "Tree.h"
 
-Tree::Tree(Node* startNode, NodeQueue* queueType){
+Tree::Tree(Node* startNode){
     this->startState = startNode;
-    this->frontier = queueType;
+    this->frontier = new NodeQueue();
 }
 
 void Tree::solveBalance(){
 
     //  initial check to check if ship is balanced
-    if(this->startState->isBalanced()){
+    if(this->startState->isGoal()){
         std::cout << "GOAL" << std::endl;
         this->startState->printState();
         return;
     }
 
     //  Create explored tab
-    std::vector<Node> explored;
-    explored.push_back(*this->startState);
+    std::vector<Node*> explored;
+    explored.push_back(this->startState);
 
     //  Add first nodes to Node Queue
     std::vector<Node*> init_frontier = this->startState->expand();
@@ -31,10 +31,10 @@ void Tree::solveBalance(){
         //  Pop next frontier
         Node* next_node = this->frontier->pop();
 
-        if(next_node->isBalanced()){
+        if(next_node->isGoal()){
             std::cout << "GOAL" << std::endl;
             next_node->printState();
-            std::cout << "Goal Cost: " << next_node->getBalanceCost() << std::endl;
+            std::cout << "Goal Cost: " << next_node->getCost() << std::endl;
 
             Node* solutionNode = next_node;
 
@@ -49,14 +49,14 @@ void Tree::solveBalance(){
         }
 
         //  Add node to explored set
-        explored.push_back(*next_node);
+        explored.push_back(next_node);
 
         //  Expand node only if not in explored
         std::vector<Node*> new_nodes = next_node->expand();
 
         next_node->printState();
 
-        std::cout << "Cost: " << next_node->getBalanceCost() << std::endl;
+        std::cout << "Cost: " << next_node->getCost() << std::endl;
         std::cout << std::endl;
 
 
@@ -64,8 +64,8 @@ void Tree::solveBalance(){
             bool foundInExplored = false;
             node->printState();
 
-            for (Node& explored_node : explored) {
-                if (explored_node.compareNodes(node)) {
+            for (Node* explored_node : explored) {
+                if (explored_node->compareNodes(node)) {
                     foundInExplored = true;
                     break;
                 }
@@ -89,8 +89,8 @@ void Tree::solveSIFT(ShipBay* siftedState){
     }
     
     //  Create explored tab
-    std::vector<Node> explored;
-    explored.push_back(*this->startState);
+    std::vector<Node*> explored;
+    explored.push_back(this->startState);
 
     //  Add first nodes to Node Queue
     std::vector<Node*> init_frontier = this->startState->expand();
@@ -122,7 +122,7 @@ void Tree::solveSIFT(ShipBay* siftedState){
         }
 
         //  Add node to explored set
-        explored.push_back(*next_node);
+        explored.push_back(next_node);
 
         //  Expand node only if not in explored
         std::vector<Node*> new_nodes = next_node->expand();
@@ -136,8 +136,8 @@ void Tree::solveSIFT(ShipBay* siftedState){
         for (Node* node : new_nodes) {
             bool foundInExplored = false;
 
-            for (Node& explored_node : explored) {
-                if (explored_node.compareNodes(node)) {
+            for (Node* explored_node : explored) {
+                if (explored_node->compareNodes(node)) {
                     foundInExplored = true;
                     break;
                 }
@@ -172,8 +172,8 @@ Node* Tree::solveUnLoad(std::string unload, Node* state){
     ShipBay* activeBay = this->startState->getBay();
 
     //  Create explored tab
-    std::vector<Node> explored;
-    explored.push_back(*this->startState);
+    std::vector<Node*> explored;
+    explored.push_back(this->startState);
 
     this->frontier->add(this->startState);
 
@@ -182,20 +182,20 @@ Node* Tree::solveUnLoad(std::string unload, Node* state){
         Node* next_node = this->frontier->pop();
 
         //  Add node to explored set
-        explored.push_back(*next_node);
+        explored.push_back(next_node);
 
         next_node->printState();
 
         //  Expand node only if not in explored
-        std::vector<Node*> new_nodes = next_node->expandUnload(unload);
+        std::vector<Node*> new_nodes = next_node->expand();
 
-        std::cout << "Cost: " << next_node->getUnloadCost() << std::endl;
+        std::cout << "Cost: " << next_node->getCost() << std::endl;
         std::cout << std::endl;
 
 
         for (Node* node : new_nodes) {
 
-            if(node->getUnloadTarget().compare("DONE") == 0){
+            if(node->isGoal()){
                 std::cout << "GOAL" << std::endl;
                 node->printState();
                 std::cout << "Goal Cost: " << node->getMoveCost() << std::endl;
@@ -217,8 +217,8 @@ Node* Tree::solveUnLoad(std::string unload, Node* state){
             //  Now, check if the container was removed
             //  If the total number of containers are less than original
 
-            for (Node& explored_node : explored) {
-                if (explored_node.compareNodes(node)) {
+            for (Node* explored_node : explored) {
+                if (explored_node->compareNodes(node)) {
                     foundInExplored = true;
                     break;
                 }
@@ -237,15 +237,10 @@ Node* Tree::solveUnLoad(std::string unload, Node* state){
     return nullptr;
 }
 
-void Tree::solveLoad(Container* newContainer){
-
-    //  If no container, retunr this state
-    if(newContainer == nullptr){
-        return;
-    }
+void Tree::solveLoad(){
 
     //  Expand node only if not in explored
-    std::vector<Node*> new_nodes = this->startState->expandLoad(newContainer);
+    std::vector<Node*> new_nodes = this->startState->expand();
 
     //  add all nodes to frontier
     for(Node* node : new_nodes){

@@ -72,20 +72,16 @@ int main() {
                 buffer = new Buffer("");
                 // buffer2 = new Buffer("");
 
-                //  init initial node
-                Node* testNode = new Node(bay, buffer, 0);
+                Node* testNode = new BalanceNode(bay, buffer, 0);
+                testNode->isSIFT = true;
 
-                Tree* tree = new Tree(testNode, new LoadQueue());
+                Tree* tree = new Tree(testNode);
 
-                // if(bay->canBalance()){
-                //     tree = new Tree(testNode, new BalanceQueue());
-                //     tree->solveBalance();
-                // }else{
-                //     tree = new Tree(testNode, new SIFTQueue());
-                //     tree->solveSIFT(siftTest);
-                // }
-                Container* batteries = new Container("Batteries", 431, 1, 1, Origin::TRUCK);
-                tree->solveLoad(batteries);
+                if(bay->canBalance()){
+                    tree->solveBalance();
+                }else{
+                    tree->solveSIFT(bay->getSIFTState());
+                }
                 
 
 

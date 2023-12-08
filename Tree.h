@@ -14,14 +14,14 @@ class Tree{
 
 public:
     
-    Tree(Node* startNode, NodeQueue* queueType);
+    Tree(Node* startNode);
 
 
     //  void for now
     void solveBalance();
     void solveSIFT(ShipBay* siftedState);
     Node* solveUnLoad(std::string unload, Node* state = nullptr);
-    void solveLoad(Container* newContainer);
+    void solveLoad();
 };
 
 #endif // TREE_H

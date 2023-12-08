@@ -132,8 +132,83 @@ ContainerSlot* ShipBay::getContainerByName(std::string name){
     return nullptr;
 }
 
-ShipBay* ShipBay::getSIFTState(){return this->siftState;};
-void ShipBay::setSIFTState(ShipBay* state){this->siftState = state;};
+ShipBay* ShipBay::getSIFTState(){
+    if(this->siftState == nullptr){
+        //  get all containers
+        std::priority_queue<Container*, std::vector<Container*>, ContainerComparator> all = this->getAllContainers();
+        std::vector<std::vector<ContainerSlot*>> siftBay;
+        int x,y,left,right;
+        bool isLeft = true;
+
+        //  Init the sift Bay
+        for(x=0; x < this->size_x; x++){
+            std::vector<ContainerSlot*> new_row;
+            siftBay.push_back(new_row);
+            for(y = 0; y < this->size_y; y++){
+                if(this->bayArea[x][y]->getName().compare("NAN") == 0){
+                    siftBay[x].push_back(new NANSlot(x + 1, y + 1, Origin::BAY));
+                }else{
+                    siftBay[x].push_back(new EmptySlot(x + 1, y + 1, Origin::BAY));
+                }
+            }
+        }
+
+        //  Iterator by row this time
+        for(y = 0; y < this->size_y; y++){
+
+            //  Break out if empty
+            if(all.empty()){break;};
+            
+            left = 5;
+            right = 6;
+            for(x=0; x < this->size_x; x++){
+
+                if(isLeft){
+                    if(siftBay[left][y]->getName().compare("NAN") != 0){
+                        if(!all.empty()){
+                            Container* c = all.top();
+                            c->changeXPos(left + 1);
+                            c->changeYPos(y + 1);
+                            delete siftBay[left][y];
+                            siftBay[left][y] = c;
+                            left--;
+                            all.pop();
+                        }else{
+                            break;
+                        }
+                    }
+                }else{
+                    if(siftBay[right][y]->getName().compare("NAN") != 0){
+                        if(!all.empty()){
+                            Container* c = all.top();
+                            c->changeXPos(right + 1);
+                            c->changeYPos(y + 1);
+                            delete siftBay[right][y];
+                            siftBay[right][y] = c;
+                            right++;
+                            all.pop();
+                        }else{
+                            break;
+                        }
+                    }
+                }
+                isLeft = !isLeft;
+            }
+        }
+
+        //  Last time, now to actually create the string to create a new ShipBay Object
+        std::string siftData = "";
+        for(x=0; x < this->size_x; x++){
+            for(y = 0; y < this->size_y; y++){
+                siftData += siftBay[x][y]->toString();
+            }
+        }
+
+        this->siftState =  new ShipBay(siftData);
+    }
+
+    return this->siftState;
+};
 
 std::vector<ContainerSlot*> ShipBay::getTempRow(){return this->temp;};
 
@@ -167,8 +242,6 @@ double ShipBay::calculateBalanceCost(){
     return diff;
     
 }
-
-
 
 bool ShipBay::compareBays(ShipBay* otherBay){
     int x, y;
@@ -262,80 +335,6 @@ bool ShipBay::canBalance() {
     }
 
     return false;  // The group cannot be balanced
-}
-
-ShipBay* ShipBay::siftBay(){
-    //  get all containers
-    std::priority_queue<Container*, std::vector<Container*>, ContainerComparator> all = this->getAllContainers();
-    std::vector<std::vector<ContainerSlot*>> siftBay;
-    int x,y,left,right;
-    bool isLeft = true;
-
-    //  Init the sift Bay
-    for(x=0; x < this->size_x; x++){
-        std::vector<ContainerSlot*> new_row;
-        siftBay.push_back(new_row);
-        for(y = 0; y < this->size_y; y++){
-            if(this->bayArea[x][y]->getName().compare("NAN") == 0){
-                siftBay[x].push_back(new NANSlot(x + 1, y + 1, Origin::BAY));
-            }else{
-                siftBay[x].push_back(new EmptySlot(x + 1, y + 1, Origin::BAY));
-            }
-        }
-    }
-
-    //  Iterator by row this time
-    for(y = 0; y < this->size_y; y++){
-
-        //  Break out if empty
-        if(all.empty()){break;};
-        
-        left = 5;
-        right = 6;
-        for(x=0; x < this->size_x; x++){
-
-            if(isLeft){
-                if(siftBay[left][y]->getName().compare("NAN") != 0){
-                    if(!all.empty()){
-                        Container* c = all.top();
-                        c->changeXPos(left + 1);
-                        c->changeYPos(y + 1);
-                        delete siftBay[left][y];
-                        siftBay[left][y] = c;
-                        left--;
-                        all.pop();
-                    }else{
-                        break;
-                    }
-                }
-            }else{
-                if(siftBay[right][y]->getName().compare("NAN") != 0){
-                    if(!all.empty()){
-                        Container* c = all.top();
-                        c->changeXPos(right + 1);
-                        c->changeYPos(y + 1);
-                        delete siftBay[right][y];
-                        siftBay[right][y] = c;
-                        right++;
-                        all.pop();
-                    }else{
-                        break;
-                    }
-                }
-            }
-            isLeft = !isLeft;
-        }
-    }
-
-    //  Last time, now to actually create the string to create a new ShipBay Object
-    std::string siftData = "";
-    for(x=0; x < this->size_x; x++){
-        for(y = 0; y < this->size_y; y++){
-            siftData += siftBay[x][y]->toString();
-        }
-    }
-
-    return new ShipBay(siftData);
 }
 
 /**
