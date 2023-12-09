@@ -15,17 +15,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
  */
 async function uploadFile(event) {
     const form = event.currentTarget;
-    const fileInput = document.getElementById("file");
+    const fileInput = document.getElementById("bala");
     const ids = document.createElement('id');
     const file = fileInput.files[0];    //  Get teh file
     const id = fileInput.form.id;
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('bala', file);
     formData.append('id', id)
 
     try {
-        const response = await fetch('/balance', {
+        const response = await fetch('/balanced', {
             method: 'POST',
             body: formData
         });

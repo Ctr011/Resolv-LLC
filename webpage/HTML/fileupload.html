@@ -13,20 +13,19 @@
     <link rel="shortcut icon" href="#"> <!-- This reference fixes a favicon error, need to include in all HTML files -->
 </head>
 <body>
-    <div>
-    <form1 id="balance" action="/balance" method="post" enctype="multipart/form-data" >
+<div>
+    <form id="balance" action="/balanced" method="post" enctype="multipart/form-data" >
         <label1 for="file" >Balance</label1>
-        <input class="ball" id="file" name="file" type="file" onchange="uploadFile(event)" />
-    </form1>
-    </div>
+        <input  id="bala" class="ball" name="file" type="file" accept=".txt" onchange="uploadFile(event)" />
+    </form>
+</div>
 <div3>
     <form id="load/offload" action="/load" method="post" enctype="multipart/form-data">
         <label for="file">Offload</label>
-        <input id="offload" class="ball2" name="file" type="file" onchange="uploadFile2(event)" />
+        <input id="offload" class="ball2" name="file" type="file" accept=".txt" onchange="uploadFile2(event)" />
     </form>
 </div3>
-<div0>
-    <button type="button" id="btnlog" onclick="check(event)">Login</button>
+    <button type="button" id="btnlog" class="btnlog" onclick="check(event)">Login</button>
     <div1 id="login" class="modal">
         <div2 class="modal-content">
             <span class="close">&times;</span>
@@ -35,13 +34,13 @@
             <button id="ssm" type="button" onblur="userLogin(event)" >Submit</button>
         </div2>
     </div1>
-</div0>
+
     <a href="intro.html">
         <button type="Back">Back</button>
     </a>
     <div4>
     <a href="balance.html">
-        <button type="button" action="/start" method="post" id="bth" onblur="startProgram(event)" >Submit</button>
+        <button type="button" action="/start" method="post" id="bth" onblur="setTimeout(startProgram(event),30000)" >Submit</button>
     </a>
     </div4>
     

@@ -14,7 +14,9 @@ async function check(event){
 
     var btnn = document.getElementById("ssm");
 
+
     var span = document.getElementsByClassName("close")[0];
+    var span2 = document.getElementsByClassName("close2")[0];
 
     btn.onclick = function(){
         prompt.style.display = "block";
@@ -23,7 +25,9 @@ async function check(event){
     span.onclick = function(){
         prompt.style.display = "none";
     }
-
+    span2.onclick = function(){
+        prompt.style.display = "none";
+    }
     btnn.onclick = function(){
         prompt.style.display = "none";
     }

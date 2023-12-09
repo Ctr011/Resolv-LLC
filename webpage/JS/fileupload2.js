@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
 /**
- * @function uploadFile
+ * @function uploadFile2
  * This function handles a file submission from a webpage with a form
  * It looks for a form element in the document, and processes the file info
  * @param {Event} event handles

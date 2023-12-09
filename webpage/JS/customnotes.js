@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 async function userNotes(event) {
     const form = event.currentTarget;
     const note = document.getElementById("nnote").value;
+    document.getElementById("nnote").value = '';
     // const ids = document.createElement('id');
     // const logins = login.value;    //  Get teh file
     // const id = login.form.id;

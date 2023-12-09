@@ -5,68 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript" src="/JS/username.js"></script>         <!-- script for getting user name -->
-    <script type="text/javascript" src="/JS/selection.js"></script>
+    <script type="text/javascript" src="/JS/selection2.js"></script>
     <script type="text/javascript" src="/JS/customnotes.js"></script>         <!-- script for getting user name -->
     <script type="text/javascript" src="/JS/hiddennotes.js"></script>
+    <link rel="stylesheet" href="/CSS/bal.css">
     <link rel="shortcut icon" href="#">
     <script></script>
 </head>
-<style>
-    body{
-        background-color: darkgray;
-    }
-    .modal {
-        display: none; /* Hidden by default */
-        position: fixed; /* Stay in place */
-        z-index: 1; /* Sit on top */
-        left: 0;
-        top: 0;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgb(0,0,0); /* Fallback color */
-        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-    .modal-content {
-        background-color: grey;
-        margin: 15% auto; /* 15% from the top and centered */
-        padding: 10px;
-        border: 1px solid #888;
-        width:10%; /* Could be more or less, depending on screen size */
-    }
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-    }
-    .close:hover,
-    .close:focus {
-        color: #000;
-        text-decoration: none;
-        cursor: pointer;}
-</style>
 <body>
-    <button type="button" id="btnotes" onclick="notecheck(event)">Custom Notes</button>
+    <button type="button" id="btnotes" class="custcom" onclick="notecheck(event)">Custom Notes</button>
     <div2 id="notes" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h1>Custom Notes</h1>
-            <input maxlength="255" type="text" action="/notes" id="nnote" name="nnote" onclick="this.value=''">
-            <button id="snm" type="button" onblur="userNotes(event)" >Submit</button>
+            <!-- <input maxlength="255" type="text" action="/notes" id="nnote" name="nnote" row="4" col="50" onclick="this.value=''"> -->
+            <textarea maxlength="255" action="/notes" id="nnote" name="nnote" rows="4" cols="25" onclick="this.value=''"></textarea>
+            <button id="snm" type="button" onblur="userNotes(event)" class="mm">Submit</button>
         </div>
     </div2>
-    <button type="button" id="btnlog" onclick="check(event)">Login</button>
-    <div1 id="login" class="modal">
+    <button type="button" id="btnlog" class="btnlog" onclick="check(event)">Login</button>
+    <div1 id="login" class="modal" >
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close2">&times;</span>
             <h1>Employee Login</h1>
             <input type="text" action="/id" id="name" name="name" onclick="this.value=''">
             <button id="ssm" type="button" onblur="userLogin(event)" >Submit</button>
         </div>
     </div1>
-    <a href="fileupload.html">
-        <button type="Back">Back</button>
+    <a href="fileupload.html" >
+        <button type="Back" class="ssx">Back</button>
     </a>
 </body>
 </html>

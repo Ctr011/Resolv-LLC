@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 async function userLogin(event) {
     const form = event.currentTarget;
     const login = document.getElementById("name").value;
+    document.getElementById("name").value = '';
     // const ids = document.createElement('id');
     // const logins = login.value;    //  Get teh file
     // const id = login.form.id;
