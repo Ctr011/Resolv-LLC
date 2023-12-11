@@ -6,14 +6,16 @@ Tree::Tree(Node* startNode){
     this->frontier = new NodeQueue();
 }
 
-void Tree::solveBalance(){
+Json Tree::solveBalance(){
 
-    //  initial check to check if ship is balanced
-    if(this->startState->isGoal()){
-        std::cout << "GOAL" << std::endl;
-        this->startState->printState();
-        return;
-    }
+    // //  initial check to check if ship is balanced
+    // if(this->startState->isGoal()){
+    //     std::cout << "GOAL" << std::endl;
+    //     this->startState->printState();
+
+    //     std::map<std::string, std::string> nodeMap = this->startState->getDescription();
+    //     return nodeMap;
+    // }
 
     //  Create explored tab
     std::vector<Node*> explored;
@@ -34,18 +36,32 @@ void Tree::solveBalance(){
         if(next_node->isGoal()){
             std::cout << "GOAL" << std::endl;
             next_node->printState();
-            std::cout << "Goal Cost: " << next_node->getCost() << std::endl;
+            std::cout << "Goal Cost: " << next_node->getMoveCost() << std::endl;
 
             Node* solutionNode = next_node;
 
+            Json solutionData;
+            int moveNumber = 1;
             while (solutionNode->getParent() != nullptr) {
-                std::cout << solutionNode->getDescription() << std::endl;
+
+                std::map<std::string, std::string> nodeMap = solutionNode->getDescription();
+
+                for(const auto& pair : nodeMap){
+                    solutionData[std::to_string(moveNumber)][pair.first] = pair.second;
+                }
 
                 // Move to the parent for the next iteration
                 solutionNode = solutionNode->getParent();
+
+                moveNumber++;
             }
 
-            return;
+            solutionData["startState"] = this->startState->getBay()->getText();
+            solutionData["endState"] = next_node->getBay()->getText();
+
+            std::cout << "JSON Object:\n" << solutionData.dump(2) << std::endl;
+
+            return solutionData;
         }
 
         //  Add node to explored set
@@ -56,13 +72,12 @@ void Tree::solveBalance(){
 
         next_node->printState();
 
-        std::cout << "Cost: " << next_node->getCost() << std::endl;
+        std::cout << "Cost: " << next_node->getMoveCost() << std::endl;
         std::cout << std::endl;
 
 
         for (Node* node : new_nodes) {
             bool foundInExplored = false;
-            node->printState();
 
             for (Node* explored_node : explored) {
                 if (explored_node->compareNodes(node)) {
@@ -79,14 +94,14 @@ void Tree::solveBalance(){
     }
 }
 
-void Tree::solveSIFT(ShipBay* siftedState){
+Json Tree::solveSIFT(ShipBay* siftedState){
 
     //  initial check to check if ship is balanced
-    if(this->startState->getBay()->compareBays(siftedState)){
-        std::cout << "GOAL" << std::endl;
-        this->startState->printState();
-        return;
-    }
+    // if(this->startState->getBay()->compareBays(siftedState)){
+    //     std::cout << "GOAL" << std::endl;
+    //     this->startState->printState();
+    //     return;
+    // }
     
     //  Create explored tab
     std::vector<Node*> explored;
@@ -111,14 +126,29 @@ void Tree::solveSIFT(ShipBay* siftedState){
 
             Node* solutionNode = next_node;
 
-            while (solutionNode->getParent() != nullptr) {
-                std::cout << solutionNode->getDescription() << std::endl;
+            Json solutionData;
+            int moveNumber = 1;
+           while (solutionNode->getParent() != nullptr) {
+
+                std::map<std::string, std::string> nodeMap = solutionNode->getDescription();
+
+                for(const auto& pair : nodeMap){
+                    solutionData[std::to_string(moveNumber)][pair.first] = pair.second;
+                }
 
                 // Move to the parent for the next iteration
                 solutionNode = solutionNode->getParent();
+
+                moveNumber++;
             }
 
-            return;
+            solutionData["startState"] = this->startState->getBay()->getText();
+            solutionData["endState"] = next_node->getBay()->getText();
+
+            std::cout << "JSON Object:\n" << solutionData.dump(2) << std::endl;
+
+            return solutionData;
+
         }
 
         //  Add node to explored set
@@ -157,13 +187,13 @@ void Tree::solveSIFT(ShipBay* siftedState){
  * this function multiple times for multiple unloads
  * @param unload
 */
-Node* Tree::solveUnLoad(std::string unload, Node* state){
+Json Tree::solveUnLoad(std::string unload, Node* state){
 
 
-    if(unload.size() == 0){
-        //  If there are no unloads, we are finished
-        return this->startState;
-    }
+    // if(unload.size() == 0){
+    //     //  If there are no unloads, we are finished
+    //     return this->startState;
+    // }
 
     //  init initial size
     int initSize = state->getBay()->getAllContainers().size();
@@ -197,19 +227,33 @@ Node* Tree::solveUnLoad(std::string unload, Node* state){
 
             if(node->isGoal()){
                 std::cout << "GOAL" << std::endl;
-                node->printState();
-                std::cout << "Goal Cost: " << node->getMoveCost() << std::endl;
+                next_node->printState();
+                std::cout << "Goal Cost: " << next_node->getMoveCost() << std::endl;
 
-                Node* solutionNode = node;
+                Node* solutionNode = next_node;
 
+                Json solutionData;
+                int moveNumber = 1;
                 while (solutionNode->getParent() != nullptr) {
-                    std::cout << solutionNode->getDescription() << std::endl;
+
+                    std::map<std::string, std::string> nodeMap = solutionNode->getDescription();
+
+                    for(const auto& pair : nodeMap){
+                        solutionData[std::to_string(moveNumber)][pair.first] = pair.second;
+                    }
 
                     // Move to the parent for the next iteration
                     solutionNode = solutionNode->getParent();
+
+                    moveNumber++;
                 }
 
-                return node;
+                solutionData["startState"] = this->startState->getBay()->getText();
+                solutionData["endState"] = next_node->getBay()->getText();
+
+                std::cout << "JSON Object:\n" << solutionData.dump(2) << std::endl;
+
+                return solutionData;
             }
 
             bool foundInExplored = false;
@@ -237,7 +281,7 @@ Node* Tree::solveUnLoad(std::string unload, Node* state){
     return nullptr;
 }
 
-void Tree::solveLoad(){
+Json Tree::solveLoad(){
 
     //  Expand node only if not in explored
     std::vector<Node*> new_nodes = this->startState->expand();
@@ -248,19 +292,33 @@ void Tree::solveLoad(){
     }
 
     //  Get lowest cost Node
-    Node* low = this->frontier->pop();
+    Node* solutionNode = this->frontier->pop();
 
     std::cout << "GOAL" << std::endl;
-    low->printState();
-    std::cout << "Goal Cost: " << low->getMoveCost() << std::endl;
+    solutionNode->printState();
+    std::cout << "Goal Cost: " << solutionNode->getMoveCost() << std::endl;
 
-    Node* solutionNode = low;
-
+    Json solutionData;
+    int moveNumber = 1;
     while (solutionNode->getParent() != nullptr) {
-        std::cout << solutionNode->getDescription() << std::endl;
+
+        std::map<std::string, std::string> nodeMap = solutionNode->getDescription();
+
+        for(const auto& pair : nodeMap){
+            solutionData[std::to_string(moveNumber)][pair.first] = pair.second;
+        }
 
         // Move to the parent for the next iteration
         solutionNode = solutionNode->getParent();
+
+        moveNumber++;
     }
+
+    solutionData["startState"] = this->startState->getBay()->getText();
+    solutionData["endState"] = solutionNode->getBay()->getText();
+
+    std::cout << "JSON Object:\n" << solutionData.dump(2) << std::endl;
+
+    return solutionData;
 
 }

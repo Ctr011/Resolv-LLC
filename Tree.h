@@ -3,6 +3,8 @@
 
 //  Tree.h
 #include "NodeQueue.h"
+#include ".\webserver\nlohmann\json.hpp"
+using Json = nlohmann::json;
 
 class Tree{
     
@@ -18,10 +20,10 @@ public:
 
 
     //  void for now
-    void solveBalance();
-    void solveSIFT(ShipBay* siftedState);
-    Node* solveUnLoad(std::string unload, Node* state = nullptr);
-    void solveLoad();
+    Json solveBalance();
+    Json solveSIFT(ShipBay* siftedState);
+    Json solveUnLoad(std::string unload, Node* state = nullptr);
+    Json solveLoad();
 };
 
 #endif // TREE_H

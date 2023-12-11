@@ -34,7 +34,7 @@ int main() {
     // Serve HTML file
     svr.Get("/", [](const httplib::Request &, httplib::Response &res) {
         std::ifstream file("../webpage/HTML/fileupload.html");
-        std::stringstream buffer;
+        std::stringstream buffer;   
         buffer << file.rdbuf();
         res.set_content(buffer.str(), "text/html");
     });
@@ -66,33 +66,20 @@ int main() {
 
             try{
                 bay = new ShipBay(file.content);
-
-                // bay2 = new ShipBay(file.content);
-
                 buffer = new Buffer("");
-                // buffer2 = new Buffer("");
 
-                Node* testNode = new UnloadNode(bay, buffer, 0, "Cat");
+                Node* testNode = new BalanceNode(bay, buffer, 0);
                 
 
                 Tree* tree = new Tree(testNode);
 
-                // if(bay->canBalance()){
-                //     tree->solveBalance();
-                // }else{
-                //     testNode->isSIFT = true;
-                //     tree->solveSIFT(bay->getSIFTState());
-                // }
+                if(bay->canBalance()){
+                    tree->solveBalance();
+                }else{
+                    testNode->isSIFT = true;
+                    tree->solveSIFT(bay->getSIFTState());
+                }
 
-                Node* first = tree->solveUnLoad("Cat", testNode);
-
-                delete tree;
-
-                Node* testNode2 = new UnloadNode(first->getBay(), first->getBuffer(), first->getMoveCost(), "Dog");
-                tree = new Tree(testNode2);
-                Node* second = tree->solveUnLoad("Dog", testNode2);
-                
-                second->printState();
 
             }catch(std::invalid_argument error){
                 res.status = 500;

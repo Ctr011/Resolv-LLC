@@ -98,6 +98,10 @@ void ShipBay::parseContent(std::string manifest){
     return;
 }
 
+std::string ShipBay::getText(){
+    return this->originalText;
+}
+
 ContainerSlot* ShipBay::getSlot(int x, int y){
 
     //  If within range, grab the normal containerslot
@@ -238,8 +242,11 @@ double ShipBay::calculateBalanceCost(){
     //  Get 10% difference value, return if less than or qual to 10%
     double diff = std::abs(mass1 - mass2) * 100 / std::max(std::abs(mass1), std::abs(mass2));
 
-    //  Return % difference here
-    return diff;
+    if(diff < 10){
+        return 0;
+    }else{
+        return diff - 10;
+    }
     
 }
 
@@ -350,7 +357,7 @@ std::vector<int> ShipBay::getHeights(int start, int end){
 
     if(start == end){
         int y;
-        for(y = 0; y <= this->size_y; y++){
+        for(y = 0; y < this->size_y; y++){
 
             if(y < this->size_y){
                 if(bayArea.at(start).at(y)->getName().compare("UNUSED") == 0){
@@ -490,6 +497,7 @@ int ShipBay::putDownDontainer(Container* container, int column){
             }else{
                 oldSlot = bayArea[column][i];
                 delete oldSlot;
+
                 bayArea[column][i] = nullptr;
                 bayArea[column][i] = container;
             }

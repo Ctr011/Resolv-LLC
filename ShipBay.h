@@ -55,6 +55,8 @@ class ShipBay{
         ShipBay() = default;
         ShipBay(std::string manifestContent, ShipBay* sift = nullptr, std::vector<ContainerSlot*>* tempRow = nullptr);
 
+        std::string getText();
+
         ContainerSlot* getSlot(int x, int y);
         ContainerSlot* getContainerByName(std::string name);
         std::vector<ContainerSlot*> getTempRow();

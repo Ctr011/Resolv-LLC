@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <iostream>
+#include <map>
 #include "./ShipBay.h"
 #include "./Buffer.h"
 #include "./ContainerSlot.h"
@@ -20,7 +21,7 @@ protected:
     Buffer* buffer;
     Container* pickedUp;
     int incoming_cost;
-    std::string move_description;
+    std::map<std::string, std::string> move_description;
 
 public:
 
@@ -39,8 +40,8 @@ public:
 
 
     //  Basically for printing the set of instructions
-    std::string getDescription();
-    void setDescription(const std::string& description);
+    std::map<std::string, std::string> getDescription();
+    void setDescription(std::string pickup_x, std::string pickup_y, std::string pickup_origin, std::string mass, std::string putdown_x, std::string putdown_y, std::string putdown_origin, std::string cost);
     
     //  Required by subclasses
     virtual int getCost() = 0;

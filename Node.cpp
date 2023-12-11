@@ -1,12 +1,19 @@
 #include "Node.h"
 
-std::string Node::getDescription(){
-    return move_description;
+std::map<std::string, std::string> Node::getDescription(){
+    return this->move_description;
 }
 
 // Setter for move_description
-void Node::setDescription(const std::string& description) {
-    move_description = description;
+void Node::setDescription(std::string pickup_x, std::string pickup_y, std::string pickup_origin, std::string mass, std::string putdown_x, std::string putdown_y, std::string putdown_origin, std::string cost) {
+    this->move_description["pickup_x"] = pickup_x;
+    this->move_description["pickup_y"] = pickup_y;
+    this->move_description["pickup_origin"] = pickup_origin;
+    this->move_description["mass"] = mass;
+    this->move_description["putdown_x"] = putdown_x;
+    this->move_description["putdown_y"] = putdown_y;
+    this->move_description["putdown_origin"] = putdown_origin;
+    this->move_description["cost"] = cost;
 }
 
 int Node::getMoveCost(){
@@ -97,103 +104,155 @@ std::vector<Node*> BalanceNode::expand(){
     std::vector<int> heights = this->bay->getHeights(1,12);
     std::vector<int> bufferHeights = this->buffer->getHeights(1, 24);
 
+    int pickup_x, pickup_y, putdown_x, putdown_y, container_mass;
 
-    //  Actions if there is not a container currently picked up
-    if(!this->pickedUp){
+     //  Loop over every columns height in the ship bay
+    for(int i = 0; i < heights.size(); i++){
+
+        //  If height != 0 (Meaning it is not empty), pick it up
+        if(heights[i] != 0){
 
 
-        //  Loop over every columns height in the ship bay
-        for(int i = 0; i < heights.size(); i++){
+            
 
-            //  If height != 0 (Meaning it is not empty), pick it up
-            if(heights[i] != 0){
-                //  Make a new (deep) copy of current bay, one that no longer has the container that is picked up
-                //  Also, the container that is picked up
-                ShipBay* bayCopy = this->bay->clone();
-                Buffer* bufferCopy = this->buffer->clone();
+            //  Make a new (deep) copy of current bay, one that no longer has the container that is picked up
+            //  Also, the container that is picked up
+            ShipBay* bayCopy = this->bay->clone();
+            Buffer* bufferCopy = this->buffer->clone();
+            Container* heldContainer = bayCopy->pickUpContainer(i);
 
-                Container* heldContainer = bayCopy->pickUpContainer(i);
+            if(heldContainer){
 
-                if(heldContainer){
-                    Node* newNode = new BalanceNode(bayCopy, bufferCopy, this->incoming_cost, this, heldContainer);
-                    newNode->isSIFT = this->isSIFT;
-                    newNode->setDescription("UP: '" + heldContainer->getName() + "' {" + std::to_string(heldContainer->getXPos()) + ", " + std::to_string(heldContainer->getYPos()) + "}");
-                    expansionNodes.push_back(newNode);
+                //  Get pickup COntainer info
+                pickup_x = heldContainer->getXPos();
+                pickup_y = heldContainer->getYPos();
+                container_mass = heldContainer->getMass();
+
+                for(int e = 0; e < heights.size(); e++){
+
+                    if(i == e){
+                        continue;
+                    }
+
+                    //  If height != 8 (Meaning it is not full), put it down
+                    if(heights[e] < 9){
+                        //  Make a new (deep) copy of current bay, one that no longer has the container that is picked up
+                        //  Also, the container that is picked up
+                        ShipBay* bayInnerCopy = bayCopy->clone();
+                        Buffer* bufferInnerCopy = bufferCopy->clone();
+
+                        //  Get putdown position info
+                        putdown_x = e + 1;
+                        putdown_y = heights[e] + 1;
+
+
+                        //  New copy of container
+                        Container* newContainer = heldContainer->clone();
+                        int cost = bayInnerCopy->putDownDontainer(newContainer, e);
+                        Node* newNode = new BalanceNode(bayInnerCopy, bufferInnerCopy, cost + this->incoming_cost, this);
+                        newNode->isSIFT = this->isSIFT;
+                        newNode->setDescription(std::to_string(pickup_x), std::to_string(pickup_y), "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));
+                        expansionNodes.push_back(newNode);
+                    }
+                }
+
+                for(int e = 0; e < bufferHeights.size(); e++){
+
+                    if(i == e){
+                        continue;
+                    }
+
+                    //  If height != 8 (Meaning it is not full), put it down
+                    if(bufferHeights[e] != 4){
+                        //  Make a new (deep) copy of current bay, one that no longer has the container that is picked up
+                        //  Also, the container that is picked up
+                        ShipBay* bayInnerCopy = bayCopy->clone();
+                        Buffer* bufferInnerCopy = bufferCopy->clone();
+
+                        //  Get putdown position info
+                        putdown_x = e + 1;
+                        putdown_y = heights[e] + 1;
+
+                        //  Put in new copy of container
+                        Container* newContainer = heldContainer->clone();
+                        int cost = bufferInnerCopy->putDownDontainer(newContainer, e);
+                        Node* newNode = new BalanceNode(bayInnerCopy, bufferInnerCopy, cost + this->incoming_cost, this);
+                        newNode->isSIFT = this->isSIFT;
+                        newNode->setDescription(std::to_string(pickup_x), std::to_string(pickup_y), "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BUFFER", std::to_string(cost));
+                        expansionNodes.push_back(newNode);
+                    }
                 }
             }
         }
-
-        //  Now the same for the buffer
-        for(int i = 0; i < bufferHeights.size(); i++){
-
-            //  If height != 0 (Meaning it is not empty), pick it up
-            if(bufferHeights[i] != 0){
-                //  Make a new (deep) copy of current bay, one that no longer has the container that is picked up
-                //  Also, the container that is picked up
-                ShipBay* bayCopy = this->bay->clone();
-                Buffer* bufferCopy = this->buffer->clone();
-
-                Container* heldContainer = bufferCopy->pickUpContainer(i);
-
-                if(heldContainer){
-                    Node* newNode = new BalanceNode(bayCopy, bufferCopy, this->incoming_cost, this, heldContainer);
-                    newNode->isSIFT = this->isSIFT;
-                    newNode->setDescription("UP: '" + heldContainer->getName() + "' *{" + std::to_string(heldContainer->getXPos()) + ", " + std::to_string(heldContainer->getYPos()) + "}");
-                    expansionNodes.push_back(newNode);
-                }
-            }
-        }
-
-
-        return expansionNodes;
-    }else{
-
-        //  First, init picked up container's name
-        std::string p_name = this->pickedUp->getName();
-
-        for(int i = 0; i < heights.size(); i++){
-
-            //  If height != 8 (Meaning it is not full), put it down
-            if(heights[i] < 9){
-                //  Make a new (deep) copy of current bay, one that no longer has the container that is picked up
-                //  Also, the container that is picked up
-                ShipBay* bayCopy = this->bay->clone();
-                Buffer* bufferCopy = this->buffer->clone();
-
-                //  Create new container based off one picked up
-                
-
-                //  New copy of container
-                Container* newContainer = this->pickedUp->clone();
-                int cost = bayCopy->putDownDontainer(newContainer, i);
-                Node* newNode = new BalanceNode(bayCopy, bufferCopy, cost + this->incoming_cost, this);
-                newNode->isSIFT = this->isSIFT;
-                newNode->setDescription("DN: '" + p_name + "' {" + std::to_string(newContainer->getXPos()) + ", " + std::to_string(newContainer->getYPos()) + "}");
-                expansionNodes.push_back(newNode);
-            }
-        }
-
-        for(int i = 0; i < bufferHeights.size(); i++){
-
-            //  If height != 8 (Meaning it is not full), put it down
-            if(bufferHeights[i] != 4){
-                //  Make a new (deep) copy of current bay, one that no longer has the container that is picked up
-                //  Also, the container that is picked up
-                ShipBay* bayCopy = this->bay->clone();
-                Buffer* bufferCopy = this->buffer->clone();
-
-                //  Put in new copy of container
-                Container* newContainer = pickedUp->clone();
-                int cost = bufferCopy->putDownDontainer(newContainer, i);
-                Node* newNode = new BalanceNode(bayCopy, bufferCopy, cost + this->incoming_cost, this);
-                newNode->isSIFT = this->isSIFT;
-                newNode->setDescription("DN: '" + p_name + "' *{" + std::to_string(newContainer->getXPos()) + ", " + std::to_string(newContainer->getYPos()) + "}");
-                expansionNodes.push_back(newNode);
-            }
-        }
-
-        return expansionNodes;
     }
+
+    for(int i = 0; i < bufferHeights.size(); i++){
+
+        //  If height != 0 (Meaning it is not empty), pick it up
+        if(bufferHeights[i] != 0){
+            //  Make a new (deep) copy of current bay, one that no longer has the container that is picked up
+            //  Also, the container that is picked up
+            ShipBay* bayCopy = this->bay->clone();
+            Buffer* bufferCopy = this->buffer->clone();
+            Container* heldContainer = bufferCopy->pickUpContainer(i);
+
+            if(heldContainer){
+                
+                //  Get pickup COntainer info
+                pickup_x = heldContainer->getXPos();
+                pickup_y = heldContainer->getYPos();
+                container_mass = heldContainer->getMass();
+
+                for(int i = 0; i < heights.size(); i++){
+
+                    //  If height != 8 (Meaning it is not full), put it down
+                    if(heights[i] < 9){
+                        //  Make a new (deep) copy of current bay, one that no longer has the container that is picked up
+                        //  Also, the container that is picked up
+                        ShipBay* bayInnerCopy = bayCopy->clone();
+                        Buffer* bufferInnerCopy = bufferCopy->clone();
+
+                        //  Get putdown position info
+                        putdown_x = i + 1;
+                        putdown_y = heights[i] + 1;
+
+                        //  New copy of container
+                        Container* newContainer = heldContainer->clone();
+                        int cost = bayInnerCopy->putDownDontainer(newContainer, i);
+                        Node* newNode = new BalanceNode(bayInnerCopy, bufferInnerCopy, cost + this->incoming_cost, this);
+                        newNode->isSIFT = this->isSIFT;
+                        newNode->setDescription(std::to_string(pickup_x), std::to_string(pickup_y), "BUFFER", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));
+                        expansionNodes.push_back(newNode);
+                    }
+                }
+
+                for(int i = 0; i < bufferHeights.size(); i++){
+
+                    //  If height != 8 (Meaning it is not full), put it down
+                    if(bufferHeights[i] != 4){
+                        //  Make a new (deep) copy of current bay, one that no longer has the container that is picked up
+                        //  Also, the container that is picked up
+                        ShipBay* bayInnerCopy = bayCopy->clone();
+                        Buffer* bufferInnerCopy = bufferCopy->clone();
+
+                        //  Get putdown position info
+                        putdown_x = i;
+                        putdown_y = heights[i];
+
+                        //  Put in new copy of container
+                        Container* newContainer = heldContainer->clone();
+                        int cost = bufferInnerCopy->putDownDontainer(newContainer, i);
+                        Node* newNode = new BalanceNode(bayInnerCopy, bufferInnerCopy, cost + this->incoming_cost, this);
+                        newNode->isSIFT = this->isSIFT;
+                        newNode->setDescription(std::to_string(pickup_x), std::to_string(pickup_y), "BUFFER", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BUFFER", std::to_string(cost));
+                        expansionNodes.push_back(newNode);
+                    }
+                }
+            }
+        }
+    }
+
+    return expansionNodes;
 
 }
 
@@ -233,7 +292,7 @@ int BalanceNode::getSIFTCost(){
         allContainers.pop();
     }
 
-    return (3 * cost) + this->incoming_cost;
+    return (5 * cost) + this->incoming_cost;
 }
 
 int BalanceNode::getCost(){
@@ -243,8 +302,8 @@ int BalanceNode::getCost(){
     }
 
     //  Below can be tweaked
-    const double distanceWeight = 0.6;
-    const double balanceWeight = 0.4;
+    const double distanceWeight = 0.1f;
+    const double balanceWeight = 0.9f;
     if(this->buffer->isEmpty()){
         return (distanceWeight * this->incoming_cost) + (balanceWeight * this->bay->calculateBalanceCost());
     }else{
@@ -260,7 +319,7 @@ int BalanceNode::getCost(){
  * @return bool
 */
 bool BalanceNode::isGoal(){
-    if(bay->calculateBalanceCost() < 10 && buffer->isEmpty() && pickedUp == nullptr){
+    if(bay->calculateBalanceCost() < 10 && buffer->isEmpty()){
         return true;
     }else{
         return false;
@@ -328,33 +387,10 @@ std::vector<Node*> UnloadNode::expand(){
     ShipBay* baycopy = this->bay->clone();
     Buffer* bufferCopy = this->buffer->clone();
 
-    //  Get heights, to find out where we can put the other onctainers
-    std::vector<int> heights = baycopy->getHeights(1, 12);
-
-    //  If we are holding onto an unrelated container, move it somewhere
-    if(this->pickedUp != nullptr){
-        
-        int x;
-        for(x = 0; x < BAY_MAX_X; x++){
-            //  Clone
-            baycopy = this->bay->clone();
-            bufferCopy = this->buffer->clone();
-
-            //  Create copy of picked up container
-            Container* containerCopy = new Container(this->pickedUp->getName(), this->pickedUp->getMass(), this->pickedUp->getXPos(), this->pickedUp->getYPos(), this->pickedUp->getOrigin());
-
-            //  Unload options here
-            if(heights[x] < 8){
-                int cost = baycopy->putDownDontainer(containerCopy, x);
-                Node* newNode = new UnloadNode(baycopy, bufferCopy, this->incoming_cost + cost, this->unloadTarget, this);
-            }
-        }
-
-        return expansions;
-    }
-
     //  Search for container
     Container* foundContainer = &baycopy->getContainerByName(this->unloadTarget)->getContainer();
+
+    int pickup_x, pickup_y, putdown_x, putdown_y, container_mass;
 
     //  if found, unload
     int cost = 0;
@@ -363,16 +399,44 @@ std::vector<Node*> UnloadNode::expand(){
         //  pick up the container in this copy
         Container* picked_up = baycopy->pickUpContainer(foundContainer->getXPos() - 1);
 
+        //  Get pickup COntainer info
+        pickup_x = picked_up->getXPos();
+        pickup_y = picked_up->getYPos();
+        container_mass = picked_up->getMass();
+
+
         //  If container is not what we wanted, move to side somewhere
         if(picked_up->getName().compare(this->unloadTarget) != 0){
-
-            //  Copy the container
-            Container* pickedUp_copy = picked_up->clone();
             
+             //  Get heights, to find out where we can put the other onctainers
+            std::vector<int> heights = baycopy->getHeights(1, 12);
+            
+            int x;
+            for(x = 0; x < BAY_MAX_X; x++){
 
-            //  Push back this copy
-            Node* newNode = new UnloadNode(baycopy, bufferCopy, this->incoming_cost, this->unloadTarget, this, pickedUp_copy);
-            expansions.push_back(newNode);
+                //  Unload options here
+                if(heights[x] < 8){
+
+                    //  Clone
+                    ShipBay* bayInnerCopy = baycopy->clone();
+                    Buffer* bufferInnerCopy = bufferCopy->clone();
+
+                    //  Copy the container
+                    Container* pickedUp_copy = picked_up->clone();
+
+                    int cost = baycopy->putDownDontainer(pickedUp_copy, x);
+
+                    putdown_x = pickedUp_copy->getXPos();
+                    putdown_y = pickedUp_copy->getYPos();
+                    container_mass = pickedUp_copy->getMass();
+
+                    Node* newNode = new UnloadNode(bayInnerCopy, bufferInnerCopy, this->incoming_cost + cost, this->unloadTarget, this);
+                    newNode->setDescription(std::to_string(pickup_x), std::to_string(pickup_y), "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));
+                    expansions.push_back(newNode);
+                }
+            }
+
+            return expansions;
         }else{
             //  Load onto a truck
             int cost = baycopy->putDownDontainer(foundContainer, TRUCK_COLUMN);
@@ -380,6 +444,7 @@ std::vector<Node*> UnloadNode::expand(){
             //  Add to expansions
             Node* newNode = new UnloadNode(baycopy, bufferCopy, this->incoming_cost + cost, "DONE", this);
             newNode->printState();
+            newNode->setDescription(std::to_string(pickup_x), std::to_string(pickup_y), "BAY", std::to_string(container_mass), "N/A", "N/A", "TRUCK", std::to_string(cost));
             expansions.push_back(newNode);
         }
     }
@@ -439,7 +504,9 @@ std::vector<Node*> LoadNode::expand(){
     int cost;
 
     std::vector<Node*> expansions;
+
     
+    int putdown_x, putdown_y, container_mass;
 
     //  Put down container in every possible column
     int x;
@@ -453,7 +520,13 @@ std::vector<Node*> LoadNode::expand(){
 
         //  Put down container into copy of bay
         cost = baycopy->putDownDontainer(container_copy, x);
+
+        putdown_x = container_copy->getXPos();
+        putdown_y = container_copy->getYPos();
+        container_mass = container_copy->getMass();
+
         Node* newNode = new LoadNode(baycopy, bufferCopy, this->incoming_cost + cost, container_copy, this);
+        newNode->setDescription("N/A", "N/A", "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));
         newNode->printState();
         expansions.push_back(newNode);
         
