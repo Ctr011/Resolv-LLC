@@ -4,6 +4,7 @@
     <title>Upload Test</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../CSS/upload.css"> <!-- Adjust the path accordingly -->
     <script type="text/javascript" src="/JS/fileupload.js"></script>
 </head>
 <body>
@@ -13,6 +14,27 @@
         <input id="file" name="file" type="file" />
         <button type="button" onclick="uploadFile(event)">Upload</button>
     </form>
+
+    <div>
+
+        <h2>Bay</h2>
+        <div id="bay_grid">
+            <!-- Populating the first grid with numbers -->
+            <div class="grid-item"><div class="grid-item-content">1</div></div>
+            <div class="grid-item"><div class="grid-item-content">2</div></div>
+            <!-- Add more items as needed -->
+        </div>
+        <div>
+            <h3>Buffer</h3>
+            <div id="buffer_grid">
+                <!-- Populating the second grid with numbers -->
+                <div class="grid-item"><div class="grid-item-content">A</div></div>
+                <div class="grid-item"><div class="grid-item-content">B</div></div>
+                <!-- Add more items as needed -->
+            </div>
+        </div>
+    
+    </div>
 
 </body>
 </html>
