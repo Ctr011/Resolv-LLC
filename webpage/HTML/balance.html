@@ -19,7 +19,7 @@
             <span class="close">&times;</span>
             <h1>Custom Notes</h1>
             <!-- <input maxlength="255" type="text" action="/notes" id="nnote" name="nnote" row="4" col="50" onclick="this.value=''"> -->
-            <textarea maxlength="255" action="/notes" id="nnote" name="nnote" rows="4" cols="25" onclick="this.value=''"></textarea>
+            <textarea maxlength="255" onkeypress="return event.charCode >= 32 && event.charCode <= 126" action="/notes" id="nnote" name="nnote" rows="4" cols="25" onclick="this.value=''"></textarea>
             <button id="snm" type="button" onblur="userNotes(event)" class="mm">Submit</button>
         </div>
     </div2>
@@ -28,12 +28,22 @@
         <div class="modal-content">
             <span class="close2">&times;</span>
             <h1>Employee Login</h1>
-            <input type="text" action="/id" id="name" name="name" onclick="this.value=''">
+            <input type="text" maxlength="255" onkeypress="return event.charCode >= 32 && event.charCode <= 126" action="/id" id="name" name="name" onclick="this.value=''">
             <button id="ssm" type="button" onblur="userLogin(event)" >Submit</button>
         </div>
     </div1>
+
+    <!-- add the interactions here with start...
+    add the backend server protocol -->
     <a href="fileupload.html" >
         <button type="Back" class="ssx">Back</button>
-    </a>
+    </a>   
+      <a href="noticeblock.html" >
+        <button type="Back" class="ssb">Done</button>
+    </a> 
+    
+    <!-- <a href="">
+        <button type="button" action="/start" method="post" id="bth" onblur="setTimeout(startProgram(event),30000)" >Submit</button>
+    </a> -->
 </body>
 </html>

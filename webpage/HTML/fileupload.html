@@ -30,7 +30,7 @@
         <div2 class="modal-content">
             <span class="close">&times;</span>
             <h1>Employee Login</h1>
-            <input type="text" action="/id" id="name" name="name" onclick="this.value=''">
+            <input type="text" maxlength="255" action="/id" id="name" name="name" onclick="this.value=''">
             <button id="ssm" type="button" onblur="userLogin(event)" >Submit</button>
         </div2>
     </div1>
@@ -38,11 +38,6 @@
     <a href="intro.html">
         <button type="Back">Back</button>
     </a>
-    <div4>
-    <a href="balance.html">
-        <button type="button" action="/start" method="post" id="bth" onblur="setTimeout(startProgram(event),30000)" >Submit</button>
-    </a>
-    </div4>
     
 </body>
 </html>

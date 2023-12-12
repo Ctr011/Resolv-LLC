@@ -22,7 +22,7 @@ async function uploadFile(event) {
 
     const formData = new FormData();
     formData.append('bala', file);
-    formData.append('id', id)
+    formData.append('id', id);
 
     try {
         const response = await fetch('/balanced', {
@@ -36,7 +36,8 @@ async function uploadFile(event) {
     } catch (error) {
         console.error('Error:', error);
     }
-
+    window.location.href ="http://localhost:8080/fileupload.html";
+    window.location.replace("http://localhost:8080/balance.html");
     // Stops page from reloading to submit the form
     event.preventDefault();
 }

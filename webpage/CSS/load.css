@@ -44,6 +44,17 @@ body{
         color: #000;
         text-decoration: none;
         cursor: pointer;}
+.close3 {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+    }
+.close3:hover,
+.close3:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;}
 .mm{
     position: relative;
     margin:auto;
