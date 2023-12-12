@@ -64,6 +64,8 @@ int main() {
             Buffer* buffer = nullptr;
             Buffer* buffer2 = nullptr;
 
+            Json solution_response;
+
             try{
                 bay = new ShipBay(file.content);
                 buffer = new Buffer("");
@@ -73,13 +75,14 @@ int main() {
 
                 Tree* tree = new Tree(testNode);
 
+                
+
                 if(bay->canBalance()){
-                    tree->solveBalance();
+                    solution_response = tree->solveBalance();
                 }else{
                     testNode->isSIFT = true;
-                    tree->solveSIFT(bay->getSIFTState());
+                    solution_response = tree->solveSIFT(bay->getSIFTState());
                 }
-
 
             }catch(std::invalid_argument error){
                 res.status = 500;
@@ -92,7 +95,7 @@ int main() {
 
             // Status code 200: Success
             res.status = 200;
-            res.set_content("File successfully uploaded", "text/plain");
+            res.set_content(solution_response.dump(), "application/json");
             return;
         } else {
             // HTTP status code set to 400: Bad Request

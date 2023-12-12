@@ -56,8 +56,11 @@ Json Tree::solveBalance(){
                 moveNumber++;
             }
 
-            solutionData["startState"] = this->startState->getBay()->getText();
-            solutionData["endState"] = next_node->getBay()->getText();
+            std::string start = this->startState->getBay()->getText();
+            std::string end = next_node->getBay()->getText();
+
+            solutionData["startState"] = start;
+            solutionData["endState"] = end;
 
             std::cout << "JSON Object:\n" << solutionData.dump(2) << std::endl;
 

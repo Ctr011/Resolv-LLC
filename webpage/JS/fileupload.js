@@ -26,7 +26,7 @@ async function uploadFile(event) {
             body: formData
         });
 
-        const data = await response;
+        const data = await response.json();
         console.log('Success:', data);
     } catch (error) {
         console.error('Error:', error);

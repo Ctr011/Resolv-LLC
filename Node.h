@@ -41,7 +41,7 @@ public:
 
     //  Basically for printing the set of instructions
     std::map<std::string, std::string> getDescription();
-    void setDescription(std::string pickup_x, std::string pickup_y, std::string pickup_origin, std::string mass, std::string putdown_x, std::string putdown_y, std::string putdown_origin, std::string cost);
+    void setDescription(std::string name, std::string pickup_x, std::string pickup_y, std::string pickup_origin, std::string mass, std::string putdown_x, std::string putdown_y, std::string putdown_origin, std::string cost);
     
     //  Required by subclasses
     virtual int getCost() = 0;

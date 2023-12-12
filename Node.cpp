@@ -5,7 +5,8 @@ std::map<std::string, std::string> Node::getDescription(){
 }
 
 // Setter for move_description
-void Node::setDescription(std::string pickup_x, std::string pickup_y, std::string pickup_origin, std::string mass, std::string putdown_x, std::string putdown_y, std::string putdown_origin, std::string cost) {
+void Node::setDescription(std::string name, std::string pickup_x, std::string pickup_y, std::string pickup_origin, std::string mass, std::string putdown_x, std::string putdown_y, std::string putdown_origin, std::string cost) {
+    this->move_description["containerName"] = name;
     this->move_description["pickup_x"] = pickup_x;
     this->move_description["pickup_y"] = pickup_y;
     this->move_description["pickup_origin"] = pickup_origin;
@@ -151,7 +152,7 @@ std::vector<Node*> BalanceNode::expand(){
                         int cost = bayInnerCopy->putDownDontainer(newContainer, e);
                         Node* newNode = new BalanceNode(bayInnerCopy, bufferInnerCopy, cost + this->incoming_cost, this);
                         newNode->isSIFT = this->isSIFT;
-                        newNode->setDescription(std::to_string(pickup_x), std::to_string(pickup_y), "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));
+                        newNode->setDescription(newContainer->getName(), std::to_string(pickup_x), std::to_string(pickup_y), "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));
                         expansionNodes.push_back(newNode);
                     }
                 }
@@ -178,7 +179,7 @@ std::vector<Node*> BalanceNode::expand(){
                         int cost = bufferInnerCopy->putDownDontainer(newContainer, e);
                         Node* newNode = new BalanceNode(bayInnerCopy, bufferInnerCopy, cost + this->incoming_cost, this);
                         newNode->isSIFT = this->isSIFT;
-                        newNode->setDescription(std::to_string(pickup_x), std::to_string(pickup_y), "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BUFFER", std::to_string(cost));
+                        newNode->setDescription(newContainer->getName(), std::to_string(pickup_x), std::to_string(pickup_y), "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BUFFER", std::to_string(cost));
                         expansionNodes.push_back(newNode);
                     }
                 }
@@ -221,7 +222,7 @@ std::vector<Node*> BalanceNode::expand(){
                         int cost = bayInnerCopy->putDownDontainer(newContainer, i);
                         Node* newNode = new BalanceNode(bayInnerCopy, bufferInnerCopy, cost + this->incoming_cost, this);
                         newNode->isSIFT = this->isSIFT;
-                        newNode->setDescription(std::to_string(pickup_x), std::to_string(pickup_y), "BUFFER", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));
+                        newNode->setDescription(newContainer->getName(), std::to_string(pickup_x), std::to_string(pickup_y), "BUFFER", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));
                         expansionNodes.push_back(newNode);
                     }
                 }
@@ -244,7 +245,7 @@ std::vector<Node*> BalanceNode::expand(){
                         int cost = bufferInnerCopy->putDownDontainer(newContainer, i);
                         Node* newNode = new BalanceNode(bayInnerCopy, bufferInnerCopy, cost + this->incoming_cost, this);
                         newNode->isSIFT = this->isSIFT;
-                        newNode->setDescription(std::to_string(pickup_x), std::to_string(pickup_y), "BUFFER", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BUFFER", std::to_string(cost));
+                        newNode->setDescription(newContainer->getName(), std::to_string(pickup_x), std::to_string(pickup_y), "BUFFER", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BUFFER", std::to_string(cost));
                         expansionNodes.push_back(newNode);
                     }
                 }
@@ -431,7 +432,7 @@ std::vector<Node*> UnloadNode::expand(){
                     container_mass = pickedUp_copy->getMass();
 
                     Node* newNode = new UnloadNode(bayInnerCopy, bufferInnerCopy, this->incoming_cost + cost, this->unloadTarget, this);
-                    newNode->setDescription(std::to_string(pickup_x), std::to_string(pickup_y), "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));
+                    newNode->setDescription(pickedUp_copy->getName(), std::to_string(pickup_x), std::to_string(pickup_y), "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));
                     expansions.push_back(newNode);
                 }
             }
@@ -444,7 +445,7 @@ std::vector<Node*> UnloadNode::expand(){
             //  Add to expansions
             Node* newNode = new UnloadNode(baycopy, bufferCopy, this->incoming_cost + cost, "DONE", this);
             newNode->printState();
-            newNode->setDescription(std::to_string(pickup_x), std::to_string(pickup_y), "BAY", std::to_string(container_mass), "N/A", "N/A", "TRUCK", std::to_string(cost));
+            newNode->setDescription(foundContainer->getName(), std::to_string(pickup_x), std::to_string(pickup_y), "BAY", std::to_string(container_mass), "N/A", "N/A", "TRUCK", std::to_string(cost));
             expansions.push_back(newNode);
         }
     }
@@ -526,7 +527,7 @@ std::vector<Node*> LoadNode::expand(){
         container_mass = container_copy->getMass();
 
         Node* newNode = new LoadNode(baycopy, bufferCopy, this->incoming_cost + cost, container_copy, this);
-        newNode->setDescription("N/A", "N/A", "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));
+        newNode->setDescription(container_copy->getName(), "N/A", "N/A", "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));
         newNode->printState();
         expansions.push_back(newNode);
         

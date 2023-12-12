@@ -245,7 +245,7 @@ double ShipBay::calculateBalanceCost(){
     if(diff < 10){
         return 0;
     }else{
-        return diff - 10;
+        return diff;
     }
     
 }
@@ -335,8 +335,10 @@ bool ShipBay::canBalance() {
         leftSideWeight += c->getMass();
         rightSideWeight -= c->getMass();
 
+        int maxWeight = std::max(rightSideWeight, leftSideWeight);
+
         // Check if the difference in weights is within 10% of the total weight
-        if (std::abs(leftSideWeight - rightSideWeight) <= 0.1 * totalWeight) {
+        if (std::abs(leftSideWeight - rightSideWeight) <= 0.1 * maxWeight) {
             return true;  // The group can be balanced
         }
     }
@@ -590,7 +592,7 @@ void ShipBay::printShipBay(){
             }else if(temp[x]->getName().compare("UNUSED") == 0){
                 std::cout << " |";
             }else{
-                std::cout << "C|";
+                std::cout << temp[x]->getName().at(0) << "|";
             }
     }
     std::cout << "\n========================\n";
@@ -602,7 +604,7 @@ void ShipBay::printShipBay(){
             }else if(bayArea[x][y]->getName().compare("UNUSED") == 0){
                 std::cout << " |";
             }else{
-                std::cout << "C|";
+                std::cout << bayArea[x][y]->getName().at(0) << "|";
             }
         }
         std::cout << "\n========================\n";
