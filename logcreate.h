@@ -41,6 +41,8 @@ string hour,minute; //time
 string date, times;
 string year;
 string user;
+string newMan; //added to make manifest creation easier
+string desloc; //added to make manifest creation easier
 int conma = 0;
 
 string craneop ="";

@@ -39,6 +39,7 @@ void InitialStart(){ //initial start.
     file_back = "log"; //backup log file
     path = "C:/Users/" + user+"/AppData/Roaming/ResolvDeckware/"; //current directory, user is obtained from GetUserProfile()
     path_backup = "C:/Users/" + user+"/AppData/Roaming/ResolvBack/"; //current backup directory, user is obtained from GetUserProfile()
+    desloc = "C:/Users/" + user+ "/Desktop/";
     GetLocalTime(&st); //getting system time
     year = to_string(st.wYear); //setting the year
     filename += "_"+ year + ".txt"; //full file name
@@ -199,6 +200,7 @@ void UpdateFileM(string manifestName){//designed for initial and ending
     file.open(path , ios_base::app); //open file in append mode to not delete old files
     if(file){ //check if we have a log file
             printf("SYSTEM HAS DETECTED LOG FILE...ATTEMPTING TO LOAD MANIFEST INTO LOG...\n");
+            newMan = manifestName;
             file << date << ": " << times;
             file << " ";//Here should be 19 characters, we want lines of 
             file << "Manifest " << manifestName << " is opened, there are "; //place in manifest file
@@ -247,7 +249,7 @@ void UpdateFileLogin(string userlogging){ //deisgned for user login
     ofstream file;
     file.open(path , ios_base::app); //open file in append mode
     if(file){//check if we have a log file
-        if(craneop == "" || craneop != " "){//System Restarted, now there is no crane op logged in
+        if(craneop == ""){//System Restarted, now there is no crane op logged in
             printf("SYSTEM CANNOT DETECT PREVIOUS OP LOGIN...SIGNING IN NEW OP...\n"); //can also be that this is the first time the system turns on
             cout << "USER SIZE: " << userlogging.size() << endl;
             file << date << ": " << times;
@@ -267,6 +269,7 @@ void UpdateFileLogin(string userlogging){ //deisgned for user login
 
      }
      craneop = userlogging; //setting current operator to the one passing through the system
+     cout << "craneop: " << craneop << endl;
     }
     else{printf("SYSTEM IS NOT DETECTING THE LOG FILE CURRENTLY...\n");} 
     file.close(); //free the file
