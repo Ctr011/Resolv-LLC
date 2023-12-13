@@ -5,10 +5,14 @@
 #include <vector>
 #include <iostream>
 #include <map>
+#include <map>
 #include "./ShipBay.h"
 #include "./Buffer.h"
 #include "./ContainerSlot.h"
 
+class BalanceNode;
+class UnloadNode;
+class LoadNode;
 class BalanceNode;
 class UnloadNode;
 class LoadNode;

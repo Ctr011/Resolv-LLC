@@ -1,6 +1,8 @@
 //  ShipBay.cpp
 #include "ShipBay.h"
+#define NOMINMAX
 #include "ContainerSlot.h"
+#include "logcreate.h"
 
 
 /**
@@ -88,6 +90,7 @@ void ShipBay::parseContent(std::string manifest){
         }else{
              //  Otherwise, data represents a container
             bayArea[x - 1][y - 1] = new Container(label, weight, x, y, Origin::BAY);
+            if(!block){conma++;}
         }
        container_count++;
     }

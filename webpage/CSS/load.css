@@ -1,0 +1,148 @@
+body{
+    background-color: darkgray;
+}
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.modal-content {
+    background-color: grey;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 1.05% ;
+    border: 10px solid black;
+    width:10%; /* Could be more or less, depending on screen size */
+}
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;}
+
+
+.close2 {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+}
+.close2:hover,
+.close2:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;}
+.close3 {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+    }
+.close3:hover,
+.close3:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;}
+
+.modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                z-index: 1; /* Sit on top */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                background-color: rgb(0,0,0); /* Fallback color */
+                background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.modal2 {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}                      
+.mm{
+    position: relative;
+    margin:auto;
+    top:auto;
+    left: 35%;
+}
+
+.custcom{
+    position: absolute;
+    font-size: 18px ;
+    margin:auto;
+    background-size: contain;
+    top:auto;
+    left: 93% ;
+}
+.btnlog{
+    align-items: center;
+    margin: auto;
+    position: absolute;
+    background-size: contain;
+    top:auto;
+    left:90%;
+    font-size: 18px;
+}
+.btnload{
+    align-items: center;
+    margin: auto;
+    position: absolute;
+    background-size: contain;
+    top:auto;
+    font-size: 18px;
+}
+.ssx{
+    align-items: center;
+    margin: auto;
+    position: absolute;
+    bottom: 8%;
+    background-size: contain;
+    top:auto;
+    left: auto;
+    font-size: 18px;
+}
+
+.ssb{
+    align-items: center;
+    margin: auto;
+    position: absolute;
+    background-size: contain;
+    top:90%;
+    left: 50%;
+    font-size: 18px;
+}
+.ppt{
+    background-color: grey;
+    position: fixed;
+    background-position:initial;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 3%;
+    left:40%;
+    border: 10px solid black;
+    width:10%; /* Could be more or less, depending on screen size */
+}
+p{
+    font-size: 20px;
+    font-weight: bold;
+}

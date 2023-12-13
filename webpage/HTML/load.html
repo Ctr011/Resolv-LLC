@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- This file is for the load/off-load function within our system -->
+<head>
+    <title>Load/Off-Load Option</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/CSS/load.css">
+    <link rel="shortcut icon" href="#">
+
+    <script type="text/javascript" src="/JS/username.js"></script>         <!-- script for getting user name -->
+    <script type="text/javascript" src="/JS/selection2.js"></script>
+    <script type="text/javascript" src="/JS/customnotes.js"></script>         <!-- script for getting user name -->
+    <script type="text/javascript" src="/JS/hiddennotes.js"></script>
+    <script type="text/javascript" src="/JS/loadprompt.js"></script>
+    <script type="text/javascript" src="/JS/load.js"></script>
+</head>
+<body>
+    <button type="button" id="btnotes" class="custcom" onclick="notecheck(event)">Custom Notes</button>
+    <div2 id="notes" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h1>Custom Notes</h1>
+            <!-- <input maxlength="255" type="text" action="/notes" id="nnote" name="nnote" row="4" col="50" onclick="this.value=''"> -->
+            <textarea maxlength="255" onkeypress="return event.charCode >= 32 && event.charCode <= 126" action="/notes" id="nnote" name="nnote" rows="4" cols="25" onclick="this.value=''"></textarea>
+            <button id="snm" type="button" onblur="userNotes(event)" class="mm">Submit</button>
+        </div>
+    </div2>
+    <button type="button" id="btnlog" class="btnlog" onclick="check(event)">Login</button>
+    <div1 id="login" class="modal" >
+        <div class="modal-content">
+            <span class="close2">&times;</span>
+            <h1>Employee Login</h1>
+            <input type="text" maxlength="255" onkeypress="return event.charCode >= 32 && event.charCode <= 126" action="/id" id="name" name="name" onclick="this.value=''">
+            <button id="ssm" type="button" onblur="userLogin(event)" >Submit</button>
+        </div>
+    </div1>
+
+    <button type="button" id="btnload" class="btnload" onclick="wcheck(event)">Load</button>
+    <div2 id="loads" class="modal">
+        <div class="modal-content">
+            <span class="close3">&times;</span>
+            <h1>Load Container</h1>
+            <input type="text" maxlength="255" action="/contname" id="contn" name="contn" onkeypress="return event.charCode >= 32 && event.charCode <= 126" onclick="this.value=''">
+            <input type="text"  pattern="[0-9]" maxlength="255" onkeypress="return event.charCode >= 48 && event.charCode <= 57" action="/contname" id="contw" name="contw" onclick="this.value=''">
+            <button id="snn" type="button" onblur="loadcheck(event)" class="mm">Submit</button> 
+            <div4 id="loadq" class="modal2">
+            <div5 class="ppt">
+            <p>Would you like to load more containers onto the ship?</p>
+            <button id="yload" type="button" class="mm">Yes</button> 
+            <button id="nload" type="button" class="mm">No</button> 
+            </div5>
+            </div4>
+            
+            <!-- add input requests for user here
+            do not let user close without specifying if system load request is done -->
+            <!-- backend system will not allow certain containers to be used. use the restricted char and word checks -->
+        </div>
+    </div2>
+    <!-- add the interactions here with start...
+    add the backend server protocol -->
+    <a href="fileupload.html" >
+        <button type="Back" class="ssx">Back</button>
+    </a>   
+      <a href="noticeblock.html" >
+        <button type="Back" class="ssb">Done</button>
+    </a> 
+    
+</body>
+</html>

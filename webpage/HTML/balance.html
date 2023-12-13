@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <title>Balance Option</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="/JS/username.js"></script>         <!-- script for getting user name -->
+    <script type="text/javascript" src="/JS/selection2.js"></script>
+    <script type="text/javascript" src="/JS/customnotes.js"></script>         <!-- script for getting user name -->
+    <script type="text/javascript" src="/JS/hiddennotes.js"></script>
+    <script type="text/javascript" src="/JS/process.js"></script>
+    <link rel="stylesheet" href="/CSS/bal.css">
+    <link rel="shortcut icon" href="#">
+    <script>
+    </script>
+</head>
+<body>
+    <button type="button" id="btnotes" class="custcom" onclick="notecheck(event)">Custom Notes</button>
+    <div2 id="notes" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h1>Custom Notes</h1>
+            <!-- <input maxlength="255" type="text" action="/notes" id="nnote" name="nnote" row="4" col="50" onclick="this.value=''"> -->
+            <textarea maxlength="255" onkeypress="return event.charCode >= 32 && event.charCode <= 126" action="/notes" id="nnote" name="nnote" rows="4" cols="25" onclick="this.value=''"></textarea>
+            <button id="snm" type="button" onblur="userNotes(event)" class="mm">Submit</button>
+        </div>
+    </div2>
+    <button type="button" id="btnlog" class="btnlog" onclick="check(event)">Login</button>
+    <div1 id="login" class="modal" >
+        <div class="modal-content">
+            <span class="close2">&times;</span>
+            <h1>Employee Login</h1>
+            <input type="text" maxlength="255" onkeypress="return event.charCode >= 32 && event.charCode <= 126" action="/id" id="name" name="name" onclick="this.value=''">
+            <button id="ssm" type="button" onblur="userLogin(event)" >Submit</button>
+        </div>
+    </div1>
+
+    <div8>
+        <button type="start" onclick="processContent(localStorage.getItem('grids'))" class="start" >Start</button>
+        <h2>Bay</h2>
+        <div id="bay_grid" >
+            <!-- Populating the first grid with numbers -->
+            <div class="grid-item"><div class="grid-item-content">1</div></div>
+            <div class="grid-item"><div class="grid-item-content">2</div></div>
+            <!-- Add more items as needed -->
+        </div>
+        <div>
+            <h3>Buffer</h3>
+            <div id="buffer_grid">
+                <!-- Populating the second grid with numbers -->
+                <div class="grid-item"><div class="grid-item-content">A</div></div>
+                <div class="grid-item"><div class="grid-item-content">B</div></div>
+                <!-- Add more items as needed -->
+            </div>
+        </div>
+    </div8>
+
+    <!-- add the interactions here with start...
+    add the backend server protocol -->
+    <a href="fileupload.html" >
+        <button type="Back" class="ssx">Back</button>
+    </a>   
+      <a href="noticeblock.html" >
+        <button type="Back" class="ssb">Done</button>
+    </a> 
+    
+    <!-- <a href="">
+        <button type="button" action="/start" method="post" id="bth" onblur="setTimeout(startProgram(event),30000)" >Submit</button>
+    </a> -->
+</body>
+</html>

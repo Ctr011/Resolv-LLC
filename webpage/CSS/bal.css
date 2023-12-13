@@ -1,0 +1,175 @@
+body{
+    background-color: darkgray;
+}
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.modal-content {
+    background-color: grey;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 1.05% ;
+    border: 10px solid black;
+    width:10%; /* Could be more or less, depending on screen size */
+}
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;}
+
+
+.close2 {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+}
+.close2:hover,
+.close2:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;}
+.mm{
+    position: relative;
+    margin:auto;
+    top:auto;
+    left: 35%;
+}
+
+.custcom{
+    position: absolute;
+    font-size: 18px ;
+    margin:auto;
+    background-size: contain;
+    top:auto;
+    left: 93% ;
+}
+.btnlog{
+    align-items: center;
+    margin: auto;
+    position: absolute;
+    background-size: contain;
+    top:auto;
+    left:90%;
+    font-size: 18px;
+}
+.ssx{
+    align-items: center;
+    margin: auto;
+    position: absolute;
+    background-size: contain;
+    bottom: 8%;
+    left: auto;
+    font-size: 18px;
+}
+
+.ssb{
+    align-items: center;
+    margin: auto;
+    position: absolute;
+    background-size: contain;
+    top:90%;
+    left: 50%;
+    font-size: 18px;
+}
+
+h2{
+    display: block;
+    margin: auto;
+    position: relative;
+    width: fit-content;
+}
+
+h3{
+    display: block;
+    margin: auto;
+    position: relative;
+    width: fit-content;
+}
+
+/* Define the styles for the first grid (12 columns by 8 rows) */
+#bay_grid {
+    display: grid;
+    margin: auto;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(8, 0.5fr);
+    gap: 6px;
+    border: 5px solid #000;
+    margin-bottom: 20px;
+    width: 36%;
+    height: 24%;
+    grid-auto-flow: row-reverse dense; /* Reverse the row flow */
+    transform: rotatex(180deg);
+}
+
+/* Define the styles for the second grid (24 columns by 4 rows) */
+#buffer_grid {
+    display: grid;
+    margin: auto;
+    grid-template-columns: repeat(24, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 10px;
+    border: 1px solid #000;
+    width: 24%;
+    height: 4%;
+    grid-auto-flow: row-reverse;      /* Reverse the row flow */
+    transform: rotatex(180deg);
+}
+
+/* Style for grid items (optional) */
+.grid-item {
+    text-align: center;
+    padding: 10px;
+    /* Set padding-bottom to create a square aspect ratio */
+    transform: rotatex(180deg);
+    padding-bottom: 100%; 
+    position: relative;
+}
+
+.grid-nan{
+    background-color: darkgray;
+}
+
+.grid-unused{
+    background-color: whitesmoke;
+}
+
+.grid-container{
+    background-color: blue;
+    color: whitesmoke;
+}
+
+/* Style for content inside the grid item */
+.grid-item-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.start{
+    align-items: center;
+    margin: auto;
+    position: absolute;
+    background-size: contain;
+    font-size: 18px;
+}

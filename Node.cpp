@@ -1,3 +1,5 @@
+#ifndef NODE_CPP
+#define NODE_CPP
 #include "Node.h"
 
 std::map<std::string, std::string> Node::getDescription(){
@@ -526,7 +528,7 @@ std::vector<Node*> LoadNode::expand(){
         putdown_y = container_copy->getYPos();
         container_mass = container_copy->getMass();
 
-        Node* newNode = new LoadNode(baycopy->clone(), bufferCopy->clone(), this->incoming_cost + cost, container_copy, this);
+        Node* newNode = new LoadNode(baycopy, bufferCopy, this->incoming_cost + cost, container_copy, this);
         newNode->setDescription(container_copy->getName(), "N/A", "N/A", "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));
         newNode->printState();
         expansions.push_back(newNode);
@@ -539,3 +541,4 @@ std::vector<Node*> LoadNode::expand(){
 
 //  Probably a better way to handle this lmao
 bool LoadNode::isGoal(){return false;}
+#endif
