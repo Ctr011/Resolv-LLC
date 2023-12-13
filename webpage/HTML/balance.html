@@ -8,9 +8,11 @@
     <script type="text/javascript" src="/JS/selection2.js"></script>
     <script type="text/javascript" src="/JS/customnotes.js"></script>         <!-- script for getting user name -->
     <script type="text/javascript" src="/JS/hiddennotes.js"></script>
+    <script type="text/javascript" src="/JS/process.js"></script>
     <link rel="stylesheet" href="/CSS/bal.css">
     <link rel="shortcut icon" href="#">
-    <script></script>
+    <script>
+    </script>
 </head>
 <body>
     <button type="button" id="btnotes" class="custcom" onclick="notecheck(event)">Custom Notes</button>
@@ -32,6 +34,26 @@
             <button id="ssm" type="button" onblur="userLogin(event)" >Submit</button>
         </div>
     </div1>
+
+    <div8>
+        <button type="start" onclick="processContent(localStorage.getItem('grids'))" class="start" >Start</button>
+        <h2>Bay</h2>
+        <div id="bay_grid" >
+            <!-- Populating the first grid with numbers -->
+            <div class="grid-item"><div class="grid-item-content">1</div></div>
+            <div class="grid-item"><div class="grid-item-content">2</div></div>
+            <!-- Add more items as needed -->
+        </div>
+        <div>
+            <h3>Buffer</h3>
+            <div id="buffer_grid">
+                <!-- Populating the second grid with numbers -->
+                <div class="grid-item"><div class="grid-item-content">A</div></div>
+                <div class="grid-item"><div class="grid-item-content">B</div></div>
+                <!-- Add more items as needed -->
+            </div>
+        </div>
+    </div8>
 
     <!-- add the interactions here with start...
     add the backend server protocol -->

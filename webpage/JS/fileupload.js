@@ -23,6 +23,17 @@ async function uploadFile(event) {
     const formData = new FormData();
     formData.append('bala', file);
     formData.append('id', id);
+    
+    if (file) {
+        const reader = new FileReader();
+    
+        reader.onload = function (e) {
+          const content = e.target.result;
+          localStorage.setItem("grids", content)
+        };
+    
+        reader.readAsText(file);
+    }
 
     try {
         const response = await fetch('/balanced', {
@@ -36,7 +47,7 @@ async function uploadFile(event) {
     } catch (error) {
         console.error('Error:', error);
     }
-    window.location.href ="http://localhost:8080/fileupload.html";
+    // window.location.href ="http://localhost:8080/fileupload.html";
     window.location.replace("http://localhost:8080/balance.html");
     // Stops page from reloading to submit the form
     event.preventDefault();

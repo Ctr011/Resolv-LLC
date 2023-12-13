@@ -1,13 +1,15 @@
 //  ShipBay.cpp
 #include "ShipBay.h"
+#define NOMINMAX
 #include "ContainerSlot.h"
+#include "logcreate.h"
 
 
 /**
  * 11/23/2023
  * @fn ShipBay (Constructor)
 */
-ShipBay::ShipBay(const std::string manifestContent, std::vector<ContainerSlot*>* tempRow){
+ShipBay::ShipBay(const std::string manifestContent, ShipBay* sift, std::vector<ContainerSlot*>* tempRow){
     this->originalText = manifestContent;
     parseContent(manifestContent);
 
@@ -18,6 +20,8 @@ ShipBay::ShipBay(const std::string manifestContent, std::vector<ContainerSlot*>*
     }else{
         this->temp = *tempRow;
     }
+
+    this->siftState = sift;
 
     return;
 }
@@ -60,6 +64,7 @@ void ShipBay::parseContent(std::string manifest){
     x,y= 0;
     
     //  Get the next line of the file
+    int container_count = 0;
     while (std::getline(filestream, curr_line)) {
 
         curr_line.erase(std::remove(curr_line.begin(), curr_line.end(), '\r'), curr_line.end());
@@ -68,8 +73,12 @@ void ShipBay::parseContent(std::string manifest){
         x = std::stoi(curr_line.substr(4,2));    //  y Position
         int weight = stoi(curr_line.substr(10,5));  //  Mass of Container
         std::string label = curr_line.substr(18);   //  get name of container
-        
-        
+
+        //  Handle invalid x and y values
+        if(x < 1 || x > 12 || y < 1 || y > 8){
+            std::cout << "Debug Info: " << curr_line << std::endl;
+            throw std::invalid_argument("Invalid ContainerSlot Coordinates: ");
+        }
 
         //  TODO: Out of bounds handling
         //  If container is an NAN slot, return NAN object
@@ -81,14 +90,22 @@ void ShipBay::parseContent(std::string manifest){
         }else{
              //  Otherwise, data represents a container
             bayArea[x - 1][y - 1] = new Container(label, weight, x, y, Origin::BAY);
+            if(!block){conma++;}
         }
-
-       
+       container_count++;
     }
+
+    //  Throw if wrong number of containers
+    if(container_count != 96){throw std::invalid_argument("Wrong number of containers in manifest. Count: " + container_count);}
+
     return;
 }
 
-ContainerSlot* ShipBay::getContainer(int x, int y){
+std::string ShipBay::getText(){
+    return this->originalText;
+}
+
+ContainerSlot* ShipBay::getSlot(int x, int y){
 
     //  If within range, grab the normal containerslot
     if(y <= this->size_y - 1){
@@ -97,6 +114,107 @@ ContainerSlot* ShipBay::getContainer(int x, int y){
         //  Otherwise, grab from temp
         return this->temp[x];
     }
+};
+
+/**
+ * 12/2/2023
+ * @fn getContainerByNam,e
+ * Searches for container in the bay, returns if found
+ * @param {string} name: name of container being searched
+*/
+ContainerSlot* ShipBay::getContainerByName(std::string name){
+    int x,y;
+
+    //  Restricted names
+    if(name.compare("NAN") == 0 || name.compare("UNUSED") == 0){return nullptr;};
+
+    for(x = 0; x < this->size_x; x++){
+        for(y = this->size_y - 1; y >= 0; y--){
+            if(bayArea[x][y]->getName().compare(name) == 0){
+                return bayArea[x][y];
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+ShipBay* ShipBay::getSIFTState(){
+    if(this->siftState == nullptr){
+        //  get all containers
+        std::priority_queue<Container*, std::vector<Container*>, ContainerComparator> all = this->getAllContainers();
+        std::vector<std::vector<ContainerSlot*>> siftBay;
+        int x,y,left,right;
+        bool isLeft = true;
+
+        //  Init the sift Bay
+        for(x=0; x < this->size_x; x++){
+            std::vector<ContainerSlot*> new_row;
+            siftBay.push_back(new_row);
+            for(y = 0; y < this->size_y; y++){
+                if(this->bayArea[x][y]->getName().compare("NAN") == 0){
+                    siftBay[x].push_back(new NANSlot(x + 1, y + 1, Origin::BAY));
+                }else{
+                    siftBay[x].push_back(new EmptySlot(x + 1, y + 1, Origin::BAY));
+                }
+            }
+        }
+
+        //  Iterator by row this time
+        for(y = 0; y < this->size_y; y++){
+
+            //  Break out if empty
+            if(all.empty()){break;};
+            
+            left = 5;
+            right = 6;
+            for(x=0; x < this->size_x; x++){
+
+                if(isLeft){
+                    if(siftBay[left][y]->getName().compare("NAN") != 0){
+                        if(!all.empty()){
+                            Container* c = all.top();
+                            c->changeXPos(left + 1);
+                            c->changeYPos(y + 1);
+                            delete siftBay[left][y];
+                            siftBay[left][y] = c;
+                            left--;
+                            all.pop();
+                        }else{
+                            break;
+                        }
+                    }
+                }else{
+                    if(siftBay[right][y]->getName().compare("NAN") != 0){
+                        if(!all.empty()){
+                            Container* c = all.top();
+                            c->changeXPos(right + 1);
+                            c->changeYPos(y + 1);
+                            delete siftBay[right][y];
+                            siftBay[right][y] = c;
+                            right++;
+                            all.pop();
+                        }else{
+                            break;
+                        }
+                    }
+                }
+                isLeft = !isLeft;
+            }
+        }
+
+        //  Last time, now to actually create the string to create a new ShipBay Object
+        std::string siftData = "";
+        for(x=0; x < this->size_x; x++){
+            for(y = 0; y < this->size_y; y++){
+                siftData += siftBay[x][y]->toString();
+            }
+        }
+
+        this->siftState =  new ShipBay(siftData);
+    }
+
+    return this->siftState;
 };
 
 std::vector<ContainerSlot*> ShipBay::getTempRow(){return this->temp;};
@@ -117,7 +235,7 @@ double ShipBay::calculateBalanceCost(){
     for(x = 0; x < this->size_x; x++){
         for(y = 0; y < this->size_y; y++){
             if(x <= 5){
-                mass1 += bayArea[x][y]->getMass();
+                mass1 += bayArea[x][y]->getMass(); //   Here
             }else{
                 mass2 += bayArea[x][y]->getMass();
             }
@@ -127,8 +245,11 @@ double ShipBay::calculateBalanceCost(){
     //  Get 10% difference value, return if less than or qual to 10%
     double diff = std::abs(mass1 - mass2) * 100 / std::max(std::abs(mass1), std::abs(mass2));
 
-    //  Return % difference here
-    return diff;
+    if(diff < 10){
+        return 0;
+    }else{
+        return diff;
+    }
     
 }
 
@@ -137,7 +258,7 @@ bool ShipBay::compareBays(ShipBay* otherBay){
     for(x = 0; x < this->size_x; x++){
         for(y = 0; y < this->size_y; y++){
             ContainerSlot* thisContainer = bayArea[x][y];
-            ContainerSlot* otherContainer = otherBay->getContainer(x,y);
+            ContainerSlot* otherContainer = otherBay->getSlot(x,y);
 
             if(thisContainer->getName().compare(otherContainer->getName()) != 0 
                 || thisContainer->getMass() != otherContainer->getMass()){
@@ -146,7 +267,7 @@ bool ShipBay::compareBays(ShipBay* otherBay){
         }
 
         ContainerSlot* thisTemp = this->temp[x];
-        ContainerSlot* otherTemp = otherBay->getContainer(x, this->size_y);
+        ContainerSlot* otherTemp = otherBay->getSlot(x, this->size_y);
 
         //  Also check the temp rows here
         if(thisTemp->getName().compare(otherTemp->getName()) != 0
@@ -159,6 +280,74 @@ bool ShipBay::compareBays(ShipBay* otherBay){
     return true;
 }
 
+/**
+ * 12/2
+ * @fn getAllContainers
+ * Retruns all container objects in the ship bay
+ * @param NONE
+ * @return std::vector<Container*>
+*/
+std::priority_queue<Container*, std::vector<Container*>, ContainerComparator> ShipBay::getAllContainers(){
+
+    std::priority_queue<Container*, std::vector<Container*>, ContainerComparator> all;
+    
+    int x, y;
+    for(x = 0; x < size_x; ++x){
+        for(y = 0; y < size_y; ++y){
+            ContainerSlot* slot = this->bayArea[x][y];
+            if(slot->getName().compare("NAN") != 0 
+            && slot->getName().compare("UNUSED") != 0){
+                all.push(slot->getContainer().clone());
+            }
+        }
+    }
+
+    return all;
+}
+
+/**
+ * 12/2
+ * @fn canBalance
+ * Determines if a given ship bay can be balanced or not
+ * 
+*/
+bool ShipBay::canBalance() {
+    // Get all containers
+    std::priority_queue<Container*, std::vector<Container*>, ContainerComparator> all = this->getAllContainers();
+
+    // Get total mass
+    int totalWeight = 0;
+
+    while (!all.empty()) {
+        Container* c = all.top();
+        all.pop();
+        
+        totalWeight += c->getMass();
+    }
+
+    int leftSideWeight = 0;
+    int rightSideWeight = totalWeight;
+
+    // Iterate through containers and check for balance
+    std::priority_queue<Container*, std::vector<Container*>, ContainerComparator> copy = this->getAllContainers();
+    
+    while (!copy.empty()) {
+        Container* c = copy.top();
+        copy.pop();
+
+        leftSideWeight += c->getMass();
+        rightSideWeight -= c->getMass();
+
+        int maxWeight = std::max(rightSideWeight, leftSideWeight);
+
+        // Check if the difference in weights is within 10% of the total weight
+        if (std::abs(leftSideWeight - rightSideWeight) <= 0.1 * maxWeight) {
+            return true;  // The group can be balanced
+        }
+    }
+
+    return false;  // The group cannot be balanced
+}
 
 /**
  * @fn getHeights
@@ -170,6 +359,24 @@ bool ShipBay::compareBays(ShipBay* otherBay){
 std::vector<int> ShipBay::getHeights(int start, int end){
 
     std::vector<int> heights;
+
+    if(start == end){
+        int y;
+        for(y = 0; y < this->size_y; y++){
+
+            if(y < this->size_y){
+                if(bayArea.at(start).at(y)->getName().compare("UNUSED") == 0){
+                    heights.push_back(y);
+                    return heights;
+                }
+            }else{
+                if(this->temp[start]->getName().compare("UNUSED") == 0){
+                    heights.push_back(y);
+                    return heights;
+                }
+            }
+        }
+    }
 
     int x, y;
 
@@ -252,11 +459,34 @@ Container* ShipBay::pickUpContainer(int column){
  * @return int: The cost to put down
 */
 int ShipBay::putDownDontainer(Container* container, int column){
+
+    //  init cost
+    int cost = 0;
+
     if(container == nullptr){std::invalid_argument("Container is null.");}
 
     //  Make sure column value is in range
     if(column < 1 || column > this->size_x){std::invalid_argument("Invalid Column value: " + column);}
     
+    //  12/2/2023
+    //  If the container is to be unloaded onto the truck, then handle special case here
+    if(column == TRUCK_COLUMN){
+        cost += 2;  //  Transfer penalty
+
+        //  Calculate cost to exit
+        cost += calculateMovementCost((container->getXPos() + 1), (container->getYPos() + 1), bay_exit_x, bay_exit_y);
+
+        //  Replace container with empty spot
+        this->bayArea.at(container->getXPos() - 1).at(container->getYPos() - 1) = new EmptySlot(container->getXPos(), container->getYPos(), Origin::BAY);
+
+
+        //  Delete container now that it is offloaded
+        delete container;
+
+        //  return cost
+        return cost;
+
+    }
 
     //  Search bottom up, to find first empty slot
     for(int i = 0; i <= this->size_y; i++){
@@ -272,12 +502,13 @@ int ShipBay::putDownDontainer(Container* container, int column){
             }else{
                 oldSlot = bayArea[column][i];
                 delete oldSlot;
+
                 bayArea[column][i] = nullptr;
                 bayArea[column][i] = container;
             }
 
             //  now return the cost.
-            int cost = 0;
+            
 
             //  First, determine if there is any transfer penalty
             if(container->getOrigin() == Origin::BUFFER){
@@ -345,8 +576,9 @@ ShipBay* ShipBay::clone(){
 
     }
     
-    //  Return a new ShipBay Object after cloning
-    return new ShipBay(cloneBayData, &newTemp);
+    //  Return a new ShipBay Object after cloning, pass the sift state and the temp row too
+    block = true;
+    return new ShipBay(cloneBayData, this->siftState, &newTemp);
 }
 
 /**
@@ -364,7 +596,7 @@ void ShipBay::printShipBay(){
             }else if(temp[x]->getName().compare("UNUSED") == 0){
                 std::cout << " |";
             }else{
-                std::cout << "C|";
+                std::cout << temp[x]->getName().at(0) << "|";
             }
     }
     std::cout << "\n========================\n";
@@ -376,7 +608,7 @@ void ShipBay::printShipBay(){
             }else if(bayArea[x][y]->getName().compare("UNUSED") == 0){
                 std::cout << " |";
             }else{
-                std::cout << "C|";
+                std::cout << bayArea[x][y]->getName().at(0) << "|";
             }
         }
         std::cout << "\n========================\n";
@@ -386,11 +618,9 @@ void ShipBay::printShipBay(){
 
 int ShipBay::calculateMovementCost(int x1, int y1, int x2, int y2){
 
-    //  If its the same spot, just return the y position
-    if(x1 == x2){return y1;};
-
     //  First get the current heights of all columns between the two positions
     std::vector<int> heights;
+
     if(x1 < x2){
          heights = getHeights(x1, x2);
     }else{
@@ -400,6 +630,11 @@ int ShipBay::calculateMovementCost(int x1, int y1, int x2, int y2){
     //  Find highest height of the vector
     auto maxElement = std::max_element(heights.begin(), heights.end());
     int maxVal = *maxElement;
+
+    //  If the max height of any given one is 9, we cannot pass over. Pass a large number
+    if(maxVal >= 9){
+        return 999999;
+    }
 
     //  Find max between y1, y2, and the list
     int max_height = std::max(maxVal, std::max(y1, y2));

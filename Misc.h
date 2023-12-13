@@ -17,6 +17,9 @@ const static int BAY_MAX_X = 12;
 const static int BAY_MAX_Y = 8;
 const static int BAY_TEMP_Y = 9;
 
+//  For unloading from and to the truck
+const static int TRUCK_COLUMN = -9182;
+
 enum class Origin{
     BAY = 0,
     BUFFER = 1,

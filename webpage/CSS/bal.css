@@ -73,7 +73,7 @@ body{
     margin: auto;
     position: absolute;
     background-size: contain;
-    top:auto;
+    bottom: 8%;
     left: auto;
     font-size: 18px;
 }
@@ -85,5 +85,91 @@ body{
     background-size: contain;
     top:90%;
     left: 50%;
+    font-size: 18px;
+}
+
+h2{
+    display: block;
+    margin: auto;
+    position: relative;
+    width: fit-content;
+}
+
+h3{
+    display: block;
+    margin: auto;
+    position: relative;
+    width: fit-content;
+}
+
+/* Define the styles for the first grid (12 columns by 8 rows) */
+#bay_grid {
+    display: grid;
+    margin: auto;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(8, 0.5fr);
+    gap: 6px;
+    border: 5px solid #000;
+    margin-bottom: 20px;
+    width: 36%;
+    height: 24%;
+    grid-auto-flow: row-reverse dense; /* Reverse the row flow */
+    transform: rotatex(180deg);
+}
+
+/* Define the styles for the second grid (24 columns by 4 rows) */
+#buffer_grid {
+    display: grid;
+    margin: auto;
+    grid-template-columns: repeat(24, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 10px;
+    border: 1px solid #000;
+    width: 24%;
+    height: 4%;
+    grid-auto-flow: row-reverse;      /* Reverse the row flow */
+    transform: rotatex(180deg);
+}
+
+/* Style for grid items (optional) */
+.grid-item {
+    text-align: center;
+    padding: 10px;
+    /* Set padding-bottom to create a square aspect ratio */
+    transform: rotatex(180deg);
+    padding-bottom: 100%; 
+    position: relative;
+}
+
+.grid-nan{
+    background-color: darkgray;
+}
+
+.grid-unused{
+    background-color: whitesmoke;
+}
+
+.grid-container{
+    background-color: blue;
+    color: whitesmoke;
+}
+
+/* Style for content inside the grid item */
+.grid-item-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.start{
+    align-items: center;
+    margin: auto;
+    position: absolute;
+    background-size: contain;
     font-size: 18px;
 }

@@ -24,6 +24,17 @@ async function uploadFile2(event) {
     formData.append('offload', file);
     formData.append('id', id);
 
+    if (file) {
+        const reader = new FileReader();
+    
+        reader.onload = function (e) {
+          const content = e.target.result;
+          localStorage.setItem("grids", content)
+        };
+    
+        reader.readAsText(file);
+    }
+    
     try {
         const response = await fetch('/load', {
             method: 'POST',
@@ -36,7 +47,6 @@ async function uploadFile2(event) {
     } catch (error) {
         console.error('Error:', error);
     }
-    window.location.href ="http://localhost:8080/fileupload.html";
     window.location.replace("http://localhost:8080/load.html");
 
     // Stops page from reloading to submit the form
