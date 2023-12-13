@@ -40,20 +40,30 @@ Json Tree::solveBalance(){
 
             Node* solutionNode = next_node;
 
-            Json solutionData;
+            Json reversedData;
             int moveNumber = 1;
             while (solutionNode->getParent() != nullptr) {
 
                 std::map<std::string, std::string> nodeMap = solutionNode->getDescription();
 
                 for(const auto& pair : nodeMap){
-                    solutionData[std::to_string(moveNumber)][pair.first] = pair.second;
+                    reversedData[std::to_string(moveNumber)][pair.first] = pair.second;
                 }
 
                 // Move to the parent for the next iteration
                 solutionNode = solutionNode->getParent();
 
                 moveNumber++;
+            }
+
+            //  Reverse the json here:
+            Json solutionData;
+            int size = reversedData.size();
+            int reversedKey = 1;
+
+            //  Populate here
+            for (auto it = reversedData.rbegin(); it != reversedData.rend(); ++it) {
+                solutionData[std::to_string(reversedKey++)] = it.value();
             }
 
             std::string start = this->startState->getBay()->getText();
@@ -129,14 +139,14 @@ Json Tree::solveSIFT(ShipBay* siftedState){
 
             Node* solutionNode = next_node;
 
-            Json solutionData;
+            Json reversedData;
             int moveNumber = 1;
            while (solutionNode->getParent() != nullptr) {
 
                 std::map<std::string, std::string> nodeMap = solutionNode->getDescription();
 
                 for(const auto& pair : nodeMap){
-                    solutionData[std::to_string(moveNumber)][pair.first] = pair.second;
+                    reversedData[std::to_string(moveNumber)][pair.first] = pair.second;
                 }
 
                 // Move to the parent for the next iteration
@@ -145,8 +155,21 @@ Json Tree::solveSIFT(ShipBay* siftedState){
                 moveNumber++;
             }
 
-            solutionData["startState"] = this->startState->getBay()->getText();
-            solutionData["endState"] = next_node->getBay()->getText();
+            //  Reverse the json here:
+            Json solutionData;
+            int size = reversedData.size();
+            int reversedKey = 1;
+
+            //  Populate here
+            for (auto it = reversedData.rbegin(); it != reversedData.rend(); ++it) {
+                solutionData[std::to_string(reversedKey++)] = it.value();
+            }
+
+            std::string start = this->startState->getBay()->getText();
+            std::string end = next_node->getBay()->getText();
+
+            solutionData["startState"] = start;
+            solutionData["endState"] = end;
 
             std::cout << "JSON Object:\n" << solutionData.dump(2) << std::endl;
 
@@ -190,13 +213,7 @@ Json Tree::solveSIFT(ShipBay* siftedState){
  * this function multiple times for multiple unloads
  * @param unload
 */
-Json Tree::solveUnLoad(std::string unload, Node* state){
-
-
-    // if(unload.size() == 0){
-    //     //  If there are no unloads, we are finished
-    //     return this->startState;
-    // }
+Json Tree::solveUnLoad(Node* state){
 
     //  init initial size
     int initSize = state->getBay()->getAllContainers().size();
@@ -303,21 +320,13 @@ Json Tree::solveLoad(){
 
     Json solutionData;
     int moveNumber = 1;
-    while (solutionNode->getParent() != nullptr) {
 
-        std::map<std::string, std::string> nodeMap = solutionNode->getDescription();
+    std::map<std::string, std::string> nodeMap = solutionNode->getDescription();
 
-        for(const auto& pair : nodeMap){
-            solutionData[std::to_string(moveNumber)][pair.first] = pair.second;
-        }
-
-        // Move to the parent for the next iteration
-        solutionNode = solutionNode->getParent();
-
-        moveNumber++;
+    for(const auto& pair : nodeMap){
+        solutionData[pair.first] = pair.second;
     }
 
-    solutionData["startState"] = this->startState->getBay()->getText();
     solutionData["endState"] = solutionNode->getBay()->getText();
 
     std::cout << "JSON Object:\n" << solutionData.dump(2) << std::endl;

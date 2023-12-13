@@ -20,6 +20,47 @@
 
 using namespace std;
 
+//  Doesnt rteally do Anything, just holds code here
+void solveLoad(){
+    // bay = new ShipBay(file.content);
+    //             buffer = new Buffer("");
+
+    //             Container* batteries = new Container("BAT1", 431, 1, 1, Origin::TRUCK);
+    //             Container* batteries2 = new Container("BAT2", 431, 1, 1, Origin::TRUCK);
+
+    //             std::vector<Container*> containers;
+    //             containers.push_back(batteries);
+    //             containers.push_back(batteries2);
+
+
+    //             //  Get initial start state
+    //             solution_response["startState"] = bay->getText();
+
+    //             int movenumber = 0;
+    //             for(Container* c : containers){
+    //                 movenumber++;
+    //                 Node* testNode = new LoadNode(bay, buffer, 0, batteries);
+    //                 Tree* tree = new Tree(testNode);
+
+    //                 solution_response[std::to_string(movenumber)] = tree->solveLoad();
+
+    //                 delete bay;
+    //                 bay = new ShipBay(solution_response[std::to_string(movenumber)]["endState"]);
+
+    //                 solution_response["endState"] = solution_response[std::to_string(movenumber)]["endState"];
+    //                 solution_response[std::to_string(movenumber)].erase("endState");
+
+    //                 delete testNode;
+    //                 delete tree;
+    //             }
+
+
+                
+                
+
+    //             std::cout << "JSON Object:\n" << solution_response.dump(2) << std::endl;
+}
+
 int main() {
 
     //  Init sever and active ShipBay
@@ -61,9 +102,8 @@ int main() {
                 entries++;
             }
             ShipBay* bay = nullptr;
-            ShipBay* bay2 = nullptr;
             Buffer* buffer = nullptr;
-            Buffer* buffer2 = nullptr;
+            ShipBay* bay2 = nullptr;
 
             Json solution_response;
 
@@ -71,13 +111,27 @@ int main() {
                 bay = new ShipBay(file.content);
                 buffer = new Buffer("");
 
+                // int movenumber = 0;
+                // for(Container* c : containers){
+                //     movenumber++;
+                //     Node* testNode = new BalanceNode(bay, buffer, 0, batteries);
+                //     Tree* tree = new Tree(testNode);
+
+                //     solution_response[std::to_string(movenumber)] = tree->solveLoad();
+
+                //     delete bay;
+                //     bay = new ShipBay(solution_response[std::to_string(movenumber)]["endState"]);
+
+                //     solution_response["endState"] = solution_response[std::to_string(movenumber)]["endState"];
+                //     solution_response[std::to_string(movenumber)].erase("endState");
+
+                //     delete testNode;
+                //     delete tree;
+                // }
+
                 Node* testNode = new BalanceNode(bay, buffer, 0);
-                
-
                 Tree* tree = new Tree(testNode);
-
                 
-
                 if(bay->canBalance()){
                     solution_response = tree->solveBalance();
                 }else{
