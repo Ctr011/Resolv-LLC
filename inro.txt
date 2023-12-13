@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">    
+    <head>
+        <title>
+            Deckware Start
+        </title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <style>
+        body{
+            background-color: #e2e2e2;
+            background-image: url(https://cdn.discordapp.com/attachments/1179005828506865674/1181141350792573008/logointro.png?ex=657ffa9a&is=656d859a&hm=6117a5ceace6ec615aa418582dd0c5faa92a26b2607921ca8935d55cc6b74ca9&);
+            /* background-repeat: no-repeat; */
+            background-blend-mode:soft-light ;
+            backface-visibility: hidden;
+            position: fixed;
+            background-size: cover;
+        }   
+        label{
+            /* background-color: black; */
+            background-blend-mode: color;
+            color: black;
+            font-weight: bold;
+            text-align: center;
+            font-size: 40px;
+            /* display: inline-block; */
+            height: 300px;
+            width: 400px;
+        }
+        a{
+            color: white;
+            background-color: black;
+            font-weight: bold;
+            text-align: center;
+            justify-content: center;
+            left:50%;
+        }
+        div {
+            height: 100px;
+            width: 200px;
+            /* background: black; */
+            justify-content: center;
+            position:fixed;
+            top: 85%;
+            left: 52.5%;
+            margin-top: -100px;
+            margin-left: -200px;
+            background-size: contain;
+        }
+        button{
+            align-items: center;
+            size: 50px;
+            margin: -10px -40px;
+            position: relative;
+            top:35%;
+            right:40%;
+            font-size: 20px;
+        }
+        .contact{
+            align-items: right;
+            position: relative;
+            margin-top: 565px;
+            left:1100px;
+            font-size: 13px;
+        }
+    </style>
+    <body>
+        <div>
+
+            <label for="button">Deckware</label>
+            <a href="./fileupload.html">
+                <button type="start">Start</button>
+            </a>
+        </div>
+    </body>
+
+    
+    <p class="contact">
+        <a href= "mailto:resolv@gmail.com"> contact for technical support </a> <br>
+    </p>
+    
+</html>
