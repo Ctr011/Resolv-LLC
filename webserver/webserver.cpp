@@ -22,8 +22,6 @@
 #include "../Tree.cpp"
 #include "../NodeQueue.h"
 #include "../NodeQueue.cpp"
-#include "../Tree.h"
-#include "../Tree.cpp"
 #include "./httplib.h"
 #include "../logcreate.h"
 #include "../logcreate.cpp"

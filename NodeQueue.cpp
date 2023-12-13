@@ -1,4 +1,6 @@
 //  NodeQueue.cpp
+#ifndef NODEQUEUE_CPP
+#define NODEQUEUE_CPP
 
 #include "NodeQueue.h"
 
@@ -22,3 +24,5 @@ Node* NodeQueue::pop(){
     ds.pop();
     return topNode;
 }
+
+#endif

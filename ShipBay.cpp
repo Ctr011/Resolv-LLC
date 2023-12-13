@@ -575,6 +575,8 @@ ShipBay* ShipBay::clone(){
         }
 
     }
+
+    block = true;
     
     //  Return a new ShipBay Object after cloning, pass the sift state and the temp row too
     return new ShipBay(cloneBayData, this->siftState, &newTemp);
