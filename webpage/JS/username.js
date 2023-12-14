@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     const form = document.querySelector('#userLogin');
     if(form){
-    form.addEventListener('submit', userLogin, true);}
+        form.addEventListener('submit', userLogin, true);}
 });
 
 
@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
  * @param {Event} event handles the event settings
  * @returns {Promise<void>}
  */
-
 async function userLogin(event) {
     const form = event.currentTarget;
     const login = document.getElementById("name").value;

@@ -4,18 +4,20 @@
     <title>Balance Option</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="text/javascript" src="/JS/username.js"></script>         <!-- script for getting user name -->
-    <script type="text/javascript" src="/JS/selection2.js"></script>
-    <script type="text/javascript" src="/JS/customnotes.js"></script>         <!-- script for getting user name -->
-    <script type="text/javascript" src="/JS/hiddennotes.js"></script>
-    <script type="text/javascript" src="/JS/process.js"></script>
+    <script type="text/javascript" src="/JS/balance.js"></script>         <!-- script for getting user name -->
     <link rel="stylesheet" href="/CSS/bal.css">
     <link rel="shortcut icon" href="#">
     <script>
     </script>
 </head>
 <body>
-    <button type="button" id="btnotes" class="custcom" onclick="notecheck(event)">Custom Notes</button>
+    <div id="top-bar">
+        <button type="Back" class="ssb button-center">Done</button>
+        <button type="Back" class="ssx button-left">Back</button>
+        <button type="button" id="btnotes" class="custcom button-right" onclick="notecheck()">NOTE</button>
+        <button type="button" id="btnlog" class="btnlog button-right" onclick="showLoginForm()">LOGIN</button>
+        <button type="start" onclick="processContent(localStorage.getItem('grids'))" class="start button-center" >Start</button>
+    </div>
     <div2 id="notes" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -25,7 +27,6 @@
             <button id="snm" type="button" onblur="userNotes(event)" class="mm">Submit</button>
         </div>
     </div2>
-    <button type="button" id="btnlog" class="btnlog" onclick="check(event)">Login</button>
     <div1 id="login" class="modal" >
         <div class="modal-content">
             <span class="close2">&times;</span>
@@ -35,8 +36,7 @@
         </div>
     </div1>
 
-    <div8>
-        <button type="start" onclick="processContent(localStorage.getItem('grids'))" class="start" >Start</button>
+    <div id="bayHolder">
         <h2>Bay</h2>
         <div id="bay_grid" >
             <!-- Populating the first grid with numbers -->
@@ -53,15 +53,18 @@
                 <!-- Add more items as needed -->
             </div>
         </div>
-    </div8>
+    </div>
+
+    <div class="moves-container" id="movesContainer">
+        
+    </div>
 
     <!-- add the interactions here with start...
     add the backend server protocol -->
     <a href="fileupload.html" >
-        <button type="Back" class="ssx">Back</button>
+        
     </a>   
       <a href="noticeblock.html" >
-        <button type="Back" class="ssb">Done</button>
     </a> 
     
     <!-- <a href="">

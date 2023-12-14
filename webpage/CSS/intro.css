@@ -51,3 +51,11 @@ button{
     right:40%;
     font-size: 20px;
 }
+.contact{
+    align-items: right;
+    position: fixed;
+    margin-top: 15% auto;
+    left:90%;
+    top:90%;
+    font-size: 13px;
+}

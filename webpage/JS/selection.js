@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', (event) => {
-    const form = document.querySelector('#button-press');
-    if(form){
-    form.addEventListener('press', check, true);}
+    const loginForm = document.querySelector('#button-press');
+    if(loginForm){
+    loginForm.addEventListener('press', showLoginForm, true);}
 });
 
 //Get the prompt input
 
 
-async function check(event){
+async function showLoginForm(event){
     var prompt = document.getElementById("login");
 
     var btn = document.getElementById("btnlog");

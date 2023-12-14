@@ -27,6 +27,8 @@
 #include "../logcreate.cpp"
 
 using namespace std;
+using namespace httplib;
+
 
 //  Doesnt rteally do Anything, just holds code here
 void solveLoad(){
@@ -67,6 +69,18 @@ void solveLoad(){
                 
 
     //             std::cout << "JSON Object:\n" << solution_response.dump(2) << std::endl;
+};
+
+std::string trim(std::string str) {
+    size_t start = str.find_first_not_of(" \t\n\r");
+    size_t end = str.find_last_not_of(" \t\n\r");
+
+    if (start == std::string::npos || end == std::string::npos) {
+        // The string is empty or contains only whitespaces
+        return "";
+    }
+
+    return str.substr(start, end - start + 1);
 }
 
 int main() {
@@ -75,7 +89,6 @@ int main() {
     httplib::Server svr;
     StartLib();
     string myData;
-    string username;
     string usernotes;
     bool bal, off;
 
@@ -85,6 +98,8 @@ int main() {
     Buffer* buffer2 = nullptr;
     Node* testNode;
     Json solution_response;
+
+    Tree* tree;
     string weight, conname;
     vector<vector<string>> contload;
     vector<vector<string>> contoff;
@@ -104,6 +119,24 @@ int main() {
         buffer << file.rdbuf();
         res.set_content(buffer.str(), "text/html");
     });
+
+    svr.Get("/upload", [](const httplib::Request &, httplib::Response &res) {
+        std::ifstream file("../webpage/HTML/fileupload.html");
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        res.status = 200;
+        res.set_content(buffer.str(), "text/html");
+    });
+
+    svr.Get("/balance", [](const httplib::Request &, httplib::Response &res) {
+        std::ifstream file("../webpage/HTML/balance.html");
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        res.status = 200;
+        res.set_content(buffer.str(), "text/html");
+    });
+
+
 
     // svr.Get("/balance", [](const httplib::Request &, httplib::Response &res) {
 
@@ -143,7 +176,6 @@ int main() {
             return;
         }
     });
-
     
     svr.Post("/notes", [](const httplib::Request & req, httplib::Response &res){//header values
         if(req.has_file("nnote")){
@@ -213,7 +245,7 @@ int main() {
                 testNode = new BalanceNode(bay, buffer, 0);
                 
 
-                Tree* tree = new Tree(testNode);
+                tree = new Tree(testNode);
 
                 
 
