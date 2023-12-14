@@ -13,7 +13,7 @@
 <body>
     <div id="top-bar">
         <button type="Back" class="ssb button-center">Done</button>
-        <button type="Back" class="ssx button-left">Back</button>
+        <button type="Back" class="ssx button-left" onclick="backToUpload()">Back</button>
         <button type="button" id="btnotes" class="custcom button-right" onclick="notecheck()">NOTE</button>
         <button type="button" id="btnlog" class="btnlog button-right" onclick="showLoginForm()">LOGIN</button>
         <button type="start" onclick="processContent(localStorage.getItem('grids'))" class="start button-center" >Start</button>
@@ -56,8 +56,19 @@
     </div>
 
     <div class="moves-container" id="movesContainer">
-        
+        <div class="container" id="container1">
+            <div class="header" id="header1"></div>
+            <div id="mass1"></div>
+            <div class="pickup-putdown" id="pickup1"></div>
+            <div class="pickup-putdown" id="putdown1"></div>
+            <div class="cost" id="cost1"></div>
+        </div>
     </div>
+    <div id="moves_buttons">
+        <button id="prevmove_btn" onclick="processContent(localStorage.getItem('grids'))">RESET</button>
+        <button id="nextmove_btn" onclick="highlightNextMove()">NEXT</button>
+    </div>
+    
 
     <!-- add the interactions here with start...
     add the backend server protocol -->

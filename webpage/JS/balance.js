@@ -1,3 +1,5 @@
+
+
 // Set up the event listener for the form submission
 document.addEventListener('DOMContentLoaded', (event) => {
     const notesForm = document.querySelector('#userNotes');
@@ -151,6 +153,10 @@ async function notecheck(){
 }
 
 async function processContent(content) {
+
+    //  Reset move count
+    moveNum = 1;
+
     const lines = content.split('\n');
 
     //  Get the buffer item
@@ -174,14 +180,22 @@ async function processContent(content) {
       if (match) {
         const [, yPosition, xPosition, mass, name] = match;
 
+        // Remove leading zeros from x and y positions
+        const cleanedYPosition = parseInt(yPosition, 10).toString();
+        const cleanedXPosition = parseInt(xPosition, 10).toString();
+
         if(name === "UNUSED"){
-            bayContent += `<div class="grid-item grid-unused" id="${name}@(${yPosition},${xPosition})"><div class="grid-item-content">${name[0]}</div></div>`;
+            bayContent += `<div class="grid-item grid-unused" id="(${cleanedYPosition},${cleanedXPosition})"><div class="grid-item-content"></div></div>`;
         }else if(name === "NAN"){
-            bayContent += `<div class="grid-item grid-nan" id="${name}"><div class="grid-item-content">${name[0]}</div></div>`;
+            bayContent += `<div class="grid-item grid-nan" id="(${cleanedYPosition},${cleanedXPosition})"><div class="grid-item-content">${name[0]}</div></div>`;
         }else{
-            bayContent += `<div class="grid-item grid-container" id="${name}"><div class="grid-item-content">${name[0]}</div></div>`;
+            bayContent += `<div class="grid-item grid-container" id="(${cleanedYPosition},${cleanedXPosition})" onclick="highlightContainer('(${cleanedYPosition},${cleanedXPosition})')"><div class="grid-item-content">${name}</div></div>`;
         }
       }
+    }
+
+    async function highlightContainer(gridItem){
+        document.getElementById(gridItem).style.backgroundColor = "orange";
     }
 
     //  And the buffer
@@ -189,11 +203,96 @@ async function processContent(content) {
       bufferContent += `<div class="grid-item grid-unused" id="UNUSED"><div class="grid-item-content">U</div></div>`;
     }
 
-    
-
-
-
     // console.log(content);
     bay.innerHTML = bayContent;
     buffer.innerHTML = bufferContent;
-  }
+
+    //  Highlight first move
+    await highlightNextMove();
+}
+
+async function displayMoves(){
+
+    
+
+    //  Get needed html elements
+    var movesContainer = document.getElementById("movesContainer");
+    
+    //  Get all the moves
+    var moves = JSON.parse(localStorage.getItem("solution"));
+    delete moves['startState'];
+    delete moves['endState'];
+
+    var allMoves = ``;
+
+    for(let i = 1; i <= Object.keys(moves).length; i++){
+
+        const moveData = moves[i.toString()];
+        allMoves += `<div class="container" id="container${i}">
+            <div class="header" id="header${i}">${moveData.containerName}</div>
+            <div id="mass${i}">Mass: ${moveData.mass}</div>
+            <div class="pickup-putdown" id="pickup${i}">FROM ${moveData.pickup_origin}: (${moveData.pickup_x}, ${moveData.pickup_y})</div>
+            <div class="pickup-putdown" id="putdown${i}">TO ${moveData.putdown_origin}: (${moveData.putdown_x}, ${moveData.putdown_y})</div>
+            <div class="cost" id="cost${i}">${moveData.cost} min</div>
+            </div>`
+    }
+
+    movesContainer.innerHTML = allMoves;
+}
+
+async function highlightNextMove(){
+
+    //  Get JSON data
+    var moveData = JSON.parse(localStorage.getItem("solution"))[`${moveNum}`];
+
+    //  Reset all move colors
+    var containers = document.getElementsByClassName("container");
+    var containerArray = Array.from(containers);
+    containerArray.forEach(function(container, index) {
+        container.style.backgroundColor = "#ccc";
+    });
+
+    //  Remove special coloring of last move
+    var allGridItems = Array.from(document.getElementsByClassName("grid-item"));
+    allGridItems.forEach(function(item, index){
+        if(item.classList.contains("grid-pickup")){item.classList.remove("grid-pickup");}
+        if(item.classList.contains("grid-putdown")){item.classList.remove("grid-putdown");}
+    });
+
+    //  Highlight the move
+    var move = document.getElementById(`container${moveNum}`);
+    move.style.backgroundColor = "yellow";
+
+    //  Highlight specified containers by adding class to grid items
+    var pickupContainer = document.getElementById(`(${moveData.pickup_y},${moveData.pickup_x})`)
+    var putdownSlot = document.getElementById(`(${moveData.putdown_y},${moveData.putdown_x})`)
+
+    //  Also get the names
+    var pickupName = pickupContainer.innerHTML;
+    var putdownName = putdownSlot.innerHTML;
+
+    //  Swap the names
+    pickupContainer.innerHTML = putdownName;
+    putdownSlot.innerHTML = pickupName;
+
+    pickupContainer.classList.add("grid-pickup");
+    pickupContainer.classList.add("grid-unused");
+    pickupContainer.classList.remove("grid-container")
+
+    putdownSlot.classList.add("grid-putdown");
+    putdownSlot.classList.add("grid-container");
+    putdownSlot.classList.remove("grid-unused")
+
+    moveNum++;
+}
+
+async function backToUpload(){
+    const result = window.confirm("Your current task data will be lost. Are you sure?")
+    if(result){
+        window.location = '/upload';
+    }
+}
+
+window.onload = async function(){
+    await displayMoves();
+}

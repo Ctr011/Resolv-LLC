@@ -82,7 +82,7 @@ async function uploadFileForBalance(event) {
     }
 
     try {
-        loadingLabel.textContent = "Solving Balance Task..."
+        loadingLabel.textContent = `Solving Balance Task for (${localStorage.getItem("fileName")})...`
         const response = await fetch('/balanced', {
             method: 'POST',
             body: formData
@@ -138,7 +138,7 @@ async function uploadFileForLoad(event) {
     }
     
     try {
-        loadingLabel.textContent = "Solving Load Task..."
+        loadingLabel.textContent = `Solving Load Task for (${localStorage.getItem("fileName")})...`
         const response = await fetch('/load', {
             method: 'POST',
             body: formData
