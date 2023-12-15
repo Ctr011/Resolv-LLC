@@ -6,6 +6,7 @@
 #define NOMINMAX
 #include <WinSock2.h>
 #include <windows.h>
+#include <filesystem>
 //#include <MyClass.h>
 
 #include "../ContainerSlot.h"
@@ -49,10 +50,10 @@ int main() {
     string usernotes;
     bool bal, off;
 
-    ShipBay* bay = nullptr;
-    ShipBay* bay2 = nullptr;
-    Buffer* buffer = nullptr;
-    Buffer* buffer2 = nullptr;
+    ShipBay* bay;
+    ShipBay* bay2;
+    Buffer* buffer;
+    Buffer* buffer2;
     Node* testNode;
     Json solution_response;
     string weight, conname;
@@ -118,6 +119,17 @@ int main() {
         if(req.has_file("finished")){
             //need to add the final output for the new manifest
             //add data for the manifest
+            string path_to_out = desloc + newMan + "OUTBOUND.txt";
+            ifstream file;
+            file.open(path_to_out);
+            if(file){}
+            else{printf("ERROR!!\n");}
+            file.close();
+
+            ofstream file_out;
+            file_out.open(path_to_out);
+
+
             res.status = 200;
             return;
         }
@@ -312,6 +324,7 @@ int main() {
         if(req.has_file("start")){
             Node* first[100];
             Node* tess[100];
+            Json finishCode;
             bay = new ShipBay(filecon);
             // buffer = new Buffer("");
             cout <<"Starting Function..." << endl;
@@ -344,6 +357,7 @@ int main() {
                 // for(int i = 0; i < load.size(); i++){
                 //     testNode = new LoadNode(load[i].first, load[i].second, 1,1,Origin::TRUCK);
                 // }
+                solution_response["startState"] = bay->getText();
                 int movenumber = 0;
                 int i = 0;
                 for(Container* c : container){
@@ -353,23 +367,29 @@ int main() {
 
                     solution_response[std::to_string(movenumber)] = tree->solveLoad();
 
-                    delete bay;
+                    // delete bay;
                     bay = new ShipBay(solution_response[std::to_string(movenumber)]["endState"]);
 
                     solution_response["endState"] = solution_response[std::to_string(movenumber)]["endState"];
                     solution_response[std::to_string(movenumber)].erase("endState");
-                    i++;
                     
-                    // delete tes;
+
+                    // delete testNode;
                     // delete tree;
                 }
+                finishCode = solution_response;
+                solution_response.erase("endState");
                 std::cout << "JSON Object:\n" << solution_response.dump(2) << std::endl;
-                task_complete_load();
+                // task_complete_load();
+                    for (Container* c : container) {
+                    delete c;
+                    }
+                    delete bay;
 
 
             }
             res.status = 200;
-            res.set_content(solution_response.dump(), "application/json");
+            res.set_content(finishCode.dump(), "application/json");
             return;
         }
         else{
