@@ -194,13 +194,20 @@ bool UserLimit(string c){ //takes user input
 void UpdateFileM(string manifestName){//designed for initial and ending
     printf("INITIAL TEST FOR MANIFEST FILE...\n");
     //cout << manifestName << endl; //checking to see if manifest is correct, backend system
+    for(int i = 0; i < manifest.size(); i++){
+        if(manifest.at(i) != '.'){
+            newMan += manifest.at(i); //adding initial parts of the name, assuming first part of manifest is the ship name
+        }
+        else if(manifest.at(i) == '.' && manifest.at(i+1) == 't' && manifest.at(i+2) == 'x' && manifest.at(i+3) == 't'){ //checking the next few characters
+            i = manifest.size();}
+    }
 
     DateTime(); //set time and date
     ofstream file;
     file.open(path , ios_base::app); //open file in append mode to not delete old files
     if(file){ //check if we have a log file
             printf("SYSTEM HAS DETECTED LOG FILE...ATTEMPTING TO LOAD MANIFEST INTO LOG...\n");
-            newMan = manifestName;
+            // newMan = manifestName;
             file << date << ": " << times;
             file << " ";//Here should be 19 characters, we want lines of 
             file << "Manifest " << manifestName << " is opened, there are "; //place in manifest file
@@ -366,7 +373,7 @@ void UpdateBalanceLog(string manifest){//we will get the ship name from manifest
         if(manifest.at(i) != '.'){
             ship += manifest.at(i); //adding initial parts of the name, assuming first part of manifest is the ship name
         }
-        else if(manifest.at(i) != '.' && manifest.at(i+1) != 't' && manifest.at(i+2) != 'x' && manifest.at(i+3) != 't'){ //checking the next few characters
+        else if(manifest.at(i) == '.' && manifest.at(i+1) == 't' && manifest.at(i+2) == 'x' && manifest.at(i+3) == 't'){ //checking the next few characters
             i = manifest.size();
         }
     }
