@@ -194,12 +194,12 @@ bool UserLimit(string c){ //takes user input
 void UpdateFileM(string manifestName){//designed for initial and ending
     printf("INITIAL TEST FOR MANIFEST FILE...\n");
     //cout << manifestName << endl; //checking to see if manifest is correct, backend system
-    for(int i = 0; i < manifest.size(); i++){
-        if(manifest.at(i) != '.'){
-            newMan += manifest.at(i); //adding initial parts of the name, assuming first part of manifest is the ship name
+    for(int i = 0; i < manifestName.size(); i++){
+        if(manifestName.at(i) != '.'){
+            newMan += manifestName.at(i); //adding initial parts of the name, assuming first part of manifest is the ship name
         }
-        else if(manifest.at(i) == '.' && manifest.at(i+1) == 't' && manifest.at(i+2) == 'x' && manifest.at(i+3) == 't'){ //checking the next few characters
-            i = manifest.size();}
+        else if(manifestName.at(i) == '.' && manifestName.at(i+1) == 't' && manifestName.at(i+2) == 'x' && manifestName.at(i+3) == 't'){ //checking the next few characters
+            i = manifestName.size();}
     }
 
     DateTime(); //set time and date
