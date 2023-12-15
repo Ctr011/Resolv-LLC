@@ -1,6 +1,67 @@
 body{
     background-color: darkgray;
 }
+
+button{
+    border-radius: 8px;
+    border-width: 0;
+    color: #d3d3d3;
+    background-color: #333333;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 10px 12px;
+    text-align: center;
+    transition: all 200ms;
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    padding: 10px;
+    margin: 5px;
+  }
+
+  .button-right{
+    float: right;
+    position: relative;
+    margin-right: 5px;
+    margin-top: 2px;
+    right: 0;
+  }
+
+  .button-left{
+    float: left;
+    position: relative;
+    margin-left: 5px;
+    margin-top: 2px;
+    left: 0;
+  }
+
+  .button-center{
+    left: 45%;
+    margin-top: 2px;
+    position: relative;
+    float: inherit;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+
+#top-bar{
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5%;
+    position: absolute;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
@@ -44,109 +105,31 @@ body{
         color: #000;
         text-decoration: none;
         cursor: pointer;}
-.close3 {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-    }
-.close3:hover,
-.close3:focus {
-            color: #000;
-            text-decoration: none;
-            cursor: pointer;}
-
-.modal {
-                display: none; /* Hidden by default */
-                position: fixed; /* Stay in place */
-                z-index: 1; /* Sit on top */
-                left: 0;
-                top: 0;
-                width: 100%; /* Full width */
-                height: 100%; /* Full height */
-                overflow: auto; /* Enable scroll if needed */
-                background-color: rgb(0,0,0); /* Fallback color */
-                background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-.modal2 {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}                      
 .mm{
     position: relative;
     margin:auto;
     top:auto;
     left: 35%;
 }
-
-.custcom{
-    position: absolute;
-    font-size: 18px ;
-    margin:auto;
-    background-size: contain;
-    top:auto;
-    left: 93% ;
-}
-.btnlog{
-    align-items: center;
-    margin: auto;
-    position: absolute;
-    background-size: contain;
-    top:auto;
-    left:90%;
-    font-size: 18px;
-}
-.btnload{
-    align-items: center;
-    margin: auto;
-    position: absolute;
-    background-size: contain;
-    top:auto;
-    font-size: 18px;
-}
 .ssx{
     align-items: center;
-    margin: auto;
-    position: absolute;
-    bottom: 8%;
-    background-size: contain;
-    top:auto;
+    position: relative;
     left: auto;
     font-size: 18px;
+    background-color: red;
 }
 
 .ssb{
+    display: none;
     align-items: center;
     margin: auto;
+    background-color: green;
     position: absolute;
     background-size: contain;
-    top:90%;
-    left: 50%;
+    top:0%;
+    left: 55%;
     font-size: 18px;
 }
-.ppt{
-    background-color: grey;
-    position: fixed;
-    background-position:initial;
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 3%;
-    left:40%;
-    border: 10px solid black;
-    width:10%; /* Could be more or less, depending on screen size */
-}
-p{
-    font-size: 20px;
-    font-weight: bold;
-}
-
 
 h2{
     display: block;
@@ -162,6 +145,13 @@ h3{
     width: fit-content;
 }
 
+#bayHolder{
+    position: absolute;
+    top: 10%;
+    width: 70%;
+    height: auto;
+    float: left;
+}
 /* Define the styles for the first grid (12 columns by 8 rows) */
 #bay_grid {
     display: grid;
@@ -177,7 +167,6 @@ h3{
     transform: rotatex(180deg);
 }
 
-
 /* Define the styles for the second grid (24 columns by 4 rows) */
 #buffer_grid {
     display: grid;
@@ -186,8 +175,8 @@ h3{
     grid-template-rows: repeat(4, 1fr);
     gap: 10px;
     border: 1px solid #000;
-    width: 24%;
-    height: 4%;
+    width: 72%;
+    height: 12%;
     grid-auto-flow: row-reverse;      /* Reverse the row flow */
     transform: rotatex(180deg);
 }
@@ -195,64 +184,155 @@ h3{
 /* Style for grid items (optional) */
 .grid-item {
     text-align: center;
-    padding: 10px;
+    padding: 2px;
     /* Set padding-bottom to create a square aspect ratio */
     transform: rotatex(180deg);
     padding-bottom: 100%; 
     position: relative;
+    display: block;
 }
 
-
 .grid-nan{
-    background-color: darkgray;
+    background-color: rgb(44, 44, 44);
+    color: whitesmoke;
 }
 
 .grid-unused{
     background-color: whitesmoke;
 }
 
+.grid-pickup{
+    background-color: red !important;
+    color: whitesmoke;
+}
+
+.grid-putdown{
+    background-color: green !important;
+    color: whitesmoke;
+}
+
 .grid-container{
-    display: flex;
     background-color: blue;
     color: whitesmoke;
     cursor: pointer;
 }
 
-/* .grid-container:active{
-    background-color: red;
-} */
-/* .grid-container:focus{
-    background-color: red;
-} */
-
 /* Style for content inside the grid item */
 .grid-item-content {
     position: absolute;
-    top: 0;
+    top: 50%;
     left: 0;
     right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    transform: translateY(-50%);
 }
 
-.show{
-    display:block;
-    align-items: center;
-    margin: auto;
-    left: 20%;
+#moves_buttons{
     position: absolute;
-    background-size: contain;
-    font-size: 18px;
+    width: 30%;
+    bottom: 10%;
+    right: 0%;
+    border: #000 1px;
+    align-items:center;
 }
+
+#nextmove_btn{
+    background-color: green;
+}
+
+#prevmove_btn{
+    background-color: orangered;
+}
+
+#newContainerBtn{
+    background-color: green;
+    color: whitesmoke;
+}
+
+.moves-container {
+    position: absolute;
+    top: 10%;
+    right: 0;
+    width: 30%;
+    height: 70%;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 20px;
+    display: flex;
+    border-radius: 8px;
+    overflow-y: scroll;
+    background-color: #333;
+    align-content: center;
+  }
+
+.half-container {
+    flex: 1;
+    border: 1px solid #ccc;
+}
+
+#unloadsContainer {
+    background-color: #ff9999; 
+}
+
+#loadsContainer {
+    background-color: #99ff99; 
+}
+
 .start{
-    display: none;
     align-items: center;
-    z-index: 1; /* Sit on top */
+    background-color: green;
     margin: auto;
-    left: 70%;
     position: absolute;
     background-size: contain;
     font-size: 18px;
 }
+
+.container {
+    border: 2px solid #333333;
+    padding: 10px;
+    margin: 10px;
+    width: 76%;
+    text-align: center;
+    align-self: center;
+    background-color: #aaa;
+    transition: all 0.5s;
+  }
+
+  /* Unload container objects */
+.unload_containers {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    padding: 5px;
+    background-color: #fa5b5b;
+}
+
+.load-containers {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    padding: 5px;
+    background-color: #2fff6e;
+}
+.unload_containers .header {
+    font-weight: bold;
+}
+
+.unload_containers .mass {
+    color: #555;
+}
+
+  .header {
+    font-weight: bold;
+  }
+
+  .pickup-putdown {
+    text-align: center;
+    margin-left: 20px;
+  }
+
+  .origin {
+    margin-top: 10px;
+  }
+
+  .cost {
+    margin-top: 10px;
+    font-weight: bold;
+  }

@@ -4,26 +4,12 @@ var contname;
 async function processContent(content) {
     const lines = content.split('\n');
     //  Get the buffer item
-    var shwbtn = document.getElementById("shbut");
-    var stn = document.getElementById("sbtn");
     var bay = document.getElementById("bay_grid");
     var buffer = document.getElementById("buffer_grid");
-    var movesContainer = document.getElementById("movesContainer");
     var bayContent = "";
     var bufferContent = "";
-    var solutionContent = JSON.parse(localStorage.getItem("solution"));
 
     moveNum = 1;
-
-    shwbtn.onclick = function(){
-      if(!stn.style.display || stn.style.display == "none"){
-        stn.style.display = "block";
-      }
-      else{
-        stn.style.display = "none";
-      }
-    }
-
 
     var bayContent = "";
   
@@ -37,18 +23,15 @@ async function processContent(content) {
         const cleanedMass = parseInt(mass,10).toString();
 
         if(name === "UNUSED"){
-            bayContent += `<div class="grid-item grid-unused" id="${name}"><div class="grid-item-content">${name[0]}</div></div>`;
+            bayContent += `<div class="grid-item grid-unused" id="${name}"><div class="grid-item-content"></div></div>`;
         }else if(name === "NAN"){
-            bayContent += `<div class="grid-item grid-nan" id="${name}"><div class="grid-item-content">${name[0]}</div></div>`;
+            bayContent += `<div class="grid-item grid-nan" id="${name}"><div class="grid-item-content"></div></div>`;
         }else{
-            bayContent += `<div class="grid-item grid-container" data-mass="${cleanedMass}" data-name="${name}" data-same="false" id="${cleanedYPosition},${cleanedXPosition}" onclick="unloadcheck((${cleanedYPosition}+','+ ${cleanedXPosition}))"><div class="grid-item-content">${name[0]}</div></div>`;
+            bayContent += `<div class="grid-item grid-container" data-mass="${cleanedMass}" data-name="${name}" data-same="false" id="${cleanedYPosition},${cleanedXPosition}" onclick="unloadcheck((${cleanedYPosition}+','+ ${cleanedXPosition}))"><div class="grid-item-content">${name}</div></div>`;
         }
 
        
       }
-    }
-    async function highlightContainer(gridItem){
-      document.getElementById(gridItem).style.backgroundColor = "orange";
     }
 
     //  And the buffer
@@ -59,9 +42,6 @@ async function processContent(content) {
     // console.log(content);
     bay.innerHTML = bayContent;
     buffer.innerHTML = bufferContent;
-
-  //  Highlight first move
-    await highlightNextMove();
   }
 
 async function highlightNextMove(){
@@ -112,9 +92,6 @@ async function highlightNextMove(){
 
 
 async function displayMoves(){
-
-    
-
   //  Get needed html elements
   var movesContainer = document.getElementById("movesContainer");
   
@@ -174,14 +151,26 @@ async function loadcheck(event) {
     const contw = document.getElementById('contw').value;
     document.getElementById("contn").value = '';
     document.getElementById("contw").value = '';
-    // const ids = document.createElement('id');
-    // const logins = login.value;    //  Get teh file
-    // const id = login.form.id;
+
+    //  Get the loads container
+    let loadContainer = document.getElementById("loadsContainer");
+    let addButton = document.getElementById("newContainerBtn");
+    let loadContainerData = "";
+    
+    //  Delete add button if visible
+    if(addButton){addButton.remove()}
+
+    loadContainerData += `
+        <div class="load-containers" id="load${contn}">
+          <div class="header">${contn}</div>
+          <div class="mass">Mass: ${contw}</div>
+        </div>`
+    
+        loadContainer.innerHTML += loadContainerData
 
     const formData = new FormData();
     formData.append('contn', contn);
     formData.append('contw', contw);
-    // formData.append('id', id);
 
     try {
         const response = await fetch('/contname', {
@@ -215,30 +204,42 @@ document.addEventListener('DOMContentLoaded', (event) => {
  */
 async function unloadcheck(id){
     const form = id.currentTarget;
-    const contn = document.getElementById(id).getAttribute('data-name');
-    const contw = document.getElementById(id).getAttribute('data-mass');
+    const contn = document.getElementById(id).getAttribute('data-name');  //  Container name
+    const contw = document.getElementById(id).getAttribute('data-mass');  //  container mass
     var delete_data = "No";
     var s = document.getElementById(id).getAttribute('data-same');
 
+    var unloads = document.getElementById('unloadsContainer');  //  Reference the unloads container
+    var unloadsContainer = "";  //  Holds the raw HTML text to go inside unloads container
+
+    //  ID-ing by colour? sure
     if(document.getElementById(id).style.backgroundColor === "orange"){
-        document.getElementById(id).style.backgroundColor = "blue";
         delete_data = "Yes";
+
+        //  Get element, and remove
+        let containerToBeRemoved = document.getElementById(`unload${contn}`);
+        if(containerToBeRemoved){containerToBeRemoved.remove()}
+
+        //  Reset color
+        document.getElementById(id).style.backgroundColor = "blue"
+
     }
     else{
         document.getElementById(id).style.backgroundColor = "orange";
         delete_data = "No";
-      }
-    //   if(s== "false"){
 
-    //   }
-    //   else if(){
-    //     return;
-    //   }
-    // document.getElementById("contn").value = '';
-    // document.getElementById("contw").value = '';
-    // const ids = document.createElement('id');
-    // const logins = login.value;    //  Get teh file
-    // const id = login.form.id;
+        //  Create the display for the picked up Container here
+        unloadsContainer += `
+        <div class="unload_containers" id="unload${contn}">
+          <div class="header">${contn}</div>
+          <div class="mass">Mass: ${contw}</div>
+        </div>`
+        unloads.innerHTML += unloadsContainer;
+    }
+
+    
+
+
 
     const formData = new FormData();
     formData.append('contn', contn);
@@ -280,7 +281,7 @@ async function wcheck(event){
 
   var lprompt = document.getElementById("loadq");
 
-  var btnt = document.getElementById("btnload");
+  var btnt = document.getElementById("newContainerBtn");
 
   var btnx = document.getElementById("snn");
 
@@ -318,7 +319,6 @@ async function wcheck(event){
       if(event.target == prompt){
           prompt.style.display = "none";
       }}
-  event.preventDefault();
 }
 
 //HiddenNotes
@@ -358,7 +358,6 @@ async function notecheck(event){
       if(event.target == prompt){
           prompt.style.display = "none";
       }}
-  event.preventDefault();
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -513,5 +512,58 @@ async function userStart(event){
     alert(error + "\nPlease contact Administrator");   //  Add alert if unsuccessful
 }
   event.preventDefault();
+}
+
+/**
+ * @function showLoginForm
+ * Shows the modal menu on the login form
+ * @param {Event} event 
+ */
+async function showLoginForm(){
+  var prompt2 = document.getElementById("login");
+
+  var btn = document.getElementById("btnlog");
+
+  var btnn = document.getElementById("ssm");
+
+  var span = document.getElementsByClassName("close2")[0];
+
+  btn.onclick = function(){
+      prompt2.style.display = "block";
+  }
+
+  span.onclick = function(){
+      prompt2.style.display = "none";
+  }
+
+  btnn.onclick = function(){
+      prompt2.style.display = "none";
+  }
+
+  window.onclick = function(event){
+      if(event.target == prompt2){
+          prompt2.style.display = "none";
+      }}
+
+  if(event){
+      event.preventDefault();
+  }
+}
+
+async function backToUpload(){
+  const result = window.confirm("Your current task data will be lost. Are you sure?");
+  if(result){
+      localStorage.clear();
+      window.location = '/fileupload.html';
+  }
+}
+
+window.onload = async function(){
+  await processContent(localStorage.getItem("grids"))
+
+  //  call here so we don;t have to click twice
+  showLoginForm()
+  notecheck();
+  wcheck();
 }
 

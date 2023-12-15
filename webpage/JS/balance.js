@@ -297,6 +297,7 @@ async function highlightNextMove(){
 async function backToUpload(){
     const result = window.confirm("Your current task data will be lost. Are you sure?");
     if(result){
+        localStorage.clear();
         window.location = '/fileupload.html';
     }
 }
