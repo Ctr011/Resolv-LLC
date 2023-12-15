@@ -23,8 +23,21 @@
 #include "./httplib.h"
 #include "../logcreate.h"
 #include "../logcreate.cpp"
+#include "../cmd.cpp"
 
 using namespace std;
+
+string trim(string str) {
+    size_t start = str.find_first_not_of(" \t\n\r");
+    size_t end = str.find_last_not_of(" \t\n\r");
+
+    if (start == string::npos || end == string::npos) {
+        // The string is empty or contains only whitespaces
+        return "";
+    }
+
+    return str.substr(start, end - start + 1);
+}
 
 int main() {
 
@@ -43,8 +56,9 @@ int main() {
     Node* testNode;
     Json solution_response;
     string weight, conname;
-    vector<vector<string>> contload;
-    vector<vector<string>> contoff;
+    string filecon;
+    Json startData;
+
     // Serve static files from the "webpage" directory
     svr.set_mount_point("/", "../webpage");
     svr.set_base_dir("../webpage/HTML");
@@ -62,29 +76,11 @@ int main() {
         res.set_content(buffer.str(), "text/html");
     });
 
-    // svr.Get("/balance", [](const httplib::Request &, httplib::Response &res) {
-
-    //     res.set_content();
-
-    // });
-    // Just for testing
     svr.Get("/hi", [](const httplib::Request &, httplib::Response &res) { 
         res.set_content("Hello World!", "text/plain");
     });
     
-    svr.Post("/start", [](const httplib::Request & req, httplib::Response &res){//function starts either balance or offload
-        if(req.has_file("bth")){
-            cout <<"Starting Function..." << endl;
-            res.status = 200;
-            res.set_content("Program Starting...", "text/plain");
-            return;
-        }
-        else{
-            res.status = 400;
-            res.set_content("USER NOT FOUND: ", "text/plain");
-            return;
-        }
-    });
+    
     svr.Post("/id", [](const httplib::Request & req, httplib::Response &res){//header values
         if(req.has_file("name")){
             const auto &username = req.get_file_value("name");
@@ -117,6 +113,20 @@ int main() {
             return;
         }
     });
+
+    svr.Post("/done", [](const httplib::Request & req, httplib::Response &res){
+        if(req.has_file("finished")){
+            //need to add the final output for the new manifest
+            //add data for the manifest
+            res.status = 200;
+            return;
+        }
+        else{
+            res.status = 400;
+            res.set_content("System Cannot Complete Task...", "text/plain");
+            return;
+        }
+    });
     
     svr.Post("/contname", [](const httplib::Request & req, httplib::Response &res){//header values
         if(req.has_file("contn")){
@@ -125,6 +135,43 @@ int main() {
                 const auto& weight = req.get_file_value("contw");
                 cout << "Container Name: " << conname.content << endl;
                 cout << "Container Weight: " << weight.content << endl;
+                if(!CheckRestrictedChars(conname.content) && !CheckRestrictedChars(weight.content)){
+                get_loads(conname.content,stoi(weight.content));
+                cout << "Container Name: " << load[0].first << endl;
+                cout << "Container Weight: " << load[0].second << endl;}
+                res.status = 200;
+                res.set_content("Container Found...", "text/plain");
+            return;}
+            else{
+            res.status = 400;
+            res.set_content("Weight Not Found...", "text/plain");
+            return;
+            }
+        }
+        else{
+            res.status = 400;
+            res.set_content("Container Name Not Found...", "text/plain");
+            return;
+        }
+    });
+
+     svr.Post("/contless", [](const httplib::Request & req, httplib::Response &res){//header values
+        string confirm;
+        if(req.has_file("contn")){
+            if(req.has_file("contw")){
+                const auto& conname = req.get_file_value("contn");
+                const auto& weight = req.get_file_value("contw");
+                const auto& confirm = req.get_file_value("delete_data");
+                if(confirm.content != "Yes"){
+                cout << "Container Name: " << conname.content << endl;
+                cout << "Container Weight: " << weight.content << endl;
+                get_unloads(conname.content,stoi(weight.content));
+                cout << "Container Name: " << unload[0].first << endl;
+                cout << "Container Weight: " << unload[0].second << endl;
+                }
+                else if(confirm.content == "Yes"){
+                    delete_unloads(conname.content,stoi(weight.content));
+                }
                 res.status = 200;
                 res.set_content("Container Found...", "text/plain");
             return;}
@@ -209,10 +256,11 @@ int main() {
 
             const auto &file = req.get_file_value("offload");
             const auto &myData = req.get_file_value("id");
+            filecon = file.content;
             std::istringstream filestream(file.content);
             bal = false;
             off = true;
-
+            const auto& filecon = req.get_file_value("info");
             // Print the content line by line
             string curr_line;
             int entries = 0;
@@ -227,20 +275,16 @@ int main() {
                 bay = new ShipBay(file.content);
                 buffer = new Buffer("");
 
-                testNode = new BalanceNode(bay, buffer, 0);
+                // testNode = new BalanceNode(bay, buffer, 0);
                 
 
-                Tree* tree = new Tree(testNode);
+                // Tree* tree = new Tree(testNode);
 
-                
 
-                if(bay->canBalance()){
-                    solution_response = tree->solveBalance();
-                }else{
-                    testNode->isSIFT = true;
-                    solution_response = tree->solveSIFT(bay->getSIFTState());
-                }
-
+                string start_json = bay->getText();
+                startData["startState"] = start_json;
+                startData.dump(2);
+              
             }catch(std::invalid_argument error){
                 res.status = 500;
                 res.set_content("Manifest Parsing Error", "text/plain");
@@ -264,6 +308,76 @@ int main() {
         
     });
 
+    svr.Post("/start", [&](const httplib::Request & req, httplib::Response &res){//function starts either balance or offload
+        if(req.has_file("start")){
+            Node* first[100];
+            Node* tess[100];
+            bay = new ShipBay(filecon);
+            // buffer = new Buffer("");
+            cout <<"Starting Function..." << endl;
+            if(unload.size() > 0){
+                // int i;
+                // int movenumber = 0;
+                // tess[0] = new UnloadNode(bay, buffer, 0, unload[0].first);
+                // Tree* tree = new Tree(tess[0]);
+                // solution_response[std::to_string(movenumber)] = tree->solveUnLoad();
+                // if(unload.size() > 1){
+                //     delete bay;
+                //     bay = new ShipBay(solution_response[std::to_string(movenumber)]["endState"]);
+                //     for(i = 1; i < unload.size(); i++){
+                //         tess[i] = new UnloadNode(first[i-1]->getBay(), first[i-1]->getBuffer(), first[i-1]->getMoveCost(), unload[i].first);
+                //     }
+                // }
+                // first[i]->printState();
+            }
+            if(load.size() > 0){
+                cout << "Load Request Size: " << load.size() << endl;
+                vector<Container*> container;
+
+                for(int i = 0; i < load.size(); i++){
+                    container.push_back(new Container(load[i].first, load[i].second, 1,1,Origin::TRUCK));
+                }
+                
+                // Json solution_response;
+                // string start_json = bay->getText();
+                // solution_response["startState"] = start_json;
+                // for(int i = 0; i < load.size(); i++){
+                //     testNode = new LoadNode(load[i].first, load[i].second, 1,1,Origin::TRUCK);
+                // }
+                int movenumber = 0;
+                int i = 0;
+                for(Container* c : container){
+                    movenumber++;
+                    Node* testNode = new LoadNode(bay, buffer, 0, container.at(i));
+                    Tree* tree = new Tree(testNode);
+
+                    solution_response[std::to_string(movenumber)] = tree->solveLoad();
+
+                    delete bay;
+                    bay = new ShipBay(solution_response[std::to_string(movenumber)]["endState"]);
+
+                    solution_response["endState"] = solution_response[std::to_string(movenumber)]["endState"];
+                    solution_response[std::to_string(movenumber)].erase("endState");
+                    i++;
+                    
+                    // delete tes;
+                    // delete tree;
+                }
+                std::cout << "JSON Object:\n" << solution_response.dump(2) << std::endl;
+                task_complete_load();
+
+
+            }
+            res.status = 200;
+            res.set_content(solution_response.dump(), "application/json");
+            return;
+        }
+        else{
+            res.status = 400;
+            res.set_content("USER NOT FOUND: ", "text/plain");
+            return;
+        }
+    });
 
 
 

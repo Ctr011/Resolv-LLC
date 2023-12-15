@@ -126,8 +126,10 @@ div4{
 }
 button{
     font-size: 20px;
+    background-color: rgb(2, 139, 245);
 }
 .btnlog{
+    background-color: rgb(2, 139, 245);
     align-items: center;
     margin: auto;
     position: absolute;

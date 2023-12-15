@@ -45,6 +45,8 @@ div {
 button{
     align-items: center;
     /* size: 50px; */
+    background-color: rgb(1, 124, 217);
+    background-blend-mode: lighten;
     margin: -10px -40px;
     position: relative;
     top:35%;
@@ -55,7 +57,7 @@ button{
     align-items: right;
     position: fixed;
     margin-top: 15% auto;
-    left:90%;
+    left:85%;
     top:90%;
     font-size: 13px;
 }
