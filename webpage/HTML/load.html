@@ -14,7 +14,7 @@
         <button type="Back"  class="ssx button-left" onclick="backToUpload()">Back</button>
         <button type="button" id="btnotes" class="custcom button-right" onclick="notecheck(event)">NOTE</button>
         <button type="button" id="btnlog" class="btnlog button-right" onclick="showLoginForm(event)">LOGIN</button>
-        <button type="start" onclick="processContent(localStorage.getItem('grids'))" class="start button-center" >Start</button>
+        <button type="start" onclick="startTask()" class="start button-center" >Start</button>
     </div>
 
     <div id="loads" class="modal">
@@ -53,7 +53,7 @@
     </div>
 
     <div id="bayHolder">
-        <h2>Choose Containers to Unload:</h2>
+        <h2 id="bayHeader">Choose Containers to Unload:</h2>
         <div id="bay_grid">
             <div class="grid-item"><div class="grid-item-content">1</div></div>
             <div class="grid-item"><div class="grid-item-content">2</div></div>

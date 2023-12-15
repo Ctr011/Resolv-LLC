@@ -213,10 +213,10 @@ Json Tree::solveSIFT(ShipBay* siftedState){
  * this function multiple times for multiple unloads
  * @param unload
 */
-Json Tree::solveUnLoad(Node* state){
+Json Tree::solveUnLoad(std::string target){
 
     //  init initial size
-    int initSize = state->getBay()->getAllContainers().size();
+    int initSize = this->startState->getBay()->getAllContainers().size();
 
     //  Get the bay that was loaded
     ShipBay* activeBay = this->startState->getBay();
@@ -247,17 +247,18 @@ Json Tree::solveUnLoad(Node* state){
 
             if(node->isGoal()){
                 std::cout << "GOAL" << std::endl;
-                next_node->printState();
-                std::cout << "Goal Cost: " << next_node->getMoveCost() << std::endl;
+                node->printState();
+                std::cout << "Goal Cost: " << node->getMoveCost() << std::endl;
 
-                Node* solutionNode = next_node;
+                Node* solutionNode = node;
 
                 Json solutionData;
                 int moveNumber = 1;
                 while (solutionNode->getParent() != nullptr) {
 
                     std::map<std::string, std::string> nodeMap = solutionNode->getDescription();
-
+                    nodeMap["containerName"] = target;
+                    
                     for(const auto& pair : nodeMap){
                         solutionData[std::to_string(moveNumber)][pair.first] = pair.second;
                     }

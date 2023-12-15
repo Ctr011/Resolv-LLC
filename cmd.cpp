@@ -35,15 +35,10 @@ void delete_unloads(string v, int n){
     }
 }
 
-void task_complete_load(){
+void clear_load(){
     load.clear();
 }
-void task_complete_unload(){
-    unload.clear();
-}
-
-void task_complete(){
-    load.clear();
+void clear_unload(){
     unload.clear();
 }
 #endif

@@ -59,7 +59,7 @@ int main() {
     Node* testNode;
     Json solution_response;
     string weight, conname;
-    string filecon;
+    std::string filecon = "";
     Json startData;
 
     // Serve static files from the "webpage" directory
@@ -142,7 +142,7 @@ int main() {
         }
     });
     
-    svr.Post("/contname", [](const httplib::Request & req, httplib::Response &res){//header values
+    svr.Post("/cont/load", [](const httplib::Request & req, httplib::Response &res){//header values
         if(req.has_file("contn")){
             if(req.has_file("contw")){
                 const auto& conname = req.get_file_value("contn");
@@ -169,7 +169,7 @@ int main() {
         }
     });
 
-     svr.Post("/contless", [](const httplib::Request & req, httplib::Response &res){//header values
+     svr.Post("/cont/unload", [](const httplib::Request & req, httplib::Response &res){//header values
         string confirm;
         if(req.has_file("contn")){
             if(req.has_file("contw")){
@@ -270,14 +270,27 @@ int main() {
 
             const auto &file = req.get_file_value("offload");
             const auto &myData = req.get_file_value("id");
-            filecon = file.content;
             std::istringstream filestream(file.content);
+
+            //  Assign file content to global filecon variable
+            std::string curr_line;
+            int entries = 0;
+            filecon = "";
+            while (getline(filestream, curr_line)) {
+                std::cout << "Line " << entries + 1 << ": " << curr_line << std::endl;
+                filecon += curr_line + "\n";
+                entries++;
+            }
+
+            if(entries != 96){
+                res.status = 400;
+                res.set_content("Bad file format", "text/plain");
+                return;
+            }
+
             bal = false;
             off = true;
-            const auto& filecon = req.get_file_value("info");
             // Print the content line by line
-            string curr_line;
-            int entries = 0;
             std::vector<std::string> data;
             while (getline(filestream, curr_line)) {
                 std::cout << "Line " << entries + 1 << ": " << curr_line << std::endl;
@@ -322,28 +335,63 @@ int main() {
         
     });
 
-    svr.Post("/start", [&](const httplib::Request & req, httplib::Response &res){//function starts either balance or offload
+    svr.Post("/start/load", [&](const httplib::Request & req, httplib::Response &res){//function starts either balance or offload
         if(req.has_file("start")){
             Node* first[100];
             Node* tess[100];
             Json finishCode;
             bay = new ShipBay(filecon);
+
+            //  To store total cost
+            int total_cost = 0;
+
+            //  Keep track of themove number
+            int movenumber = 0;
+
             // buffer = new Buffer("");
             cout <<"Starting Function..." << endl;
             if(unload.size() > 0){
-                // int i;
-                // int movenumber = 0;
-                // tess[0] = new UnloadNode(bay, buffer, 0, unload[0].first);
-                // Tree* tree = new Tree(tess[0]);
-                // solution_response[std::to_string(movenumber)] = tree->solveUnLoad();
-                // if(unload.size() > 1){
-                //     delete bay;
-                //     bay = new ShipBay(solution_response[std::to_string(movenumber)]["endState"]);
-                //     for(i = 1; i < unload.size(); i++){
-                //         tess[i] = new UnloadNode(first[i-1]->getBay(), first[i-1]->getBuffer(), first[i-1]->getMoveCost(), unload[i].first);
-                //     }
-                // }
-                // first[i]->printState();
+                cout << "Unload Request Size: " << std::to_string(unload.size()) << endl;
+                vector<Container*> unloadContainers;
+
+                //  Load all of the containers
+                for(int i = 0; i < unload.size(); i++){
+                    unloadContainers.push_back(new Container(unload[i].first, unload[i].second, 1,1,Origin::TRUCK));
+                }
+
+                //  Add state state data
+                solution_response["startState"] = bay->getText();
+
+                int i = 0;
+                for(Container* container : unloadContainers){
+
+                    //  Keep track of moveNumber
+                    movenumber++;
+                    std::string moveNumString = std::to_string(movenumber);
+                    
+
+                    Node* testNode = new UnloadNode(bay, buffer, 0, container->getName());
+                    Tree* tree = new Tree(testNode);
+
+                    solution_response[moveNumString] = tree->solveUnLoad(container->getName());
+                    solution_response[moveNumString]["movetype"] = "UNLOAD"; //  Set movetype here
+
+                    bay = new ShipBay(solution_response[moveNumString]["endState"]);
+
+                    solution_response["endState"] = solution_response[moveNumString]["endState"];
+                    solution_response[moveNumString].erase("endState");
+
+                    std::cout << "JSON Object:\n" << solution_response.dump(2) << std::endl;
+
+                    std::string costString = solution_response[moveNumString]["cost"];
+                    total_cost += std::stoi(costString);
+
+                    //  Needed to avoid memory leakage
+                    delete testNode;
+                    delete tree;
+
+                    i++;
+                }
             }
             if(load.size() > 0){
                 cout << "Load Request Size: " << load.size() << endl;
@@ -353,45 +401,55 @@ int main() {
                     container.push_back(new Container(load[i].first, load[i].second, 1,1,Origin::TRUCK));
                 }
                 
-                // Json solution_response;
-                // string start_json = bay->getText();
-                // solution_response["startState"] = start_json;
-                // for(int i = 0; i < load.size(); i++){
-                //     testNode = new LoadNode(load[i].first, load[i].second, 1,1,Origin::TRUCK);
-                // }
-                solution_response["startState"] = bay->getText();
-                int movenumber = 0;
+                //  If there are no unloads, our start state is not init yet either .
+                //  Do so here
+                if(solution_response.find("startState") == solution_response.end()){
+                    solution_response["startState"] = bay->getText();
+                }
+
+                
                 int i = 0;
                 for(Container* c : container){
+
                     movenumber++;
-                    Node* testNode = new LoadNode(bay, buffer, 0, container.at(i));
+                    Node* testNode = new LoadNode(bay, buffer, 0, c);
                     Tree* tree = new Tree(testNode);
 
                     solution_response[std::to_string(movenumber)] = tree->solveLoad();
+                    solution_response[std::to_string(movenumber)]["movetype"] = "LOAD"; //  Set movetype here
 
                     // delete bay;
                     bay = new ShipBay(solution_response[std::to_string(movenumber)]["endState"]);
 
                     solution_response["endState"] = solution_response[std::to_string(movenumber)]["endState"];
                     solution_response[std::to_string(movenumber)].erase("endState");
-                    
 
-                    // delete testNode;
-                    // delete tree;
+
+                    std::string costString = solution_response[std::to_string(movenumber)]["cost"];
+                    total_cost += std::stoi(costString);
+                    
+                    //  Needed to avoid memory leakage
+                    delete testNode;
+                    delete tree;
+
+                    i++;
                 }
-                finishCode = solution_response;
-                solution_response.erase("endState");
-                std::cout << "JSON Object:\n" << solution_response.dump(2) << std::endl;
-                // task_complete_load();
-                    for (Container* c : container) {
+
+                //  Add total cost
+                solution_response["totalCost"] = std::to_string(total_cost);
+                std::cout << "JSON Solution:\n" << solution_response.dump(2) << std::endl;
+                
+
+
+                for (Container* c : container) {
                     delete c;
-                    }
-                    delete bay;
+                }
+                delete bay;
 
 
             }
             res.status = 200;
-            res.set_content(finishCode.dump(), "application/json");
+            res.set_content(solution_response.dump(), "application/json");
             return;
         }
         else{
@@ -399,6 +457,15 @@ int main() {
             res.set_content("USER NOT FOUND: ", "text/plain");
             return;
         }
+    });
+
+    /**
+     * @fn /clear/load
+     * Clears load and unload vectors 
+    */
+    svr.Get("/clear/load", [&](const httplib::Request & req, httplib::Response &res){
+        clear_load();
+        clear_unload();
     });
 
 

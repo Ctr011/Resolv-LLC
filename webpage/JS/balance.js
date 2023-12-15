@@ -198,10 +198,6 @@ async function processContent(content) {
       }
     }
 
-    async function highlightContainer(gridItem){
-        document.getElementById(gridItem).style.backgroundColor = "orange";
-    }
-
     //  And the buffer
     for(let x = 0; x < 96; x++){
       bufferContent += `<div class="grid-item grid-unused" id="UNUSED"><div class="grid-item-content">U</div></div>`;

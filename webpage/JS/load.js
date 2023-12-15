@@ -1,6 +1,13 @@
 //passing in data
 var contmass;
 var contname;
+
+//  Keep track of the move number
+var moveNum;
+
+//  Keeping track of the load/unload move number
+var moveNum
+
 async function processContent(content) {
     const lines = content.split('\n');
     //  Get the buffer item
@@ -13,24 +20,24 @@ async function processContent(content) {
 
     var bayContent = "";
   
+    //  Populate the bay
     for (const line of lines) {
       const match = line.match(/\[(\d+),(\d+)\], \{(\d+)\}, (\w+)/);
   
       if (match) {
         const [, yPosition, xPosition, mass, name] = match;
-        const cleanedYPosition = parseInt(yPosition,10).toString();
-        const cleanedXPosition = parseInt(xPosition,10).toString();
-        const cleanedMass = parseInt(mass,10).toString();
+
+        // Remove leading zeros from x and y positions
+        const cleanedYPosition = parseInt(yPosition, 10).toString();
+        const cleanedXPosition = parseInt(xPosition, 10).toString();
 
         if(name === "UNUSED"){
-            bayContent += `<div class="grid-item grid-unused" id="${name}"><div class="grid-item-content"></div></div>`;
+            bayContent += `<div class="grid-item grid-unused" id="(${cleanedYPosition},${cleanedXPosition})"><div class="grid-item-content"></div></div>`;
         }else if(name === "NAN"){
-            bayContent += `<div class="grid-item grid-nan" id="${name}"><div class="grid-item-content"></div></div>`;
+            bayContent += `<div class="grid-item grid-nan" id="(${cleanedYPosition},${cleanedXPosition})"><div class="grid-item-content">${name[0]}</div></div>`;
         }else{
-            bayContent += `<div class="grid-item grid-container" data-mass="${cleanedMass}" data-name="${name}" data-same="false" id="${cleanedYPosition},${cleanedXPosition}" onclick="unloadcheck((${cleanedYPosition}+','+ ${cleanedXPosition}))"><div class="grid-item-content">${name}</div></div>`;
+            bayContent += `<div class="grid-item grid-container" id="(${cleanedYPosition},${cleanedXPosition})" data-name="${name}" data-mass = "${mass}" onclick="highlightContainer('(${cleanedYPosition},${cleanedXPosition})')"><div class="grid-item-content">${name}</div></div>`;
         }
-
-       
       }
     }
 
@@ -67,25 +74,14 @@ async function highlightNextMove(){
     var move = document.getElementById(`container${moveNum}`);
     move.style.backgroundColor = "yellow";
 
-    //  Highlight specified containers by adding class to grid items
-    var pickupContainer = document.getElementById(`(${moveData.pickup_y},${moveData.pickup_x})`)
-    var putdownSlot = document.getElementById(`(${moveData.putdown_y},${moveData.putdown_x})`)
-
-    //  Also get the names
-    var pickupName = pickupContainer.innerHTML;
-    var putdownName = putdownSlot.innerHTML;
-
-    //  Swap the names
-    pickupContainer.innerHTML = putdownName;
-    putdownSlot.innerHTML = pickupName;
-
-    pickupContainer.classList.add("grid-pickup");
-    pickupContainer.classList.add("grid-unused");
-    pickupContainer.classList.remove("grid-container")
-
-    putdownSlot.classList.add("grid-putdown");
-    putdownSlot.classList.add("grid-container");
-    putdownSlot.classList.remove("grid-unused")
+    //  Now change visuallt depending on type of move
+    if(moveData.movetype === "LOAD"){
+      var putdownContainer = document.getElementById(`(${moveData.putdown_y},${moveData.putdown_x})`)
+      putdownContainer.innerHTML = `<div class="grid-item-content">${moveData.containerName.slice(0,3)}</div>`;
+      putdownContainer.classList.add("grid-pickup");
+      putdownContainer.classList.remove("grid-unused");
+      putdownContainer.classList.add("grid-container")
+    }
 
     moveNum++;
 }
@@ -94,9 +90,14 @@ async function highlightNextMove(){
 async function displayMoves(){
   //  Get needed html elements
   var movesContainer = document.getElementById("movesContainer");
+
+  //  Change display of container to block, in order to read moves from top-down
+  document.getElementById("movesContainer").style.display = "block";
   
   //  Get all the moves
   var moves = JSON.parse(localStorage.getItem("solution"));
+  var totalCost = moves.totalCost;
+  delete moves['totalCost']
   delete moves['startState'];
   delete moves['endState'];
 
@@ -108,7 +109,7 @@ async function displayMoves(){
       allMoves += `<div class="container" id="container${i}">
           <div class="header" id="header${i}">${moveData.containerName}</div>
           <div id="mass${i}">Mass: ${moveData.mass}</div>
-          <div class="pickup-putdown" id="pickup${i}">FROM ${moveData.pickup_origin}: (${moveData.pickup_x}, ${moveData.pickup_y})</div>
+          <div class="pickup-putdown" id="pickup${i}">FROM TRUCK</div>
           <div class="pickup-putdown" id="putdown${i}">TO ${moveData.putdown_origin}: (${moveData.putdown_x}, ${moveData.putdown_y})</div>
           <div class="cost" id="cost${i}">${moveData.cost} min</div>
           </div>`
@@ -173,7 +174,7 @@ async function loadcheck(event) {
     formData.append('contw', contw);
 
     try {
-        const response = await fetch('/contname', {
+        const response = await fetch('/cont/load', {
             method: 'POST',
             body: formData
         });
@@ -202,8 +203,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
  * @param {Event} event handles the event settings
  * @returns {Promise<void>}
  */
-async function unloadcheck(id){
-    const form = id.currentTarget;
+async function highlightContainer(id){
     const contn = document.getElementById(id).getAttribute('data-name');  //  Container name
     const contw = document.getElementById(id).getAttribute('data-mass');  //  container mass
     var delete_data = "No";
@@ -237,10 +237,6 @@ async function unloadcheck(id){
         unloads.innerHTML += unloadsContainer;
     }
 
-    
-
-
-
     const formData = new FormData();
     formData.append('contn', contn);
     formData.append('contw', contw);
@@ -248,7 +244,7 @@ async function unloadcheck(id){
     // formData.append('id', id);
 
     try {
-        const response = await fetch('/contless', {
+        const response = await fetch('/cont/unload', {
             method: 'POST',
             body: formData
         });
@@ -493,25 +489,33 @@ async function userNotes(event) {
   event.preventDefault();
 }
 
-async function userStart(event){
-  const form = event.currentTarget;
-  const speak = document.getElementById("sbtn");
+async function startTask(){
+
+  
+
   const formData = new FormData();
   formData.append("info", localStorage.getItem("grids"));
   formData.append("start", "start");
   try {
-    const response = await fetch('/start', {
+    const response = await fetch('/start/load', {
         method: 'POST',
         body: formData
     });
 
-    const data = await response;
+    const data = await response.json();
+    localStorage.setItem("solution", JSON.stringify(data));
+
+    document.getElementById("bayHeader").textContent = "Estimated Time: " + data.totalCost + " minutes";
+
+    //  We now have the JSON solution. Highlight the first move
+    await displayMoves();
+    await highlightNextMove();
+
     console.log('Success:', data);
   } catch (error) {
     console.error('Error:', error);
     alert(error + "\nPlease contact Administrator");   //  Add alert if unsuccessful
-}
-  event.preventDefault();
+  }
 }
 
 /**
@@ -560,6 +564,11 @@ async function backToUpload(){
 
 window.onload = async function(){
   await processContent(localStorage.getItem("grids"))
+
+  //  Clear data from last time
+  await fetch('/clear/load', {
+    method: 'GET',
+  });
 
   //  call here so we don;t have to click twice
   showLoginForm()

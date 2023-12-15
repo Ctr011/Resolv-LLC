@@ -22,7 +22,7 @@ public:
     //  void for now
     Json solveBalance();
     Json solveSIFT(ShipBay* siftedState);
-    Json solveUnLoad(Node* state = nullptr);
+    Json solveUnLoad(std::string target);
     Json solveLoad();
 };
 
