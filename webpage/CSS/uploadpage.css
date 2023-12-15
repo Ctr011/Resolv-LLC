@@ -126,10 +126,8 @@ div4{
 }
 button{
     font-size: 20px;
-    background-color: rgb(2, 139, 245);
 }
-.btnlog{
-    background-color: rgb(2, 139, 245);
+#btnlog{
     align-items: center;
     margin: auto;
     position: absolute;
@@ -137,4 +135,85 @@ button{
     top:1%;
     left:96%;
     font-size: 20px;
+    cursor: pointer;
+}
+
+#back_btn{
+    cursor: pointer;
+}
+
+#title_label {
+    position: absolute;
+    left: 60%;
+    top: 20%;
+    width: 20%;
+    font-family: system-ui;
+    font-size: x-large;
+    text-align: center;
+}
+
+h2{
+    display: block;
+    position: relative;
+    width: fit-content;
+}
+
+
+/* Define the styles for the first grid (12 columns by 8 rows) */
+#bay_grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(8, 0.5fr);
+    gap: 10px;
+    border: 1px solid #000;
+    margin-bottom: 20px;
+    width: 36%;
+    height: 24%;
+    grid-auto-flow: row-reverse dense; /* Reverse the row flow */
+}
+
+/* Define the styles for the second grid (24 columns by 4 rows) */
+#buffer_grid {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 10px;
+    border: 1px solid #000;
+    width: 24%;
+    height: 4%;
+    grid-auto-flow: row-reverse; /* Reverse the row flow */
+}
+
+/* Style for grid items (optional) */
+.grid-item {
+    text-align: center;
+    padding: 10px;
+    /* Set padding-bottom to create a square aspect ratio */
+    padding-bottom: 100%; 
+    position: relative;
+}
+
+.grid-nan{
+    background-color: darkgray;
+}
+
+.grid-unused{
+    background-color: whitesmoke;
+}
+
+.grid-container{
+    background-color: blue;
+    color: whitesmoke;
+}
+
+/* Style for content inside the grid item */
+.grid-item-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

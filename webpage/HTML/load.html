@@ -7,15 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/CSS/load.css">
     <link rel="shortcut icon" href="#">
-
-    <script type="text/javascript" src="/JS/username.js"></script>         <!-- script for getting user name -->
-    <script type="text/javascript" src="/JS/selection2.js"></script>
-    <script type="text/javascript" src="/JS/customnotes.js"></script>         <!-- script for getting user name -->
-    <script type="text/javascript" src="/JS/hiddennotes.js"></script>
-    <script type="text/javascript" src="/JS/loadprompt.js"></script>
     <script type="text/javascript" src="/JS/load.js"></script>
 </head>
 <body>
+    <button type="show" id="shbut" onclick="processContent(localStorage.getItem('grids'));" class="show" >Show</button>
+    <button type="show"  id="sbtn"  action='/start' onclick="userStart(event)" class="start" >Start</button>
     <button type="button" id="btnotes" class="custcom" onclick="notecheck(event)">Custom Notes</button>
     <div2 id="notes" class="modal">
         <div class="modal-content">
@@ -57,6 +53,39 @@
             <!-- backend system will not allow certain containers to be used. use the restricted char and word checks -->
         </div>
     </div2>
+    <div8>
+        <h2>Bay</h2>
+        <div id="bay_grid" >
+            <!-- Populating the first grid with numbers -->
+            <div class="grid-item"><div class="grid-item-content">1</div></div>
+            <div class="grid-item"><div class="grid-item-content">2</div></div>
+            <!-- Add more items as needed -->
+        </div>
+        <div>
+            <h3>Buffer</h3>
+            <div id="buffer_grid">
+                <!-- Populating the second grid with numbers -->
+                <div class="grid-item"><div class="grid-item-content">A</div></div>
+                <div class="grid-item"><div class="grid-item-content">B</div></div>
+                <!-- Add more items as needed -->
+            </div>
+        </div>
+    </div8>
+
+    <div class="moves-container" id="movesContainer">
+        <div class="container" id="container1">
+            <div class="header" id="header1"></div>
+            <div id="mass1"></div>
+            <div class="pickup-putdown" id="pickup1"></div>
+            <div class="pickup-putdown" id="putdown1"></div>
+            <div class="cost" id="cost1"></div>
+        </div>
+    </div>
+    <div id="moves_buttons">
+        <button id="prevmove_btn" onclick="processContent(localStorage.getItem('grids'))">RESET</button>
+        <button id="nextmove_btn" onclick="highlightNextMove()">NEXT</button>
+    </div>
+
     <!-- add the interactions here with start...
     add the backend server protocol -->
     <a href="fileupload.html" >

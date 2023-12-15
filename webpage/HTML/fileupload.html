@@ -4,29 +4,28 @@
     <title>Deckware</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/CSS/fileup.css">
-    <link rel="stylesheet" href="../CSS/upload.css"> <!-- Adjust the path accordingly -->
-    <script type="text/javascript" src="/JS/fileupload.js"></script>      <!-- script for uploading files -->
-    <script type="text/javascript" src="/JS/fileupload2.js"></script>      <!-- script for uploading files -->
-    <script type="text/javascript" src="/JS/username.js"></script>         <!-- script for getting user name -->
-    <script type="text/javascript" src="/JS/selection.js"></script>         <!-- script for displaying and removing prompt for name -->
-    <script type="text/javascript" src="/JS/startfunction.js"></script>
+    <link rel="stylesheet" href="/CSS/uploadpage.css">
+    <script type="text/javascript" src="/JS/uploadpage.js"></script>
     <link rel="shortcut icon" href="#"> <!-- This reference fixes a favicon error, need to include in all HTML files -->
 </head>
 <body>
+
+    <button type="Back" id="back_btn" onclick="backToIntro(event)">Back</button>
+
+    <div id="title_label">Choose Your Task</div>
 <div>
     <form id="balance" action="/balanced" method="post" enctype="multipart/form-data" >
         <label1 for="file" >Balance</label1>
-        <input  id="bala" class="ball" name="file" type="file" accept=".txt" onchange="uploadFile(event)" />
+        <input  id="bala" class="ball" name="file" type="file" accept=".txt" onchange="uploadFileForBalance(event)" />
     </form>
 </div>
 <div3>
     <form id="load/offload" action="/load" method="post" enctype="multipart/form-data">
         <label for="file">Offload</label>
-        <input id="offload" class="ball2" name="file" type="file" accept=".txt" onchange="uploadFile2(event)" />
+        <input id="offload" class="ball2" name="file" type="file" accept=".txt" onchange="uploadFileForLoad(event)" />
     </form>
 </div3>
-    <button type="button" id="btnlog" class="btnlog" onclick="check(event)">Login</button>
+    <button type="button" id="btnlog" class="btnlog" onclick="showLoginForm(event)">Login</button>
     <div1 id="login" class="modal">
         <div2 class="modal-content">
             <span class="close">&times;</span>
@@ -35,10 +34,6 @@
             <button id="ssm" type="button" onblur="userLogin(event)" >Submit</button>
         </div2>
     </div1>
-
-    <a href="intro.html">
-        <button type="Back">Back</button>
-    </a>
     
 </body>
 </html>

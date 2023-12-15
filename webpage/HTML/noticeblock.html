@@ -6,7 +6,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="#">
 <head>
-
+    <script>
+    async function completeSystem(event){
+        const form = event.currentTarget;
+        const final = document.getElementById('final');
+        const formData = new FormData();
+    
+        formData.append("finished", "yes");
+        try {
+        const response = await fetch('/done', {
+            method: 'POST',
+            body: formData
+        });
+    
+        const data = await response;
+        console.log('Success:', data);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+        event.preventDefault();
+    }
+    </script>
 </head>
 <style>
 body{
@@ -65,7 +85,7 @@ p3{
     font-size: 20px;
 }
 </style>
-<body>
+<body id="final" action="/done" method="POST" onload="completeSystem(event)">
     <h1>Done with ship</h1>
     <p1>Please email back the generated outbound file found on the desktop to the ship.</p1>
     <p2>Thank you for your hard work!!.</p2>

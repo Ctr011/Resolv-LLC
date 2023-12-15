@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     const form = document.querySelector('#button-press');
     if(form){
-    form.addEventListener('press', wcheck, true);}
+    form.addEventListener('press', check, true);}
 });
 
 //Get the prompt input
