@@ -629,48 +629,50 @@ void ShipBay::printShipBay(){
     std::cout << "\n\n\n";
 }
 
-int ShipBay::calculateMovementCost(int x1, int y1, int x2, int y2){
-
-    //  First get the current heights of all columns between the two positions
+int ShipBay::calculateMovementCost(int x1, int y1, int x2, int y2) {
+    // First get the current heights of all columns between the two positions
     std::vector<int> heights;
 
-    if(x1 < x2){
-         heights = getHeights(x1, x2);
-    }else{
-        heights = getHeights(x2, x1);
+    if(std::abs(x1 - x2) == 1){
+        return std::abs(x1 - x2) + std::abs(y1 - y2);
     }
 
-    //  Find highest height of the vector
+    if (x1 < x2) {
+        heights = getHeights(x1 + 1, x2 - 1);
+    } else {
+        heights = getHeights(x2 + 1, x1 - 1);
+    }
+
+    // Find highest height of the vector
     auto maxElement = std::max_element(heights.begin(), heights.end());
     int maxVal = *maxElement;
 
-    //  If the max height of any given one is 9, we cannot pass over. Pass a large number
-    if(maxVal >= 9){
+    // If the max height of any given one is 9, we cannot pass over. Pass a large number
+    if (maxVal >= 9) {
         return 999999;
     }
 
-    //  Find max between y1, y2, and the list
-    int max_height = std::max(maxVal, std::max(y1, y2));
+    // Find max between y1, y2, and the list
+    int max_height = std::max(y1 - 1, y2 - 1);
 
     int cost = 0;
-    //  Meaning, if the position of one of the containers is taller than anything between the two
-    if(max_height > maxVal){
-        //  Calculate the basic manhattan distance
+
+    // Meaning, if the position of one of the containers is taller than anything between the two
+    if (max_height > maxVal) {
+        // Calculate the basic Manhattan distance
         cost += std::abs(x1 - x2) + std::abs(y1 - y2);
-    }else{
-        //  Calculate the manhattan distance from the lowest y-position container to the highest y-position
-        //  Then the manhattan distance from there to the end position
-        int max_starting = std::max(y1, y2);
-        cost += max_height - max_starting;
-        
-        if(max_starting == y1){
-            cost += std::abs(x1 - x2) + std::abs(max_starting - y2);
-        }else{
-            cost += std::abs(x1 - x2) + std::abs(y2 - max_starting);
-        }
+    } else {
+        // Calculate the Manhattan distance from the lowest y-position container to the highest column
+        // Then the Manhattan distance from there to the end position
+
+        cost += std::abs(y1 - y2);
+        cost += (maxVal - max_height);
+
+        // Corrected calculation here
+        cost += std::abs(x1 - x2) + std::abs(maxVal - max_height);
     }
 
-    //  Return calculated cost
+    // Return calculated cost
     return cost;
-
 }
+
