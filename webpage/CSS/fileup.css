@@ -1,0 +1,140 @@
+body{
+    background-color: #a9a9a9;
+        background-image: url(https://media.discordapp.net/attachments/1179005828506865674/1182878045892264037/fiel2.png?ex=65864c06&is=6573d706&hm=7b0e574f7fa84bbf7a2ddfd86c88f774552559404aed2d8ffee21832b5006284&=&format=webp&quality=lossless&width=1098&height=617);
+        /* background-repeat: no-repeat; */
+        background-blend-mode:soft-light ;
+        background-position:left;
+        backface-visibility: hidden;
+        position: center;
+        background-size: cover;
+    }
+label{
+    position: relative;
+    color: white;
+    background-color: #000;
+    font-weight: bold;
+    font-size: 30px;
+    padding: 4px;
+    left: 35%;
+
+}
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.modal-content {
+    background-color: rgb(167, 165, 165);
+    margin: 15 auto; /* 15% from the top and centered */
+    top: 45%;
+    left: 45%;
+    padding: 10px;
+    position: absolute;
+    border: 10px solid black;
+    width:auto; /* Could be more or less, depending on screen size */
+}
+.close {
+    color: black;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover,
+.close:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;    
+}
+.ball{
+    background-image: url(https://cdn.discordapp.com/attachments/1179005828506865674/1182252442134511646/balance.png?ex=65840563&is=65719063&hm=c1fdd87369f885ac8b9f6a1b207a735199fadca2bee6ebce0d48252cdc687b71&);
+    /* background-repeat: none; */
+    position: relative;
+    right: 30%;
+    border: 10px solid black;
+    width: 400px;
+    height: 450px;
+}
+.ball2{
+    background-image: url(https://media.discordapp.net/attachments/1179005828506865674/1182260674605363210/load.png?ex=65840d0e&is=6571980e&hm=65569f0d87410a73cacf04d339c1e18ffdd0d5d65ffbdf6653749962898340bd&=&format=webp&quality=lossless&width=500&height=562);
+    position: relative;
+    right: 30%;
+    border: 10px solid black;
+    width: 400px;
+    height: 450px;
+}
+label1{
+    position: relative;
+    color: white;
+    background-color: #000;
+    font-weight: bold;
+    font-size: 30px;
+    padding: 4px;
+    left: 30%;
+}
+div {
+        height: 100px;
+        width: 200px;
+        /* background: black; */
+        justify-content: center;
+        position:fixed;
+        top: 30%;
+        left: 40%;
+        margin-top: -100px;
+        margin-left: -200px;
+        background-size: contain;
+    }
+    div3 {
+        height: 100px;
+        width: 200px;
+        /* background: black; */
+        justify-content: center;
+        position:fixed;
+        top: 30%;
+        left: 70%;
+        margin-top: -100px;
+        margin-left: -200px;
+        background-size: contain;
+    }
+.form1{
+    position: relative; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 40%; /* Full width */
+    height: 10%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+div4{
+    align-items: center;
+        /* size: 50px; */
+    margin-top: -100px;
+    margin-left: -200px;
+    position: fixed;
+    background-size: contain;
+    bottom: 20%;
+    left:60%;
+    font-size: 40px;
+}
+button{
+    font-size: 20px;
+    background-color: rgb(2, 139, 245);
+}
+.btnlog{
+    background-color: rgb(2, 139, 245);
+    align-items: center;
+    margin: auto;
+    position: absolute;
+    background-size: contain;
+    top:1%;
+    left:96%;
+    font-size: 20px;
+}

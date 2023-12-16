@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Load/Off-Load Option</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/CSS/load.css"> <!-- Use the same stylesheet as balance.html -->
+    <link rel="shortcut icon" href="#">
+    <script type="text/javascript" src="/JS/load.js"></script>
+</head>
+<body>
+    <div id="top-bar">
+        <button type="Back" id="balfin" class="ssb button-center" onclick="finishTask()">Done</button>
+        <button type="Back"  class="ssx button-left" onclick="backToUpload()">Back</button>
+        <button type="button" id="btnotes" class="custcom button-right" onclick="notecheck(event)">NOTE</button>
+        <button type="button" id="btnlog" class="btnlog button-right" onclick="showLoginForm(event)">LOGIN</button>
+        <button type="start" onclick="startTask()" class="start button-center" >Start</button>
+    </div>
+
+    <div id="loads" class="modal">
+        <div class="modal-content">
+            <span class="close3">&times;</span>
+            <h1>Load Container</h1>
+            <input type="text" maxlength="255" action="/contname" id="contn" name="contn" onkeypress="return event.charCode >= 32 && event.charCode <= 126" onclick="this.value=''">
+            <input type="text"  pattern="[0-9]" maxlength="255" onkeypress="return event.charCode >= 48 && event.charCode <= 57" action="/contname" id="contw" name="contw" onclick="this.value=''">
+            <button id="snn" type="button" onblur="loadcheck(event)" class="mm">Submit</button> 
+            <div id="loadq" class="modal2">
+            <div class="ppt">
+            <p>Would you like to load more containers onto the ship?</p>
+            <button id="yload" type="button" class="mm">Yes</button> 
+            <button id="nload" type="button" class="mm">No</button> 
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notes" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h1>Custom Notes</h1>
+            <!-- <input maxlength="255" type="text" action="/notes" id="nnote" name="nnote" row="4" col="50" onclick="this.value=''"> -->
+            <textarea maxlength="255" onkeypress="return event.charCode >= 32 && event.charCode <= 126" action="/notes" id="nnote" name="nnote" rows="4" cols="25" onclick="this.value=''"></textarea>
+            <button id="snm" type="button" onblur="userNotes(event)" class="mm">Submit</button>
+        </div>
+    </div>
+    <div id="login" class="modal" >
+        <div class="modal-content">
+            <span class="close2">&times;</span>
+            <h1>Employee Login</h1>
+            <input type="text" maxlength="255" onkeypress="return event.charCode >= 32 && event.charCode <= 126" action="/id" id="name" name="name" onclick="this.value=''">
+            <button id="ssm" type="button" onblur="userLogin(event)" >Submit</button>
+        </div>
+    </div>
+
+    <div id="bayHolder">
+        <h2 id="bayHeader">Choose Containers to Unload:</h2>
+        <div id="bay_grid">
+            <div class="grid-item"><div class="grid-item-content">1</div></div>
+            <div class="grid-item"><div class="grid-item-content">2</div></div>
+        </div>
+        <div>
+            <div id="buffer_grid">
+                <div class="grid-item"><div class="grid-item-content">A</div></div>
+                <div class="grid-item"><div class="grid-item-content">B</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="moves-container" id="movesContainer">
+        <div class="half-container" id="unloadsContainer">
+            <h3>UNLOADS</h3>
+        </div>
+        <div class="half-container" id="loadsContainer">
+            <h3>LOADS</h3>
+            <button id="newContainerBtn" onclick="wcheck()">ADD CONTAINERS</button>
+        </div>
+    </div>
+    
+    
+    <div id="moves_buttons">
+        <button id="prevmove_btn" onclick="processContent(localStorage.getItem('grids'))">RESET</button>
+        <button id="nextmove_btn" onclick="highlightNextMove()">NEXT</button>
+    </div>
+
+    <a href="noticeblock.html">
+        <button type="button" class="ssb">Done</button>
+    </a> 
+    
+</body>
+</html>

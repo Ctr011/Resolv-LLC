@@ -91,6 +91,9 @@ public:
     void changeXPos(int x);
     void changeYPos(int y);
 
+    //  Exclusive to  Containers: Will be able to clone self
+    Container* clone();
+
     Container& getContainer() override;
     virtual std::string toString() override;
 };

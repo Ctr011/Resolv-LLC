@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <title>Balance Option</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="/JS/balance.js"></script>         <!-- script for getting user name -->
+    <link rel="stylesheet" href="/CSS/bal.css">
+    <link rel="shortcut icon" href="#">
+    <script>
+    </script>
+</head>
+<body>
+    <div id="top-bar">
+        <button type="Back" id="balfin" class="ssb button-center" onclick="finishTask()">Done</button>
+        <button type="Back"  class="ssx button-left" onclick="backToUpload()">Back</button>
+        <button type="button" id="btnotes" class="custcom button-right" onclick="notecheck(event)">NOTE</button>
+        <button type="button" id="btnlog" class="btnlog button-right" onclick="showLoginForm(event)">LOGIN</button>
+        <button type="start" onclick="processContent(localStorage.getItem('grids'))" class="start button-center" >Start</button>
+    </div>
+    <div2 id="notes" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h1>Custom Notes</h1>
+            <!-- <input maxlength="255" type="text" action="/notes" id="nnote" name="nnote" row="4" col="50" onclick="this.value=''"> -->
+            <textarea maxlength="255" onkeypress="return event.charCode >= 32 && event.charCode <= 126" action="/notes" id="nnote" name="nnote" rows="4" cols="25" onclick="this.value=''"></textarea>
+            <button id="snm" type="button" onblur="userNotes(event)" class="mm">Submit</button>
+        </div>
+    </div2>
+    <div1 id="login" class="modal" >
+        <div class="modal-content">
+            <span class="close2">&times;</span>
+            <h1>Employee Login</h1>
+            <input type="text" maxlength="255" onkeypress="return event.charCode >= 32 && event.charCode <= 126" action="/id" id="name" name="name" onclick="this.value=''">
+            <button id="ssm" type="button" onblur="userLogin(event)" >Submit</button>
+        </div>
+    </div1>
+
+    <div id="bayHolder">
+        <h2 id="bayHeader">Bay</h2>
+        <div id="bay_grid" >
+            <!-- Populating the first grid with numbers -->
+            <div class="grid-item"><div class="grid-item-content">1</div></div>
+            <div class="grid-item"><div class="grid-item-content">2</div></div>
+            <!-- Add more items as needed -->
+        </div>
+        <div>
+            <div id="buffer_grid">
+                <!-- Populating the second grid with numbers -->
+                <div class="grid-item"><div class="grid-item-content">A</div></div>
+                <div class="grid-item"><div class="grid-item-content">B</div></div>
+                <!-- Add more items as needed -->
+            </div>
+        </div>
+    </div>
+
+    <div class="moves-container" id="movesContainer">
+        <div class="container" id="container1">
+            <div class="header" id="header1"></div>
+            <div id="mass1"></div>
+            <div class="pickup-putdown" id="pickup1"></div>
+            <div class="pickup-putdown" id="putdown1"></div>
+            <div class="cost" id="cost1"></div>
+        </div>
+    </div>
+    <div id="moves_buttons">
+        <button id="prevmove_btn" onclick="processContent(localStorage.getItem('grids'))">RESET</button>
+        <button id="nextmove_btn" onclick="highlightNextMove()">NEXT</button>
+    </div>
+    
+      <a href="noticeblock.html" >
+    </a> 
+    
+    <!-- <a href="">
+        <button type="button" action="/start" method="post" id="bth" onblur="setTimeout(startProgram(event),30000)" >Submit</button>
+    </a> -->
+</body>
+</html>
