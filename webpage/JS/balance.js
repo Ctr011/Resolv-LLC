@@ -310,6 +310,24 @@ async function finishTask(){
     }
 }
 
+async function backup(){
+    const formData = new FormData();
+    formData.append('backup', 'yes');
+    try {
+        const response = await fetch('/backup', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response;
+        console.log('Success:', data);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+
+}
+
 window.onload = async function(){
     await displayMoves();
+    var inter = setInterval(function(){backup()},60*1000*5); 
 }

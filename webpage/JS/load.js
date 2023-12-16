@@ -662,6 +662,22 @@ async function backToUpload(){
       window.location = '/fileupload.html';
   }
 }
+async function backup(){
+  const formData = new FormData();
+  formData.append('backup', 'yes');
+  try {
+      const response = await fetch('/backup', {
+          method: 'POST',
+          body: formData
+      });
+
+      const data = await response;
+      console.log('Success:', data);
+  } catch (error) {
+      console.error('Error:', error);
+  }
+
+}
 
 window.onload = async function(){
   await processContent(localStorage.getItem("grids"))
@@ -675,6 +691,7 @@ window.onload = async function(){
   showLoginForm()
   notecheck();
   wcheck();
+  var inter = setInterval(function(){backup()},60*1000*5); 
 }
 
 async function finishTask(){
