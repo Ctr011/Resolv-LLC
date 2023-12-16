@@ -51,6 +51,8 @@ async function processContent(content) {
     buffer.innerHTML = bufferContent;
   }
 
+
+var unloadStepNum = 1;
 async function highlightNextMove(){
 
     //  Get JSON data
@@ -60,7 +62,7 @@ async function highlightNextMove(){
     var containers = document.getElementsByClassName("container");
     var containerArray = Array.from(containers);
     containerArray.forEach(function(container, index) {
-        container.style.backgroundColor = "#ccc";
+        container.style.backgroundColor = "null";
     });
 
     //  Remove special coloring of last move
@@ -68,19 +70,58 @@ async function highlightNextMove(){
     allGridItems.forEach(function(item, index){
         if(item.classList.contains("grid-pickup")){item.classList.remove("grid-pickup");}
         if(item.classList.contains("grid-putdown")){item.classList.remove("grid-putdown");}
+        if(item.style.backgroundColor === "orange"){item.style.backgroundColor = null;}
     });
 
     //  Highlight the move
     var move = document.getElementById(`container${moveNum}`);
+
+    //  If move is null, this means we are done
+    if(move === null){
+      document.getElementById("balfin").style.display = "block"
+    }
+
     move.style.backgroundColor = "yellow";
 
     //  Now change visuallt depending on type of move
-    if(moveData.movetype === "LOAD"){
+    if(moveData.pickup_x === "N/A"){
+      delete moveData.movetype;
       var putdownContainer = document.getElementById(`(${moveData.putdown_y},${moveData.putdown_x})`)
       putdownContainer.innerHTML = `<div class="grid-item-content">${moveData.containerName.slice(0,3)}</div>`;
       putdownContainer.classList.add("grid-pickup");
       putdownContainer.classList.remove("grid-unused");
       putdownContainer.classList.add("grid-container")
+    }else if(moveData.putdown_x === "N/A"){
+      //  There may be multiple moves needed for each unload
+      delete moveData.movetype;
+
+      var pickupContainer = document.getElementById(`(${moveData.pickup_y},${moveData.pickup_x})`)
+
+      pickupContainer.innerHTML = `<div class="grid-item-content"></div>`;
+      pickupContainer.classList.add("grid-pickup");
+      pickupContainer.classList.add("grid-unused");
+      pickupContainer.classList.remove("grid-container")
+
+    }else{
+      //  Highlight specified containers by adding class to grid items
+      var pickupContainer = document.getElementById(`(${moveData.pickup_y},${moveData.pickup_x})`)
+      var putdownSlot = document.getElementById(`(${moveData.putdown_y},${moveData.putdown_x})`)
+
+      //  Also get the names
+      var pickupName = pickupContainer.innerHTML;
+      var putdownName = putdownSlot.innerHTML;
+
+      //  Swap the names
+      pickupContainer.innerHTML = putdownName;
+      putdownSlot.innerHTML = pickupName;
+
+      pickupContainer.classList.add("grid-pickup");
+      pickupContainer.classList.add("grid-unused");
+      pickupContainer.classList.remove("grid-container")
+
+      putdownSlot.classList.add("grid-putdown");
+      putdownSlot.classList.add("grid-container");
+      putdownSlot.classList.remove("grid-unused")
     }
 
     moveNum++;
@@ -91,44 +132,108 @@ async function displayMoves(){
   //  Get needed html elements
   var movesContainer = document.getElementById("movesContainer");
 
+  var totalCost = 0;
+
   //  Change display of container to block, in order to read moves from top-down
   document.getElementById("movesContainer").style.display = "block";
   
   //  Get all the moves
   var moves = JSON.parse(localStorage.getItem("solution"));
-  var totalCost = moves.totalCost;
   delete moves['totalCost']
   delete moves['startState'];
   delete moves['endState'];
 
+  //  Also, create a cleaner JSON here
+  var steps = {};
+
   var allMoves = ``;
 
+  var stepNum = 1;
   for(let i = 1; i <= Object.keys(moves).length; i++){
 
       const moveData = moves[i.toString()];
-      allMoves += `<div class="container" id="container${i}">
-          <div class="header" id="header${i}">${moveData.containerName}</div>
-          <div id="mass${i}">Mass: ${moveData.mass}</div>
-          <div class="pickup-putdown" id="pickup${i}">FROM TRUCK</div>
-          <div class="pickup-putdown" id="putdown${i}">TO ${moveData.putdown_origin}: (${moveData.putdown_x}, ${moveData.putdown_y})</div>
-          <div class="cost" id="cost${i}">${moveData.cost} min</div>
-          </div>`
+
+      if(moveData.movetype === "UNLOAD"){
+        delete moveData.movetype;
+        
+        for(let x = 1; x <= Object.keys(moveData).length; x++){
+          if(moveData[x].putdown_x === "N/A"){
+            allMoves += `<div class="container" id="container${stepNum}">
+            <div class="header" id="header${stepNum}">${moveData[x].containerName}</div>
+            <div id="mass${stepNum}">Mass: ${moveData[x].mass}</div>
+            <div class="pickup-putdown" id="pickup${stepNum}">FROM ${moveData[x].pickup_origin}: (${moveData[x].pickup_x}, ${moveData[x].pickup_y})</div>
+            <div class="pickup-putdown" id="putdown${stepNum}">TO TRUCK</div>
+            <div class="cost" id="cost${stepNum}">${moveData[x].cost} min</div>
+            </div>`
+          }else{
+            allMoves += `<div class="container" id="container${stepNum}">
+            <div class="header" id="header${stepNum}">${moveData[x].containerName}</div>
+            <div id="mass${stepNum}">Mass: ${moveData[x].mass}</div>
+            <div class="pickup-putdown" id="pickup${stepNum}">FROM ${moveData[x].pickup_origin}: (${moveData[x].pickup_x}, ${moveData[x].pickup_y})</div>
+            <div class="pickup-putdown" id="putdown${stepNum}">TO ${moveData[x].putdown_origin}: (${moveData[x].putdown_x}, ${moveData[x].putdown_y})</div>
+            <div class="cost" id="cost${stepNum}">${moveData[x].cost} min</div>
+            </div>`
+          }
+
+          steps[stepNum] = {
+            containerName: moveData[x].containerName,
+            cost: moveData[x].cost,
+            mass: moveData[x].mass,
+            pickup_origin: moveData[x].pickup_origin,
+            pickup_x: moveData[x].pickup_x,
+            pickup_y: moveData[x].pickup_y,
+            putdown_origin: moveData[x].putdown_origin, // Fix here
+            putdown_x: moveData[x].putdown_x,
+            putdown_y: moveData[x].putdown_y
+          };
+          stepNum++;
+        }
+
+      }else{
+        allMoves += `<div class="container" id="container${stepNum}">
+        <div class="header" id="header${stepNum}">${moveData.containerName}</div>
+        <div id="mass${stepNum}">Mass: ${moveData.mass}</div>
+        <div class="pickup-putdown" id="pickup${stepNum}">FROM TRUCK</div>
+        <div class="pickup-putdown" id="putdown${stepNum}">TO ${moveData.putdown_origin}: (${moveData.putdown_x}, ${moveData.putdown_y})</div>
+        <div class="cost" id="cost${stepNum}">${moveData.cost} min</div>
+        </div>`
+        steps[stepNum] = {
+          containerName: moveData.containerName,
+          cost: moveData.cost,
+          mass: moveData.mass,
+          pickup_origin: moveData.pickup_origin,
+          pickup_x: moveData.pickup_x,
+          pickup_y: moveData.pickup_y,
+          putdown_origin: moveData.putdown_origin, // Fix here
+          putdown_x: moveData.putdown_x,
+          putdown_y: moveData.putdown_y
+        };
+        stepNum++;
+      }
   }
 
+  localStorage.setItem("solution", JSON.stringify(steps))
+
+  //  Get total cost now
+  for(i in steps){
+    totalCost += parseInt(steps[i].cost);
+  }
+  document.getElementById("bayHeader").textContent = "Estimated Time: " + totalCost + " minutes";
+
+  //  Reset color of all containers, make not clickable
+  var containers = document.getElementsByClassName("grid-container");
+  for (var i = 0; i < containers.length; i++) {
+    var container = containers[i];
+    container.style.backgroundColor = "null";
+    container.style.cursor = "default";
+    container.onclick = null;
+  }
+
+
+  console.log(steps);
   movesContainer.innerHTML = allMoves;
 
 }
-
-
-  async function tester(id){
-    if(document.getElementById(id).style.backgroundColor == "blue"){
-      document.getElementById(id).style.backgroundColor = "orange";
-    }
-    else{
-      document.getElementById(id).style.backgroundColor = "blue";
-    }
-    // alert("Passing ID: " + id);
-  }
 
 // Set up the event listener for the form submission
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -491,8 +596,6 @@ async function userNotes(event) {
 
 async function startTask(){
 
-  
-
   const formData = new FormData();
   formData.append("info", localStorage.getItem("grids"));
   formData.append("start", "start");
@@ -504,8 +607,6 @@ async function startTask(){
 
     const data = await response.json();
     localStorage.setItem("solution", JSON.stringify(data));
-
-    document.getElementById("bayHeader").textContent = "Estimated Time: " + data.totalCost + " minutes";
 
     //  We now have the JSON solution. Highlight the first move
     await displayMoves();
@@ -576,3 +677,9 @@ window.onload = async function(){
   wcheck();
 }
 
+async function finishTask(){
+  const result = window.confirm("Your current task data will be lost. Are you sure you are completed?");
+  if(result){
+      window.location = '/noticeblock.html';
+  }
+}

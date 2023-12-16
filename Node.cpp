@@ -420,18 +420,19 @@ std::vector<Node*> UnloadNode::expand(){
                 //  Unload options here
                 if(heights[x] < 8){
 
-                    //  Clone
-                    ShipBay* bayInnerCopy = baycopy->clone();
+                    //  Clone stuff
                     Buffer* bufferInnerCopy = bufferCopy->clone();
-
-                    //  Copy the container
+                    ShipBay* bayInnerCopy = baycopy->clone();
                     Container* pickedUp_copy = picked_up->clone();
 
-                    int cost = baycopy->putDownDontainer(pickedUp_copy, x);
+                    
+                    int cost = bayInnerCopy->putDownDontainer(pickedUp_copy, x);
 
                     putdown_x = pickedUp_copy->getXPos();
                     putdown_y = pickedUp_copy->getYPos();
                     container_mass = pickedUp_copy->getMass();
+
+                    bayInnerCopy->printShipBay();
 
                     Node* newNode = new UnloadNode(bayInnerCopy, bufferInnerCopy, this->incoming_cost + cost, this->unloadTarget, this);
                     newNode->setDescription(pickedUp_copy->getName(), std::to_string(pickup_x), std::to_string(pickup_y), "BAY", std::to_string(container_mass), std::to_string(putdown_x), std::to_string(putdown_y), "BAY", std::to_string(cost));

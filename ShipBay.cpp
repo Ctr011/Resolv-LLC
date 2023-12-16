@@ -102,7 +102,17 @@ void ShipBay::parseContent(std::string manifest){
 }
 
 std::string ShipBay::getText(){
-    return this->originalText;
+
+    std::string bayData;
+    int x,y;
+    for(y = 0; y < this->size_y; y++){
+        for(x=0; x < this->size_x; x++){
+            bayData += bayArea[x][y]->toString();
+        }
+    }
+
+    return bayData;
+
 }
 
 ContainerSlot* ShipBay::getSlot(int x, int y){
@@ -560,11 +570,13 @@ ShipBay* ShipBay::clone(){
 
     //  Clone bayArea using string info
     int x,y;
-    for(x = 0; x < this->size_x; x++){
-        for(y=0; y < this->size_y; y++){
+    for(y = 0; y < this->size_y; y++){
+        for(x=0; x < this->size_x; x++){
             cloneBayData += bayArea[x][y]->toString();
         }
+    }
 
+    for(x=0; x < this->size_x; x++){
         //  Also populate temp with new COntainers
         if(this->temp[x]->getName().compare("NAN") == 0){
             newTemp.push_back(new NANSlot(x + 1, BAY_TEMP_Y, Origin::BAY));
@@ -573,8 +585,8 @@ ShipBay* ShipBay::clone(){
         }else{
             newTemp.push_back(new Container(this->temp[x]->getName(), this->temp[x]->getMass(), x + 1, BAY_TEMP_Y, Origin::BAY));
         }
-
     }
+
 
     block = true;
     

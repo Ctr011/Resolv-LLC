@@ -223,6 +223,8 @@ async function displayMoves(){
     delete moves['startState'];
     delete moves['endState'];
 
+    var totalCost = 0;
+
     var allMoves = ``;
 
     for(let i = 1; i <= Object.keys(moves).length; i++){
@@ -235,9 +237,12 @@ async function displayMoves(){
             <div class="pickup-putdown" id="putdown${i}">TO ${moveData.putdown_origin}: (${moveData.putdown_x}, ${moveData.putdown_y})</div>
             <div class="cost" id="cost${i}">${moveData.cost} min</div>
             </div>`
+        
+        totalCost += parseInt(moveData.cost);
     }
 
     movesContainer.innerHTML = allMoves;
+    document.getElementById("bayHeader").textContent = "Estimated Time: " + totalCost + " minutes";
 }
 
 async function highlightNextMove(){

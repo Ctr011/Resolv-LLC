@@ -376,15 +376,25 @@ int main() {
                     solution_response[moveNumString] = tree->solveUnLoad(container->getName());
                     solution_response[moveNumString]["movetype"] = "UNLOAD"; //  Set movetype here
 
+                    std::cout << "JSON Object:\n" << solution_response.dump(2) << std::endl;
+
+                    int x = 1;
+                    std::string costString;
+                    for (auto it = solution_response[moveNumString].begin(); it != solution_response[moveNumString].end(); ++it) {
+                        solution_response[moveNumString].erase("startState");
+                        costString = solution_response[moveNumString][std::to_string(x)]["cost"];
+                        total_cost += std::stoi(costString);
+                    }
+
+                    std::cout << "JSON Object:\n" << solution_response.dump(2) << std::endl;
+
                     bay = new ShipBay(solution_response[moveNumString]["endState"]);
 
                     solution_response["endState"] = solution_response[moveNumString]["endState"];
                     solution_response[moveNumString].erase("endState");
 
                     std::cout << "JSON Object:\n" << solution_response.dump(2) << std::endl;
-
-                    std::string costString = solution_response[moveNumString]["cost"];
-                    total_cost += std::stoi(costString);
+                    
 
                     //  Needed to avoid memory leakage
                     delete testNode;
@@ -436,11 +446,13 @@ int main() {
                 }
 
                 //  Add total cost
-                solution_response["totalCost"] = std::to_string(total_cost);
+                
                 std::cout << "JSON Solution:\n" << solution_response.dump(2) << std::endl;
                 
 
-
+                //  Cleanup Here
+                clear_load();
+                clear_unload();
                 for (Container* c : container) {
                     delete c;
                 }
@@ -448,6 +460,7 @@ int main() {
 
 
             }
+            solution_response["totalCost"] = std::to_string(total_cost);
             res.status = 200;
             res.set_content(solution_response.dump(), "application/json");
             return;

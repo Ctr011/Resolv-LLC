@@ -62,8 +62,8 @@ Json Tree::solveBalance(){
             int reversedKey = 1;
 
             //  Populate here
-            for (auto it = reversedData.rbegin(); it != reversedData.rend(); ++it) {
-                solutionData[std::to_string(reversedKey++)] = it.value();
+            for(int i = size; i >= 1; i--){
+                solutionData[std::to_string(reversedKey++)] = reversedData[std::to_string(i)];
             }
 
             std::string start = this->startState->getBay()->getText();
@@ -155,14 +155,15 @@ Json Tree::solveSIFT(ShipBay* siftedState){
                 moveNumber++;
             }
 
+            std::cout << "Reversed JSON Object:\n" << reversedData.dump(2) << std::endl;
+
             //  Reverse the json here:
             Json solutionData;
             int size = reversedData.size();
             int reversedKey = 1;
 
-            //  Populate here
-            for (auto it = reversedData.rbegin(); it != reversedData.rend(); ++it) {
-                solutionData[std::to_string(reversedKey++)] = it.value();
+            for(int i = size; i >= 1; i--){
+                solutionData[std::to_string(reversedKey++)] = reversedData[std::to_string(i)];
             }
 
             std::string start = this->startState->getBay()->getText();
@@ -251,26 +252,46 @@ Json Tree::solveUnLoad(std::string target){
                 std::cout << "Goal Cost: " << node->getMoveCost() << std::endl;
 
                 Node* solutionNode = node;
+                std::string end = solutionNode->getBay()->getText();
 
-                Json solutionData;
+                Json reversedData;
                 int moveNumber = 1;
                 while (solutionNode->getParent() != nullptr) {
 
-                    std::map<std::string, std::string> nodeMap = solutionNode->getDescription();
-                    nodeMap["containerName"] = target;
-                    
-                    for(const auto& pair : nodeMap){
-                        solutionData[std::to_string(moveNumber)][pair.first] = pair.second;
-                    }
+                        std::map<std::string, std::string> nodeMap = solutionNode->getDescription();
 
-                    // Move to the parent for the next iteration
-                    solutionNode = solutionNode->getParent();
+                        for(const auto& pair : nodeMap){
+                            reversedData[std::to_string(moveNumber)][pair.first] = pair.second;
 
-                    moveNumber++;
+                            //  Temp fix
+                            std::string name = reversedData[std::to_string(moveNumber)]["containerName"];
+                            if(name.compare("") == 0){
+                                reversedData[std::to_string(moveNumber)]["containerName"] = target;
+                            }
+                        }
+
+                        // Move to the parent for the next iteration
+                        solutionNode = solutionNode->getParent();
+
+                        moveNumber++;
                 }
 
-                solutionData["startState"] = this->startState->getBay()->getText();
-                solutionData["endState"] = next_node->getBay()->getText();
+                //  Reverse the json here:
+                Json solutionData;
+                int size = reversedData.size();
+                int reversedKey = 1;
+
+                //  Populate here
+                for(int i = size; i >= 1; i--){
+                    solutionData[std::to_string(reversedKey++)] = reversedData[std::to_string(i)];
+                }
+
+                std::string start = this->startState->getBay()->getText();
+                
+
+                solutionData["startState"] = start;
+                solutionData["endState"] = end;
+                
 
                 std::cout << "JSON Object:\n" << solutionData.dump(2) << std::endl;
 
