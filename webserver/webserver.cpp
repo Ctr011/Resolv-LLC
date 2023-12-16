@@ -408,7 +408,7 @@ int main() {
                 vector<Container*> container;
 
                 for(int i = 0; i < load.size(); i++){
-                    container.push_back(new Container(load[i].first, load[i].second, 1,1,Origin::TRUCK));
+                    container.push_back(new Container(load[i].first, load[i].second, TRUCK_COLUMN,9,Origin::TRUCK));
                 }
                 
                 //  If there are no unloads, our start state is not init yet either .
@@ -479,6 +479,7 @@ int main() {
     svr.Get("/clear/load", [&](const httplib::Request & req, httplib::Response &res){
         clear_load();
         clear_unload();
+        std::cout << "Deleted data" << std::endl;
     });
 
 

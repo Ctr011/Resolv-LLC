@@ -217,4 +217,7 @@ async function backToIntro(event){
 window.onload = async function(){
     await showLoginForm();
     localStorage.clear();
+    await fetch('/clear/load', {
+        method: 'GET',
+    });
 };

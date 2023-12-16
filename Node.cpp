@@ -151,6 +151,7 @@ std::vector<Node*> BalanceNode::expand(){
 
                         //  New copy of container
                         Container* newContainer = heldContainer->clone();
+
                         int cost = bayInnerCopy->putDownDontainer(newContainer, e);
                         Node* newNode = new BalanceNode(bayInnerCopy, bufferInnerCopy, cost + this->incoming_cost, this);
                         newNode->isSIFT = this->isSIFT;
@@ -424,7 +425,10 @@ std::vector<Node*> UnloadNode::expand(){
                     Buffer* bufferInnerCopy = bufferCopy->clone();
                     ShipBay* bayInnerCopy = baycopy->clone();
                     Container* pickedUp_copy = picked_up->clone();
-
+                    
+                    if(pickedUp_copy->getXPos() - 1 == x){
+                        continue;
+                    }
                     
                     int cost = bayInnerCopy->putDownDontainer(pickedUp_copy, x);
 
@@ -521,6 +525,10 @@ std::vector<Node*> LoadNode::expand(){
 
         ShipBay* baycopy = this->bay->clone();
         Buffer* bufferCopy = this->buffer->clone();
+
+        if(container_copy->getXPos() - 1 == x){
+             continue;
+        }
 
         //  Put down container into copy of bay
         cost = baycopy->putDownDontainer(container_copy, x);

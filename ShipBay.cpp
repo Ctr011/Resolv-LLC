@@ -497,6 +497,7 @@ int ShipBay::putDownDontainer(Container* container, int column){
         return cost;
 
     }
+    
 
     //  Search bottom up, to find first empty slot
     for(int i = 0; i <= this->size_y; i++){
@@ -539,7 +540,7 @@ int ShipBay::putDownDontainer(Container* container, int column){
                 cost += calculateMovementCost((column + 1), (i + 1), container->getXPos(), container->getYPos());
             }else{
                 //  Otherwise, calculate from the exit/enter point
-                cost += calculateMovementCost((column + 1), (i + 1), bay_exit_x, bay_exit_y);
+                cost += std::abs((column + 1) - bay_exit_x) + std::abs((i + 1) - bay_exit_y);
             }
 
 
@@ -635,6 +636,10 @@ int ShipBay::calculateMovementCost(int x1, int y1, int x2, int y2) {
 
     if(std::abs(x1 - x2) == 1){
         return std::abs(x1 - x2) + std::abs(y1 - y2);
+    }
+
+    if(x2 == x1){
+
     }
 
     if (x1 < x2) {
