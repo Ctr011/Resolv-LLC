@@ -7,6 +7,7 @@
 #include <WinSock2.h>
 #include <windows.h>
 #include <filesystem>
+#include <algorithm>
 //#include <MyClass.h>
 
 #include "../ContainerSlot.h"
@@ -59,6 +60,7 @@ int main() {
     Node* testNode;
     Json solution_response;
     string weight, conname;
+    string name;
     std::string filecon = "";
     Json startData;
 
@@ -83,6 +85,15 @@ int main() {
         res.set_content("Hello World!", "text/plain");
     });
     
+    svr.Post("/backup", [](const httplib::Request& req, httplib::Response &res){
+        if(req.has_file("backup")){
+            res.status = 200;
+            BackupLogs();
+        }
+        else{
+            res.status = 400;
+        }
+    });
     
     svr.Post("/id", [](const httplib::Request & req, httplib::Response &res){//header values
         if(req.has_file("name")){
@@ -117,21 +128,34 @@ int main() {
         }
     });
 
-    svr.Post("/done", [](const httplib::Request & req, httplib::Response &res){
+    svr.Post("/done", [&](const httplib::Request & req, httplib::Response &res){
         if(req.has_file("finished")){
             //need to add the final output for the new manifest
             //add data for the manifest
+            if(bal == true && off == false){
+                // UpdateBalanceLog(string manifest)
+                UpdateBalanceLog(name);
+            }
+            else if(bal == false && off == true){
+                //implementation is not avaliable currently
+            }
+            // FinalUpdateLog(string n)
             string path_to_out = desloc + newMan + "OUTBOUND.txt";
-            ifstream file;
+            FinalUpdateLog(newMan+"OUTBOUND.txt");
+            string all = solution_response["endState"];
+            all.erase(std::remove(all.begin(), all.end(), '\n'), all.cend());
+            cout << "ALL: " << all << endl;
+            ofstream file;
             file.open(path_to_out);
-            if(file){}
+            if(file){
+                // while(getline(file, all)){
+                //     file << all << endl;
+                // }
+                file << all;
+            }
             else{printf("ERROR!!\n");}
             file.close();
-
-            ofstream file_out;
-            file_out.open(path_to_out);
-
-
+            newMan = "";
             res.status = 200;
             return;
         }
@@ -147,12 +171,12 @@ int main() {
             if(req.has_file("contw")){
                 const auto& conname = req.get_file_value("contn");
                 const auto& weight = req.get_file_value("contw");
-                cout << "Container Name: " << conname.content << endl;
-                cout << "Container Weight: " << weight.content << endl;
+                std::cout << "Container Name: " << conname.content << endl;
+                std::cout << "Container Weight: " << weight.content << endl;
                 if(!CheckRestrictedChars(conname.content) && !CheckRestrictedChars(weight.content)){
                 get_loads(conname.content,stoi(weight.content));
-                cout << "Container Name: " << load[0].first << endl;
-                cout << "Container Weight: " << load[0].second << endl;}
+                std::cout << "Container Name: " << load[0].first << endl;
+                std::cout << "Container Weight: " << load[0].second << endl;}
                 res.status = 200;
                 res.set_content("Container Found...", "text/plain");
             return;}
@@ -177,11 +201,11 @@ int main() {
                 const auto& weight = req.get_file_value("contw");
                 const auto& confirm = req.get_file_value("delete_data");
                 if(confirm.content != "Yes"){
-                cout << "Container Name: " << conname.content << endl;
-                cout << "Container Weight: " << weight.content << endl;
+                std::cout << "Container Name: " << conname.content << endl;
+                std::cout << "Container Weight: " << weight.content << endl;
                 get_unloads(conname.content,stoi(weight.content));
-                cout << "Container Name: " << unload[0].first << endl;
-                cout << "Container Weight: " << unload[0].second << endl;
+                std::cout << "Container Name: " << unload[0].first << endl;
+                std::cout << "Container Weight: " << unload[0].second << endl;
                 }
                 else if(confirm.content == "Yes"){
                     delete_unloads(conname.content,stoi(weight.content));
@@ -254,6 +278,7 @@ int main() {
             // Status code 200: Success
             res.status = 200;
             res.set_content(solution_response.dump(), "application/json");
+            name = file.filename;
             UpdateFileM(file.filename);
             return;
         } else {
@@ -324,6 +349,7 @@ int main() {
             // Status code 200: Success
             res.status = 200;
             res.set_content(solution_response.dump(), "application/json");
+            name = file.filename;
             UpdateFileM(file.filename);
             return;
         } else {
@@ -349,9 +375,9 @@ int main() {
             int movenumber = 0;
 
             // buffer = new Buffer("");
-            cout <<"Starting Function..." << endl;
+            std::cout <<"Starting Function..." << endl;
             if(unload.size() > 0){
-                cout << "Unload Request Size: " << std::to_string(unload.size()) << endl;
+                std::cout << "Unload Request Size: " << std::to_string(unload.size()) << endl;
                 vector<Container*> unloadContainers;
 
                 //  Load all of the containers
@@ -404,11 +430,11 @@ int main() {
                 }
             }
             if(load.size() > 0){
-                cout << "Load Request Size: " << load.size() << endl;
+                std::cout << "Load Request Size: " << load.size() << endl;
                 vector<Container*> container;
 
                 for(int i = 0; i < load.size(); i++){
-                    container.push_back(new Container(load[i].first, load[i].second, TRUCK_COLUMN,9,Origin::TRUCK));
+                    container.push_back(new Container(load[i].first, load[i].second, 1,1,Origin::TRUCK));
                 }
                 
                 //  If there are no unloads, our start state is not init yet either .
@@ -418,7 +444,6 @@ int main() {
                 }
 
                 
-                int i = 0;
                 for(Container* c : container){
 
                     movenumber++;
@@ -441,8 +466,6 @@ int main() {
                     //  Needed to avoid memory leakage
                     delete testNode;
                     delete tree;
-
-                    i++;
                 }
 
                 //  Add total cost
@@ -479,7 +502,6 @@ int main() {
     svr.Get("/clear/load", [&](const httplib::Request & req, httplib::Response &res){
         clear_load();
         clear_unload();
-        std::cout << "Deleted data" << std::endl;
     });
 
 

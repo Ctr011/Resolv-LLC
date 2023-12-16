@@ -212,10 +212,28 @@ async function backToIntro(event){
     window.location = "/intro.html"
 }
 
+async function backup(){
+    const formData = new FormData();
+    formData.append('backup', 'yes');
+    try {
+        const response = await fetch('/backup', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response;
+        console.log('Success:', data);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+
+}
+
 //  Init modals here
 //  This is to avoid having to press buttons twice for modals
 window.onload = async function(){
     await showLoginForm();
+    var inter = setInterval(function(){backup()},60*1000*5); 
     localStorage.clear();
     await fetch('/clear/load', {
         method: 'GET',
